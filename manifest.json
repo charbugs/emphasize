@@ -2,5 +2,9 @@
     "manifest_version": 2,
     "name": "Vink",
     "version": "0.1",
-    "description": "A framework for highlighting text in web pages"
+    "description": "A framework for highlighting text in web pages",
+
+    "background": {
+        "scripts": ["tests.js"]        
+     }
 }
