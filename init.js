@@ -13,15 +13,15 @@ var init = {
                 var markers = [
                     {
                         id: 1, 
-                        title: 'Verben', 
-                        url: 'http://markers.com/verben', 
+                        title: 'Keywords', 
+                        url: 'http://myawswomemarkers.com/keywords', 
                         custom: ''
                     },
 
                     {
                         id: 2, 
-                        title: 'Nomen', 
-                        url: 'http://markers.com/nomen', 
+                        title: 'Locations', 
+                        url: 'http://myawesomemarkers.com/locations', 
                         custom: ''
                     }
                 ];
