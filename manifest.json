@@ -4,7 +4,11 @@
     "version": "0.1",
     "description": "A framework for highlighting text in web pages",
 
+    "permissions": [
+        "storage"
+    ],
+
     "background": {
-        "scripts": ["tests.js"]        
+        "scripts": ["tests.js", "init.js"]        
      }
 }
