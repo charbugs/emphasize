@@ -9,6 +9,6 @@
     ],
 
     "background": {
-        "scripts": ["tests.js", "init.js"]        
+        "scripts": ["tests.js", "init.js", "markerdb.js"]        
      }
 }
