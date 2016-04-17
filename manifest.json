@@ -10,5 +10,10 @@
 
     "background": {
         "scripts": ["tests.js", "init.js", "markerdb.js"]        
-     }
+     },
+
+    "browser_action": {
+        "default_icon": "menu.png",
+        "default_popup": "menu.html"
+    }
 }
