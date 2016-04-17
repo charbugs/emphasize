@@ -9,7 +9,8 @@
     ],
 
     "background": {
-        "scripts": ["tests.js", "init.js", "markerdb.js"]        
+        "scripts": ["tests.js", "init.js", "markerdb.js"],
+        "persistent": false
      },
 
     "browser_action": {
