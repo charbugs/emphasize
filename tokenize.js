@@ -62,11 +62,13 @@ var tokenize = {
         var head = [], tail = [], period = [], word = [];
 
         while (this.PUNCTS.indexOf(token[0]) > -1) {
+
             head.push(token[0]);
             token = token.slice(1);
         }
 
         while (this.PUNCTS.indexOf(token[token.length-1]) > -1) {
+
             tail.push(token[token.length-1]);
             token = token.slice(0,-1);
         }
@@ -74,6 +76,7 @@ var tokenize = {
         if (token.length > 1 && 
 	            token[token.length-1] == this.PERIOD && 
 	        	this.ABBREVS.indexOf(token) == -1) {
+
             word = token.slice(0,-1);
             period = [this.PERIOD];
         }
@@ -81,7 +84,7 @@ var tokenize = {
             if(token)
                 word = token;
 
-        splitted = [].concat(head, word, period, tail);
+        var splitted = [].concat(head, word, period, tail.reverse());
 
         return splitted.map(function(item, index) {
 
@@ -99,6 +102,16 @@ var tokenize = {
     * @return {String}
     */
     concat: function(tokens) {
+
+        var string = '';
+
+        for (key in tokens) {
+
+            var t = tokens[key];
+            string = string + (t.isSuffix ? t.form : ' ' + t.form);
+        }
+
+        return string;
     }
 };
 
