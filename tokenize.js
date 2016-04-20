@@ -44,7 +44,6 @@ var tokenize = {
         return [].concat.apply([], tokens);
     },
 
-
     /**
     * Splits an expression if it contains leading an trailing punctuation.
     *
@@ -93,7 +92,6 @@ var tokenize = {
 
         }, this);
     },
-
 
     /**
     * Concatenates tokens to the original string.
