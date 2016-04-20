@@ -3,22 +3,22 @@ var tokenize = {
 
     PERIOD: '.',
 
-	PUNCTS: [	
-	    '?', '!', '"', "'", ',', ';', ':', '(',	')', '{', '}', 
+    PUNCTS: [	
+        '?', '!', '"', "'", ',', ';', ':', '(',	')', '{', '}', 
         '%', '/', '[', ']',
-		String.fromCharCode(8216), String.fromCharCode(8217),
-		String.fromCharCode(8218), String.fromCharCode(8220),
-		String.fromCharCode(8221), String.fromCharCode(8222),
-		String.fromCharCode(8230)
-	],
+        String.fromCharCode(8216), String.fromCharCode(8217),
+        String.fromCharCode(8218), String.fromCharCode(8220),
+        String.fromCharCode(8221), String.fromCharCode(8222),
+        String.fromCharCode(8230)
+    ],
 
-	ABBREVS: [
-		'allg.', 'bzw.', 'bspw.', 'b.w.', 'd. h.', 'd. i.', 'etc.',
-		'evtl.', 'geb.', 'ggf.', 'n. Chr.', 'od.', 's.', 's. a.',
-		's.o.', 's.u.', 'u.', 'u. a.', 'u. Ä.', 'u.U.', 'u.z.', 'u.a.',
-		'usw.', 'v. a.', 'v. Chr.', 'vgl.', 'z.B.', 'z.T.', 'zB.', 'zb.',
-		'z.Zt.', 'i.d.R.', 'i.A.', 'z.Hd.' 
-	],
+    ABBREVS: [
+        'allg.', 'bzw.', 'bspw.', 'b.w.', 'd. h.', 'd. i.', 'etc.',
+        'evtl.', 'geb.', 'ggf.', 'n. Chr.', 'od.', 's.', 's. a.',
+        's.o.', 's.u.', 'u.', 'u. a.', 'u. Ä.', 'u.U.', 'u.z.', 'u.a.',
+        'usw.', 'v. a.', 'v. Chr.', 'vgl.', 'z.B.', 'z.T.', 'zB.', 'zb.',
+        'z.Zt.', 'i.d.R.', 'i.A.', 'z.Hd.' 
+    ],
 
     /**
     * Respesents a single Token.
@@ -43,7 +43,6 @@ var tokenize = {
         var tokens = string.trim().split(/\s+/).map(this._splitPuncts, this);
         return [].concat.apply([], tokens);
     },
-
 
     /**
     * Splits an expression if it contains leading an trailing punctuation.
@@ -93,7 +92,6 @@ var tokenize = {
 
         }, this);
     },
-
 
     /**
     * Concatenates tokens to the original string.
