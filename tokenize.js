@@ -87,8 +87,10 @@ var tokenize = {
 
         return splitted.map(function(item, index) {
 
-            if (index === 0) return new this.Token(item, false);
-            else return new this.Token(item, true);
+            if (index === 0) 
+                return new this.Token(item, false);
+            else 
+                return new this.Token(item, true);
 
         }, this);
     },
@@ -103,16 +105,14 @@ var tokenize = {
 
         var string = '';
 
-        for (key in tokens) {
+        for (var i=0; i<tokens.length; i++) {
 
-            var t = tokens[key];
+            var t = tokens[i];
             string = string + (t.isSuffix ? t.form : ' ' + t.form);
         }
 
-        return string;
+        return string.trim();
     }
 };
-
-module.exports = tokenize;
 
 
