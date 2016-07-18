@@ -5,11 +5,17 @@
     "description": "A framework for highlighting text in web pages",
 
     "permissions": [
+        "activeTab",
         "storage"
     ],
 
     "background": {
-        "scripts": ["tests.js", "init.js", "markerdb.js"],
+        "scripts": [
+            "tests.js", 
+            "init.js", 
+            "markerdb.js", 
+            "extension-control.js"
+        ],
         "persistent": false
      },
 

@@ -44,7 +44,7 @@ var menu = {
         
             chrome.runtime.getBackgroundPage(function(bg) {
 
-                bg.tests.logSelectedMarker(id);                
+                bg.extensionControl.applyMarker(id);                
             });  
         });        
     }
