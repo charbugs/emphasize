@@ -54,7 +54,7 @@ var tokenize = {
 
         // A single charakter is a proper token.
         if (token.length == 1)
-            return [token];
+            return [new this.Token(token, false)];
 
         // First split the token in head chars, tail chars,
         // the actual word and the period.
