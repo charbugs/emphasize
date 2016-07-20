@@ -111,7 +111,7 @@ var tokenize = {
             string = string + (t.isSuffix ? t.form : ' ' + t.form);
         }
 
-        return string.trim();
+        return string;
     }
 };
 

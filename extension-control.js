@@ -3,12 +3,15 @@ var extensionControl = {
 
 	/* IDs of tabs that already injected with content scripts */
 	injectedTabs: [],
+
 	/* ID of active tab */
 	activeTab: null,
+
 	/* ID of chosen marker */
 	markerId: null,
+	
 	/* content scripts to inject in given order*/
-	scripts: ['tokenize.js', 'extract.js', 'content-control.js'],
+	scripts: ['jquery.js', 'tokenize.js', 'extract.js', 'highlight.js', 'content-control.js'],
 
 	applyMarker: function(id) {
 
