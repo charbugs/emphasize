@@ -1,5 +1,5 @@
 
-var markerdb = {
+var markerdb = (function() {
 
     /**
     * Respresents a Marker
@@ -14,13 +14,13 @@ var markerdb = {
     * @param {String} url - url of the marker programm
     * @param {JSON String} custom - customizing string
     */
-    Marker: function(id, title, url, custom) {
+    function Marker(id, title, url, custom) {
         
         this.id = id;
         this.title = title;
         this.url = url;
         this.custom = custom;
-    },
+    }
 
     /**
     * Return one or all marker(s) from storage.
@@ -29,7 +29,7 @@ var markerdb = {
     * @param {Function} - callback
     *    @param {Marker | Array of Marker} marker - requested marker(s)
     */
-    get: function(id, callback) {
+    function get(id, callback) {
     
         chrome.storage.local.get('markers', function(items) {
 
@@ -49,7 +49,7 @@ var markerdb = {
                 }
             }
         });
-    },
+    }
 
     /**
     * Add a new marker to the storage.
@@ -59,7 +59,7 @@ var markerdb = {
     *    @prob {String} url - url of marker programm
     *    @prob {String} custom - custom json string
     */
-    add: function(infos) {
+    function add(infos) {
 
         chrome.storage.local.get('lastId', function(items) {
 
@@ -79,7 +79,7 @@ var markerdb = {
                 chrome.storage.local.set({lastId: curId});
             });
         });
-    },
+    }
 
 
     /** 
@@ -91,7 +91,7 @@ var markerdb = {
     *    @prob {String} url - url of marker programm
     *    @prob {String} custom - custom json string
     */
-    edit: function(id, infos) {
+    function edit(id, infos) {
 
         var marker = {
             id: id,
@@ -111,14 +111,14 @@ var markerdb = {
                 }
             }
         });
-    },
+    }
 
     /**
     * Remove a marker from storage.
     * 
     * @param {Number} id - the id of the marker to remove    
     */
-    remove: function(id) {
+    function remove(id) {
         
         chrome.storage.local.get('markers', function(items) {
 
@@ -131,9 +131,16 @@ var markerdb = {
                 }
             }
         });
-    },
+    }
+
+    return {
+        get: get,
+        add: add,
+        edit: edit,
+        remove: remove
+    };
     
-};
+}());
 
 
 
