@@ -1,10 +1,10 @@
 
-var init = {
+var init = (function () {
 
     /**
     * If the storage is empty set some default markers.
     */
-    setDefaultMarkers: function() {
+    function setDefaultMarkers() {
         
         chrome.storage.local.get(null, function(items) {
             
@@ -31,7 +31,11 @@ var init = {
             }
         });
     }
-};
 
+    return {
+        setDefaultMarkers: setDefaultMarkers
+    };
+
+}());
 
 init.setDefaultMarkers();
