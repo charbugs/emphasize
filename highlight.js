@@ -1,30 +1,28 @@
 
-var highlight = {
+var highlight = (function() {
 
 	/*
 	* Highlights text passages of the web page.
 	*
-	* @param {Array of extract.Segment} segments
+	* @param {Array of extract.TextSegment} segments
 	* @param {Array of int} mask
 	*/
-	highlight: function(segments, mask) {
+	function highlight(segments, mask) {
 
 		for (var i=0; i<segments.length; i++) { 
 
         	var submask = mask.splice(0, segments[i].tokens.length);
-        	//console.log(segments[i].tokens);
-        	//console.log(submask);
-        	this._highlightSegment(segments[i], submask);  
+        	highlightSegment(segments[i], submask);  
     	}
-	},
+	}
 
 	/*
 	* Highlights a single text node of the web page.
 	*
-	* @param {extract.Segment} segment
-	* @param {Array of in} submask
+	* @param {extract.TextSegment} segment
+	* @param {Array of int} submask
 	*/
-	_highlightSegment: function(segment, submask) {
+	function highlightSegment(segment, submask) {
 
     	var newNodes = [];
     	var start = 0;
@@ -39,7 +37,7 @@ var highlight = {
             	var text = tokenize.concat(tokens);
 	            var textNode = document.createTextNode(text);
 
-	            if (highlightElement = this._createHighlightElement(submask[i])) {
+	            if (highlightElement = createHighlightElement(submask[i])) {
 
 	                highlightElement.appendChild(textNode);
 	                newNodes.push(highlightElement);
@@ -54,9 +52,9 @@ var highlight = {
     	}
     	//console.log(newNodes);
     	jQuery(segment.node).replaceWith(newNodes);
-	},
+	}
 
-	_createHighlightElement: function(type) {
+	function createHighlightElement(type) {
 
 	    switch (type) {
 	        case 0:
@@ -70,4 +68,9 @@ var highlight = {
 	            return null;
 	    }
 	}
-};
+
+	return {
+		highlight: highlight
+	};
+
+}());
