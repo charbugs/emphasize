@@ -1,53 +1,47 @@
 
-var extensionControl = {
+var extensionControl = (function() {
 
-	/* IDs of tabs that already injected with content scripts */
-	injectedTabs: [],
-
-	/* ID of active tab */
-	activeTab: null,
-
-	/* ID of chosen marker */
-	markerId: null,
-	
 	/* content scripts to inject in given order*/
-	scripts: ['jquery.js', 'tokenize.js', 'extract.js', 'highlight.js', 'content-control.js'],
+	const scripts = [
 
-	applyMarker: function(id) {
+		'jquery.js', 
+		'tokenize.js', 
+		'extract.js', 
+		'highlight.js', 
+		'content-control.js'
+	]
 
-		var that = this;
-		that.markerId = id;
+	function applyMarker(markerId) {
 
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
-			that.activeTab = tabs[0].id;
-			var message = {command: 'alive'};
+			var tab = tabs[0].id;
+			var message = {command: 'isAlive'};
 
-			chrome.tabs.sendMessage(that.activeTab, message, function (respond) {
+			chrome.tabs.sendMessage(tab, message, function (respond) {
 
 				if (respond)
-					that._passMarkerToContentControl();
+					passMarkerToContentControl(tab, markerId);
+
 				else
-					that._executeScripts();
+					executeScripts(tab, function() {
+						passMarkerToContentControl(tab, markerId);	
+					});
 			});
 		});
-	},
+	}
 
-	_passMarkerToContentControl: function() {
+	function passMarkerToContentControl(tab, markerId) {
 
-		var that = this;
-
-		markerdb.get(that.markerId, function (marker) {
+		markerdb.get(markerId, function (marker) {
 			
 			var message = {command: 'apply', data: marker};
-			chrome.tabs.sendMessage(that.activeTab, message);
+			chrome.tabs.sendMessage(tab, message);
 		});
 		
-	},
+	}
 
-	_executeScripts: function() {
-
-		var that = this;
+	function executeScripts(tab, callback) {
 
     	function createCallback(tabId, script, callback) {
         	return function () {
@@ -55,12 +49,15 @@ var extensionControl = {
         	};
         }
 
-    	var callback = that._passMarkerToContentControl.bind(that);
-
-    	for (var i = that.scripts.length - 1; i >= 0; --i)
-        	callback = createCallback(that.activeTab, that.scripts[i], callback);
+    	for (var i = scripts.length - 1; i >= 0; --i)
+        	callback = createCallback(tab, scripts[i], callback);
 
     	if (callback !== null)
         	callback();   // execute outermost function
-	}	
-};
+	}
+
+	return {
+		applyMarker: applyMarker
+	};
+
+}());

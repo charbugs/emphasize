@@ -1,18 +1,27 @@
 
-chrome.runtime.onMessage.addListener(function(message, sender, callback) {
-	
-	if (message.command === 'alive')
-		callback(1);
-	else if (message.command === 'apply') {
-		extract.extract();
-		//var mask = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-		//debugger;
-		//highlight.highlight(extract.segments, mask);
+var contentControl = (function () {
+
+	function createMessageChannel() {
+
+		chrome.runtime.onMessage.addListener(handleMessage);
 	}
-	else
-		console.log('content-control: unknown command: ' + message.command);
 
-	// DON'T FORGET to empty the extract.segments array when work is done!
+	function handleMessage(message, sender, callback) {
 
-	debugger;
-});
+		if (message.command === 'isAlive')
+			callback(true);
+
+		else if (message.command === 'apply')
+			debugger;
+
+		else
+			console.log('content control: unknown command: ' + message.command);
+	}
+
+	return {
+		createMessageChannel : createMessageChannel
+	};
+
+}());
+
+contentControl.createMessageChannel();
