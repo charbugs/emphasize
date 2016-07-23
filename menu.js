@@ -1,13 +1,11 @@
 
-var menu = {
+var menu = (function() {
 
     /**
     * Creates a clickable list of the stored markers.
     * A click on a item invokes the marking process.
     */
-    draw: function() {
-
-        var that = this;
+    function draw() {
 
         chrome.runtime.getBackgroundPage(function (bg) {
 
@@ -15,12 +13,12 @@ var menu = {
 
                 for (key in markers) {
                     
-                    var item = that._addItemToList(markers[key].title);
-                    that._createItemCallback(item, markers[key].id);
+                    var item = addItemToList(markers[key].title);
+                    createItemCallback(item, markers[key].id);
                 }
             });
         });
-    },
+    }
 
     /** 
     * Puts a new item to the marker list.
@@ -28,7 +26,7 @@ var menu = {
     * @param {String} title - title of the marker to add
     * @return {DOM Element} - reference to the new item
     */
-    _addItemToList: function(title) {
+    function addItemToList(title) {
     
         var item = document.createElement('p');
         var text = document.createTextNode(title);
@@ -36,9 +34,9 @@ var menu = {
         var list = document.getElementById('marker-list');
         list.appendChild(item);
         return item;
-    },
+    }
 
-    _createItemCallback: function(item, id) {
+    function createItemCallback(item, id) {
 
         item.addEventListener('click', function() {
         
@@ -48,7 +46,12 @@ var menu = {
             });  
         });        
     }
-};
+
+    return {
+        draw: draw
+    };
+
+}());
 
 document.addEventListener('DOMContentLoaded', function() {
     menu.draw();
