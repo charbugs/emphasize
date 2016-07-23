@@ -1,64 +1,68 @@
 
-var extract = {
+var extract = (function() {
 
-	/* Container for text segments the a web page.
-	* 
-	* {Array of Segment}
-	*/
-	segments: [],
+    /**
+    * Respresents a single text node of a web page.
+    *
+    * @prob {DOM Node} node - reference to the text node
+    * @prob {Array of tokenize.Token} tokens - tokens of the text node
+    */
+    function TextSegment(node, tokens) {
 
-	/**
-	* Respresents a single text node of a web page.
-	*
-	* @prob {DOM Node} node - reference to the text node
-	* @prob {Array of Token} tokens - tokens of the text node
-	*/
-	Segment: function(node, tokens) {
+        this.node = node;
+        this.tokens = tokens;
+    }
 
-		this.node = node;
-		this.tokens = tokens;
-	},
+    /**
+    * Extract the entire text from web page.
+    *
+    * @return {Array of TextSegment}
+    */ 
+    function extractTextSegments() {
 
-	/**
-	* Extract the entire text from web page.
-	*
-	* @return {Array of Segment}
-	*/ 
-	extract: function() {
+        var textRoot = document.body; 
+        var segments = [];
 
-		var textRoot = document.body; 
-
-		var walker = document.createTreeWalker(
-        	textRoot,
-        	NodeFilter.SHOW_TEXT,
-        	{ acceptNode: function (node) { 
-            	return node.data.trim().length > 0 &&
-                	node.parentElement.nodeName != 'SCRIPT' &&
-                	node.parentElement.nodeName != 'NOSCRIPT' &&
-                	node.parentElement.nodeName != 'STYLE'; 
+        var walker = document.createTreeWalker(
+            textRoot,
+            NodeFilter.SHOW_TEXT,
+            { acceptNode: function (node) { 
+                return node.data.trim().length > 0 &&
+                    node.parentElement.nodeName != 'SCRIPT' &&
+                    node.parentElement.nodeName != 'NOSCRIPT' &&
+                    node.parentElement.nodeName != 'STYLE'; 
         }});
-		
-	    while(walker.nextNode()) {
-	    	console.log('from extract');
-	    	var tokens = tokenize.split(walker.currentNode.data);
-	        this.segments.push(new this.Segment(walker.currentNode, tokens));
-	    }
-	},
+        
+        while(walker.nextNode()) {
+            
+            let tokens = tokenize.split(walker.currentNode.data);
+            segments.push(new TextSegment(walker.currentNode, tokens));
+        }
 
-	/**
-	* Return the web page's text as a list of tokens.
-	*
-	* @param {Array of Segment} segments - all text segments in appropriate order
-	* @return {Array of String}
-	*/
-	getTokens: function() {
+        return segments;
+    }
 
-		var tokens = [];
+    /**
+    * Return the web page's text as a list of tokens.
+    *
+    * @param {Array of Segment} segments - all text segments in appropriate order
+    * @return {Array of String}
+    */
+    function getTokensFromSegments(segments) {
 
-		for (var segment of this.segments) 
-			for (var token of segment.tokens)
-				tokens.push(token.form);
+        var tokens = [];
 
-		return tokens;
-	}
-};
+        for (let segment of segments) 
+            for (let token of segment.tokens)
+                tokens.push(token.form);
+
+        return tokens;
+    }
+
+    return {
+        
+        extractTextSegments : extractTextSegments,
+        getTokensFromSegments: getTokensFromSegments 
+    };
+
+}());
