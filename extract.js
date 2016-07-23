@@ -43,7 +43,7 @@ var extract = (function() {
     }
 
     /**
-    * Return the web page's text as a list of tokens.
+    * Return the the tokens of text segments as a single list.
     *
     * @param {Array of Segment} segments - all text segments in appropriate order
     * @return {Array of String}
@@ -60,7 +60,7 @@ var extract = (function() {
     }
 
     return {
-        
+
         extractTextSegments : extractTextSegments,
         getTokensFromSegments: getTokensFromSegments 
     };
