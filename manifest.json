@@ -6,7 +6,9 @@
 
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "http://*/",
+        "https://*/"    
     ],
 
     "background": {
