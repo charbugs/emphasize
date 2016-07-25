@@ -6,7 +6,8 @@ var extensionControl = (function() {
 
 		'jquery.js', 
 		'tokenize.js', 
-		'extract.js', 
+		'extract.js',
+		'request.js', 
 		'highlight.js', 
 		'content-control.js'
 	]
