@@ -1,6 +1,8 @@
 	
 var contentControl = (function () {
 
+	var segments;
+
 	function createMessageChannel() {
 
 		chrome.runtime.onMessage.addListener(handleMessage);
@@ -8,23 +10,23 @@ var contentControl = (function () {
 
 	function handleMessage(message, sender, callback) {
 
-		if (message.command === 'isAlive')
+		if (message.command === 'isAlive') {
 			callback(true);
-		else if (message.command === 'apply')
-			applyMarker(message);
-		else
+		}
+
+		else if (message.command === 'getTokens') {
+			segments = extract.extractTextSegments();
+			callback(extract.getTokensFromSegments(segments));
+		}
+
+		else if (message.command === 'highlight') {
+			debugger;
+			highlight.highlight(segments, message.mask);
+		}
+
+		else {
 			console.log('content control: unknown command: ' + message.command);
-	}
-
-	function applyMarker(message) {
-
-		var marker = message.marker;
-		var segments = extract.extractTextSegments();
-		var tokens = extract.getTokensFromSegments(segments);
-		console.log(tokens);
-		request.callMarkerApp(marker, tokens, function(mask) {
-			highlight.highlight(segments, mask);
-		});
+		}
 	}
 
 	return {

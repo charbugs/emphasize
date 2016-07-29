@@ -15,7 +15,8 @@
         "scripts": [
             "tests.js", 
             "init.js", 
-            "markerdb.js", 
+            "markerdb.js",
+            "request.js", 
             "extension-control.js"
         ],
         "persistent": false
