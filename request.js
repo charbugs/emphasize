@@ -33,8 +33,6 @@ var request = (function() {
 
 		return {
 			tokens: tokens,
-			location: document.location.href,
-			custom: marker.query
 		};
 	}
 
