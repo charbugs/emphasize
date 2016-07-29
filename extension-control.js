@@ -36,7 +36,7 @@ var extensionControl = (function() {
 
 		markerdb.get(markerId, function (marker) {
 			
-			var message = {command: 'apply', data: marker};
+			var message = {command: 'apply', marker: marker};
 			chrome.tabs.sendMessage(tab, message);
 		});
 		

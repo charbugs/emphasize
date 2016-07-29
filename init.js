@@ -13,15 +13,15 @@ var init = (function () {
                 var markers = [
                     {
                         id: 1, 
-                        title: 'Keywords', 
-                        url: 'http://myawswomemarkers.com/keywords', 
+                        title: 'Upper Case', 
+                        url: 'http://mauser.pythonanywhere.com/upper-case/', 
                         custom: ''
                     },
 
                     {
                         id: 2, 
-                        title: 'Locations', 
-                        url: 'http://myawesomemarkers.com/locations', 
+                        title: 'Proper Names', 
+                        url: 'http://mauser.pythonanywhere.com/proper-names/', 
                         custom: ''
                     }
                 ];

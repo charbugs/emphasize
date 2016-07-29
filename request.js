@@ -16,7 +16,7 @@ var request = (function() {
 		
 		xhr.setRequestHeader('Content-Type', 'application/json');
 
-		var data = compileRequestData();
+		var data = compileRequestData(marker, tokens);
 
 		xhr.send(JSON.stringify(data));
 	}
@@ -29,7 +29,7 @@ var request = (function() {
 		}
 	}
 
-	function compileRequestData() {
+	function compileRequestData(marker, tokens) {
 
 		return {
 			tokens: tokens,
