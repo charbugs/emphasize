@@ -7,7 +7,6 @@ var extensionControl = (function() {
 		'jquery.js', 
 		'tokenize.js', 
 		'extract.js',
-		'request.js', 
 		'highlight.js', 
 		'content-control.js'
 	]
@@ -22,24 +21,26 @@ var extensionControl = (function() {
 			chrome.tabs.sendMessage(tab, message, function (respond) {
 
 				if (respond)
-					passMarkerToContentControl(tab, markerId);
-
+					run(tab, markerId);
 				else
 					executeScripts(tab, function() {
-						passMarkerToContentControl(tab, markerId);	
+						run(tab, markerId);	
 					});
 			});
 		});
 	}
 
-	function passMarkerToContentControl(tab, markerId) {
+	function run(tab, markerId) {
 
-		markerdb.get(markerId, function (marker) {
-			
-			var message = {command: 'apply', marker: marker};
-			chrome.tabs.sendMessage(tab, message);
-		});
-		
+		var message = {command: 'getTokens'};
+		chrome.tabs.sendMessage(tab, message, function (tokens) {
+			markerdb.get(markerId, function(marker) {
+				request.callMarkerApp(marker, tokens, function(mask) {
+					var message = {command: 'highlight', mask: mask};
+					chrome.tabs.sendMessage(tab, message);
+				});
+			});
+		});				
 	}
 
 	function executeScripts(tab, callback) {
