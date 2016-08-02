@@ -20,98 +20,78 @@ var tokenize = (function() {
         'z.Zt.', 'i.d.R.', 'i.A.', 'z.Hd.' 
     ];
 
-    /**
-    * Respesents a single Token.
-    *
-    * @param {String} form - the literal form of the token
-    * @param {Boolean} isAffix - is this token an suffix of the previous token?
-    */
-    function Token(form, isSuffix) {
-
+    function Token(form, space) {
         this.form = form;
-        this.isSuffix = isSuffix;
+        this.space = space;
     }
 
-    /**
-    * Split a string in single tokens.
-    *
-    * @param {String} string - string to tokenize
-    * @return {Array of Token}
-    */
     function split(string) {
 
-        var tokens = string.trim().split(/\s+/).map(splitPunctsFromToken);
-        return [].concat.apply([], tokens);
+        var tokenList = [];
+        var reSubString = new RegExp(/\S+\s*/, 'g');
+        var reNonSpace = new RegExp(/\S+/);
+        var reTrailingSpace = new RegExp(/\s*$/);
+        var reLeadingSpace = new RegExp(/^\s*/);
+
+        let form = '';
+        let space = string.match(reLeadingSpace)[0];
+        tokenList.push(new Token(form, space))
+
+        for (let sub of string.match(reSubString)) {
+
+            let nonSpaceExpr = sub.match(reNonSpace)[0];
+            let tokens = splitNonSpaceExpression(nonSpaceExpr);
+            
+            for (let token of tokens)
+                tokenList.push(new Token(token, ''));
+
+            let space = sub.match(reTrailingSpace)[0];
+            tokenList[tokenList.length-1].space = space;
+        }
+
+        return tokenList;
     }
 
-    /**
-    * Splits an token when it contains leading an trailing punctuation.
-    *
-    * @param {String} token - a string without withspaces
-    * @return {Array of Token}
-    */
-    function splitPunctsFromToken(token) {
+    function splitNonSpaceExpression(string) {
 
         // A single charakter is a proper token.
-        if (token.length == 1)
-            return [new Token(token, false)];
+        if (string.length == 1)
+            return [string];
 
         // First split the token in head chars, tail chars,
         // the actual word and the period.
         var head = [], tail = [], period = [], word = [];
 
-        while (PUNCTS.indexOf(token[0]) > -1) {
+        while (PUNCTS.indexOf(string[0]) > -1) {
 
-            head.push(token[0]);
-            token = token.slice(1);
+            head.push(string[0]);
+            string = string.slice(1);
         }
 
-        while (PUNCTS.indexOf(token[token.length-1]) > -1) {
+        while (PUNCTS.indexOf(string[string.length-1]) > -1) {
 
-            tail.push(token[token.length-1]);
-            token = token.slice(0,-1);
+            tail.push(string[string.length-1]);
+            string = string.slice(0,-1);
         }
 
-        if (token.length > 1 && 
-	            token[token.length-1] == PERIOD && 
-	        	ABBREVS.indexOf(token) == -1) {
+        if (string.length > 1 && 
+                string[string.length-1] == PERIOD && 
+                ABBREVS.indexOf(string) == -1) {
 
-            word = token.slice(0,-1);
+            word = string.slice(0,-1);
             period = [PERIOD];
         }
         else
-            if(token)
-                word = token;
+            if(string)
+                word = string;
 
-        var splitted = [].concat(head, word, period, tail.reverse());
-
-        return splitted.map(function(item, index) {
-
-            if (index === 0) 
-                return new Token(item, false);
-            else 
-                return new Token(item, true);
-
-        });
+        return [].concat(head, word, period, tail.reverse());
     }
 
-    /**
-    * Concatenates tokens to the original string.
-    *
-    * @param {Array of Token} tokens
-    * @return {String}
-    */
     function concat(tokens) {
-
-        var string = '';
-
-        for (var i=0; i<tokens.length; i++) {
-
-            var t = tokens[i];
-            string = string + (t.isSuffix ? t.form : ' ' + t.form);
-        }
-
-        return string;
+        var str = '';
+        tokens.map(tok => str += tok.form + tok.space);
+        return str; 
     }
 
     return {
