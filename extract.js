@@ -10,7 +10,8 @@ var extract = (function() {
     function TextSegment(node, tokens) {
 
         this.node = node;
-        this.tokens = tokens;
+        this.leadingSpaceToken = tokens[0];
+        this.tokens = tokens.slice(1);
     }
 
     /**
