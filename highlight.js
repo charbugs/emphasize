@@ -60,7 +60,8 @@ var highlight = (function() {
         	} 
     	}
 
-    	jQuery(segment.node).replaceWith(newNodes);
+    	replaceNodeWithMultipleNodes(segment.node, newNodes);
+    	//jQuery(segment.node).replaceWith(newNodes);
 	}
 
 	function highlightTokens(tokens, type) {
@@ -84,6 +85,14 @@ var highlight = (function() {
 		}
 		else
 			return [textNode, spaceNode];
+	}
+
+	function replaceNodeWithMultipleNodes(oldNode, newNodes) {
+
+		var parentNode = oldNode.parentNode;
+		for (newNode of newNodes)
+			parentNode.insertBefore(newNode, oldNode)
+		parentNode.removeChild(oldNode);
 	}
 
 	return {
