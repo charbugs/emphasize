@@ -1,7 +1,9 @@
 
 var highlight = (function() {
 
-	var pencilMap = {
+	const globalClassName = 'vink-element';
+
+	const pencilMap = {
 
 		1: 'vink-pen-1',
 		2: 'vink-pen-1',
@@ -79,7 +81,8 @@ var highlight = (function() {
 		// wrap text node in a styled span element if type is known
 		if (type in pencilMap) {
 			var element = document.createElement('SPAN');
-			element.className = pencilMap[type];
+			element.classList.add(globalClassName);
+			element.classList.add(pencilMap[type]);
 			element.appendChild(textNode);
 			return [element, spaceNode];
 		}
