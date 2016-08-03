@@ -98,8 +98,24 @@ var highlight = (function() {
 		parentNode.removeChild(oldNode);
 	}
 
+	function remove() {
+
+		var elements = document.getElementsByClassName(globalClassName);
+		while (element = elements[0])
+			unwrapElement(element);
+	}
+
+	function unwrapElement(element) {
+
+		var parent = element.parentNode;
+		while(element.firstChild)
+			parent.insertBefore(element.firstChild, element);
+		parent.removeChild(element);
+	} 
+
 	return {
-		highlight: highlight
+		highlight: highlight,
+		remove: remove
 	};
 
 }());
