@@ -20,6 +20,7 @@ var contentControl = (function () {
 		}
 
 		else if (message.command === 'highlight') {
+			debugger;
 			highlight.highlight(segments, message.mask);
 		}
 

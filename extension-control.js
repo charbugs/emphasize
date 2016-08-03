@@ -4,6 +4,7 @@ var extensionControl = (function() {
 	/* content scripts to inject in given order*/
 	const scripts = [
 
+		'vink.css',
 		'jquery.js', 
 		'tokenize.js', 
 		'extract.js',
@@ -46,9 +47,14 @@ var extensionControl = (function() {
 	function executeScripts(tab, callback) {
 
     	function createCallback(tabId, script, callback) {
-        	return function () {
-            	chrome.tabs.executeScript(tabId, {file: script}, callback);
-        	};
+    		if (script.endsWith('.js'))
+        		return function () {
+        			chrome.tabs.executeScript(tabId, {file: script}, callback);
+        		};
+        	else if(script.endsWith('.css'))
+        		return function () {
+        			chrome.tabs.insertCSS(tabId, {file: script}, callback);
+        		};
         }
 
     	for (var i = scripts.length - 1; i >= 0; --i)

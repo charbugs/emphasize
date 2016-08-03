@@ -1,6 +1,14 @@
 
 var highlight = (function() {
 
+	var pencilMap = {
+
+		1: 'vink-pen-1',
+		2: 'vink-pen-1',
+		3: 'vink-pen-2',
+		4: 'vink-pen-2'
+	};
+
 	function highlight(segments, mask) {
 
 		var pairs = getSegmentSubmaskPairs(segments, mask);
@@ -67,34 +75,15 @@ var highlight = (function() {
 		var space = string.match(/\s*$/)[0];
 		var spaceNode = document.createTextNode(space);
 		
-		// wrap text node in highlight element
-		var highlightNode = createHighlightElement(type)
-		if (highlightNode)
-			highlightNode.appendChild(textNode);
+		// wrap text node in a styled span element if type is known
+		if (type in pencilMap) {
+			var element = document.createElement('SPAN');
+			element.className = pencilMap[type];
+			element.appendChild(textNode);
+			return [element, spaceNode];
+		}
 		else
-			highlightNode = textNode;
-
-		return [highlightNode, spaceNode];
-	}
-
-	function createHighlightElement(type) {
-
-	    switch (type) {
-	        case 0:
-	            return null;
-	        case 1:
-	            var element = document.createElement('span');
-	            element.style.backgroundColor = '#b7e500';
-	            element.style['border-radius'] = '5px';
-	            return element;
-	        case 2:
-	        	var element = document.createElement('span');
-	            element.style.backgroundColor = '#b7e500';
-	            element.style['border-radius'] = '5px';
-	            return element;
-	        default:
-	            return null;
-	    }
+			return [textNode, spaceNode];
 	}
 
 	return {
