@@ -14,34 +14,37 @@ var extensionControl = (function() {
 
 	function applyMarker(markerId) {
 
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		connectWebPage(function(tab) {
+			
+			var message = {command: 'getTokens'};
+			chrome.tabs.sendMessage(tab, message, function (tokens) {
+				markerdb.get(markerId, function(marker) {
+					request.callMarkerApp(marker, tokens, function(mask) {
+						var message = {command: 'highlight', mask: mask};
+						chrome.tabs.sendMessage(tab, message);
+					});
+				});
+			});
+		});					
+	}
 
+	function connectWebPage(callback) {
+
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			
 			var tab = tabs[0].id;
 			var message = {command: 'isAlive'};
-
+			
 			chrome.tabs.sendMessage(tab, message, function (respond) {
-
+				
 				if (respond)
-					run(tab, markerId);
+					callback(tab);
 				else
 					executeScripts(tab, function() {
-						run(tab, markerId);	
+						callback(tab);
 					});
 			});
 		});
-	}
-
-	function run(tab, markerId) {
-
-		var message = {command: 'getTokens'};
-		chrome.tabs.sendMessage(tab, message, function (tokens) {
-			markerdb.get(markerId, function(marker) {
-				request.callMarkerApp(marker, tokens, function(mask) {
-					var message = {command: 'highlight', mask: mask};
-					chrome.tabs.sendMessage(tab, message);
-				});
-			});
-		});				
 	}
 
 	function executeScripts(tab, callback) {
@@ -57,7 +60,7 @@ var extensionControl = (function() {
         		};
         }
 
-    	for (var i = scripts.length - 1; i >= 0; --i)
+		for (var i = scripts.length - 1; i >= 0; --i)
         	callback = createCallback(tab, scripts[i], callback);
 
     	if (callback !== null)
