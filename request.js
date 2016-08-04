@@ -1,6 +1,11 @@
 
 var request = (function() {
 
+	function MarkerResponse(mask) {
+
+		this.mask;
+	}
+
 	/*
 	* @param {markerdb.Marker} - marker
 	* @param {Array of String} - tokens
