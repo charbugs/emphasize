@@ -17,12 +17,13 @@ var menu = (function() {
 
             bg.markerdb.get(null, function(markers) {
 
-                for (key in markers) {
+                // 'let' because closure in loop
+                for (let marker of markers) {
                     
-                    var item = addItemToList(markers[key].title, 'markers');
+                    var item = addItemToList(marker.title, 'markers');
 
                     item.addEventListener('click', function() {
-                        bg.extensionControl.applyMarker(markers[key].id);
+                        bg.extensionControl.applyMarker(marker.id);
                     });
                 }
             });
