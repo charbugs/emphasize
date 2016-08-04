@@ -1,11 +1,17 @@
 
 var menu = (function() {
 
+    function draw() {
+
+        drawMarkerList();
+        drawControlList();
+    }
+
     /**
     * Creates a clickable list of the stored markers.
     * A click on a item invokes the marking process.
     */
-    function draw() {
+    function drawMarkerList() {
 
         chrome.runtime.getBackgroundPage(function (bg) {
 
@@ -13,11 +19,26 @@ var menu = (function() {
 
                 for (key in markers) {
                     
-                    var item = addItemToList(markers[key].title);
-                    createItemCallback(item, markers[key].id);
+                    var item = addItemToList(markers[key].title, 'markers');
+
+                    item.addEventListener('click', function() {
+                        bg.extensionControl.applyMarker(markers[key].id);
+                    });
                 }
             });
         });
+    }
+
+    function drawControlList() {
+        
+
+        chrome.runtime.getBackgroundPage(function(bg) {
+
+            var itemClear = addItemToList('Clear', 'controls');
+            itemClear.addEventListener('click', function() {
+                bg.extensionControl.removeHighlighting();
+            });
+        });      
     }
 
     /** 
@@ -26,25 +47,14 @@ var menu = (function() {
     * @param {String} title - title of the marker to add
     * @return {DOM Element} - reference to the new item
     */
-    function addItemToList(title) {
+    function addItemToList(title, listId) {
     
         var item = document.createElement('p');
         var text = document.createTextNode(title);
         item.appendChild(text);
-        var list = document.getElementById('marker-list');
+        var list = document.getElementById(listId);
         list.appendChild(item);
         return item;
-    }
-
-    function createItemCallback(item, id) {
-
-        item.addEventListener('click', function() {
-        
-            chrome.runtime.getBackgroundPage(function(bg) {
-
-                bg.extensionControl.applyMarker(id);                
-            });  
-        });        
     }
 
     return {
