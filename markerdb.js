@@ -19,7 +19,6 @@ var markerdb = (function() {
         this.id = id;
         this.title = title;
         this.url = url;
-        this.custom = custom;
     }
 
     /**
@@ -133,16 +132,46 @@ var markerdb = (function() {
         });
     }
 
+    /**
+    * If the storage is empty set some default markers.
+    */
+    function setDefaultMarkers() {
+        
+        chrome.storage.local.get(null, function(items) {
+            
+            if (Object.keys(items).length == 0) {
+
+                var markers = [
+                    {
+                        id: 1, 
+                        title: 'Upper Case', 
+                        url: 'http://mauser.pythonanywhere.com/upper-case/', 
+                    },
+
+                    {
+                        id: 2, 
+                        title: 'Proper Names', 
+                        url: 'http://mauser.pythonanywhere.com/proper-names/', 
+                    }
+                ];
+
+                chrome.storage.local.set({markers: markers});
+                chrome.storage.local.set({lastId: markers.length});
+            }
+        });
+    }
+
     return {
         get: get,
         add: add,
         edit: edit,
-        remove: remove
+        remove: remove,
+        setDefaultMarkers: setDefaultMarkers
     };
     
 }());
 
-
+markerdb.setDefaultMarkers();
 
 
 
