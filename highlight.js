@@ -13,6 +13,7 @@ var highlight = (function() {
 
 	function highlight(segments, mask) {
 
+		remove();
 		var pairs = getSegmentSubmaskPairs(segments, mask);
 		for (var {segment, submask} of pairs) {
 			processSegment(segment, submask);
