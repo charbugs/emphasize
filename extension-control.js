@@ -12,6 +12,14 @@ var extensionControl = (function() {
 		'content-control.js'
 	]
 
+	function removeHighlighting() {
+
+		connectWebPage(function(tab) {
+			var message = {command: 'removeHighlighting'};
+			chrome.tabs.sendMessage(tab, message);
+		});
+	}
+
 	function applyMarker(markerId) {
 
 		connectWebPage(function(tab) {
@@ -68,7 +76,8 @@ var extensionControl = (function() {
 	}
 
 	return {
-		applyMarker: applyMarker
+		applyMarker: applyMarker,
+		removeHighlighting: removeHighlighting
 	};
 
 }());

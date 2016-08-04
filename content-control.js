@@ -20,8 +20,11 @@ var contentControl = (function () {
 		}
 
 		else if (message.command === 'highlight') {
-			debugger;
 			highlight.highlight(segments, message.mask);
+		}
+
+		else if (message.command === 'removeHighlighting') {
+			highlight.remove();
 		}
 
 		else {
