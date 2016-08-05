@@ -1,9 +1,30 @@
 
 var request = (function() {
 
-	function MarkerResponse(mask) {
+	var numberOfTokens;
 
-		this.mask;
+	function MarkerResponse(responseText) {
+
+		var parseErrMsg = 'parsing marker response failed: ' 
+
+		// is valid JSON string?
+		try {
+			var response = JSON.parse(responseText);
+		} catch(e) {
+			throw new Error(parseErrMsg + e.message);
+		}
+	
+		// is Array?
+		if (!Array.isArray(response))
+			throw new Error(parseErrMsg + 'not an array');
+
+		// if shorter then tokens fill with 0
+		var padding = numberOfTokens - response.length;
+		if (padding > 0)
+			response = response.concat(Array(padding).fill(0));
+
+		// all right!
+		this.mask = response;
 	}
 
 	/*
@@ -11,6 +32,8 @@ var request = (function() {
 	* @param {Array of String} - tokens
 	*/
 	function callMarkerApp(marker, tokens, callback) {
+
+		numberOfTokens = tokens.length;
 
 		var xhr = new XMLHttpRequest();
 
@@ -30,7 +53,7 @@ var request = (function() {
 
 		if (xhr.readyState === 4 && xhr.status === 200) {
 
-			callback(JSON.parse(xhr.responseText));
+			callback(new MarkerResponse(xhr.responseText));
 		}
 	}
 

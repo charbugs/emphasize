@@ -27,8 +27,8 @@ var extensionControl = (function() {
 			var message = {command: 'getTokens'};
 			chrome.tabs.sendMessage(tab, message, function (tokens) {
 				markerdb.get(markerId, function(marker) {
-					request.callMarkerApp(marker, tokens, function(mask) {
-						var message = {command: 'highlight', mask: mask};
+					request.callMarkerApp(marker, tokens, function(markerResponse) {
+						var message = {command: 'highlight', mask: markerResponse.mask};
 						chrome.tabs.sendMessage(tab, message);
 					});
 				});
