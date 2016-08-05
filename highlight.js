@@ -45,7 +45,7 @@ var highlight = (function() {
 
     	var start = 0;
 
-    	for (var i=0, next=1; i<submask.length; i++, next++) {
+    	for (var i=0, next=1; i<segment.tokens.length; i++, next++) {
 
         	if (submask[i] != submask[next]) {
 
