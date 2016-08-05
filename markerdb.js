@@ -152,6 +152,12 @@ var markerdb = (function() {
                         id: 2, 
                         title: 'Proper Names', 
                         url: 'http://mauser.pythonanywhere.com/proper-names/', 
+                    },
+
+                    {
+                        id: 3, 
+                        title: 'Some Test', 
+                        url: 'http://mauser.pythonanywhere.com/test/', 
                     }
                 ];
 
