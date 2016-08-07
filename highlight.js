@@ -1,7 +1,7 @@
 
 var highlight = (function() {
 
-	const globalClassName = 'vink-element';
+	const GLOBAL_CLASS_NAME = 'vink-element';
 
 	const pencilMap = {
 
@@ -13,7 +13,6 @@ var highlight = (function() {
 
 	function highlight(segments, mask) {
 
-		remove();
 		var pairs = getSegmentSubmaskPairs(segments, mask);
 		for (var {segment, submask} of pairs) {
 			processSegment(segment, submask);
@@ -82,7 +81,7 @@ var highlight = (function() {
 		// wrap text node in a styled span element if type is known
 		if (type in pencilMap) {
 			var element = document.createElement('SPAN');
-			element.classList.add(globalClassName);
+			element.classList.add(GLOBAL_CLASS_NAME);
 			element.classList.add(pencilMap[type]);
 			element.appendChild(textNode);
 			return [element, spaceNode];
@@ -101,18 +100,12 @@ var highlight = (function() {
 
 	function remove() {
 
-		var elements = document.getElementsByClassName(globalClassName);
-		while (element = elements[0])
-			unwrapElement(element);
+		while(elem = document.querySelector('.' + GLOBAL_CLASS_NAME)) {
+			var parent = elem.parentNode;
+			elem.outerHTML = elem.innerHTML;
+			parent.normalize();
+		}
 	}
-
-	function unwrapElement(element) {
-
-		var parent = element.parentNode;
-		while(element.firstChild)
-			parent.insertBefore(element.firstChild, element);
-		parent.removeChild(element);
-	} 
 
 	return {
 		highlight: highlight,

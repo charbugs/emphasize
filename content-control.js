@@ -15,6 +15,7 @@ var contentControl = (function () {
 		}
 
 		else if (message.command === 'getTokens') {
+			highlight.remove()
 			segments = extract.extractTextSegments();
 			callback(extract.getTokensFromSegments(segments));
 		}
