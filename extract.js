@@ -10,8 +10,7 @@ var extract = (function() {
     function TextSegment(node, tokens) {
 
         this.node = node;
-        this.leadingSpaceToken = tokens[0];
-        this.tokens = tokens.slice(1);
+        this.tokens = tokens;
     }
 
     /**
@@ -36,7 +35,7 @@ var extract = (function() {
         
         while(walker.nextNode()) {
             
-            let tokens = tokenize.split(walker.currentNode.data);
+            var tokens = tokenize.split(walker.currentNode.data);
             segments.push(new TextSegment(walker.currentNode, tokens));
         }
 
@@ -55,7 +54,7 @@ var extract = (function() {
 
         for (let segment of segments) 
             for (let token of segment.tokens)
-                tokens.push(token.form);
+                tokens.push(token.trim());
 
         return tokens;
     }
