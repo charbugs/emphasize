@@ -1,6 +1,12 @@
 
 var tokenize = (function() {
 
+    function Token(form, node) {
+
+        this.form = form;
+        this.node = node;
+    }
+
     function split(string) {
 
         var reSplitSpace = /\s*\S+\s*/g;
@@ -55,6 +61,7 @@ var tokenize = (function() {
 
     return {
         split: split,
+        Token: Token
     };
 
 }());

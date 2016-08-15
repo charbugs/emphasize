@@ -1,7 +1,7 @@
 	
 var contentControl = (function () {
 
-	var segments;
+	var tokens;
 
 	function createMessageChannel() {
 
@@ -14,14 +14,20 @@ var contentControl = (function () {
 			callback(true);
 		}
 
-		else if (message.command === 'getTokens') {
+		else if (message.command === 'getWords') {
+			/*
+			debugger;
+			tokens = extract.getTokens();
+			var mask = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0];
+			highlight.highlight(tokens, mask);
+			*/
 			highlight.remove()
-			segments = extract.extractTextSegments();
-			callback(extract.getTokensFromSegments(segments));
+			tokens = extract.getTokens()
+			callback(extract.getWords(tokens));
 		}
 
 		else if (message.command === 'highlight') {
-			highlight.highlight(segments, message.mask);
+			highlight.highlight(tokens, message.mask);
 		}
 
 		else if (message.command === 'removeHighlighting') {

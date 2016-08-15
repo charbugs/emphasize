@@ -1,27 +1,10 @@
 
 var extract = (function() {
 
-    /**
-    * Respresents a single text node of a web page.
-    *
-    * @prob {DOM Node} node - reference to the text node
-    * @prob {Array of tokenize.Token} tokens - tokens of the text node
-    */
-    function TextSegment(node, tokens) {
-
-        this.node = node;
-        this.tokens = tokens;
-    }
-
-    /**
-    * Extract the entire text from web page.
-    *
-    * @return {Array of TextSegment}
-    */ 
-    function extractTextSegments() {
+    function getTokens() {
 
         var textRoot = document.body; 
-        var segments = [];
+        var tokens = [];
 
         var walker = document.createTreeWalker(
             textRoot,
@@ -35,34 +18,23 @@ var extract = (function() {
         
         while(walker.nextNode()) {
             
-            var tokens = tokenize.split(walker.currentNode.data);
-            segments.push(new TextSegment(walker.currentNode, tokens));
+            var forms = tokenize.split(walker.currentNode.data);
+            for (form of forms)
+                tokens.push(new tokenize.Token(form, walker.currentNode));
         }
-
-        return segments;
-    }
-
-    /**
-    * Return the the tokens of text segments as a single list.
-    *
-    * @param {Array of Segment} segments - all text segments in appropriate order
-    * @return {Array of String}
-    */
-    function getTokensFromSegments(segments) {
-
-        var tokens = [];
-
-        for (let segment of segments) 
-            for (let token of segment.tokens)
-                tokens.push(token.trim());
 
         return tokens;
     }
 
+    function getWords(tokens) {
+
+        return tokens.map(token => token.form.trim());
+    }
+
     return {
 
-        extractTextSegments : extractTextSegments,
-        getTokensFromSegments: getTokensFromSegments 
+        getTokens : getTokens,
+        getWords: getWords 
     };
 
 }());

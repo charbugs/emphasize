@@ -5,7 +5,6 @@ var extensionControl = (function() {
 	const scripts = [
 
 		'vink.css',
-		'jquery.js', 
 		'tokenize.js', 
 		'extract.js',
 		'highlight.js', 
@@ -24,7 +23,7 @@ var extensionControl = (function() {
 
 		connectWebPage(function(tab) {
 			
-			var message = {command: 'getTokens'};
+			var message = {command: 'getWords'};
 			chrome.tabs.sendMessage(tab, message, function (tokens) {
 				markerdb.get(markerId, function(marker) {
 					request.callMarkerApp(marker, tokens, function(markerResponse) {

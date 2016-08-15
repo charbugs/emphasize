@@ -157,7 +157,7 @@ var markerdb = (function() {
                     {
                         id: 3, 
                         title: 'Some Test', 
-                        url: 'http://mauser.pythonanywhere.com/test/', 
+                        url: 'http://localhost/test/', 
                     }
                 ];
 

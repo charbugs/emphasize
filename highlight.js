@@ -11,91 +11,216 @@ var highlight = (function() {
 		4: 'vink-pen-2'
 	};
 
-	function highlight(segments, mask) {
+	function highlight(tokens, mask) {
 
-		var pairs = getSegmentSubmaskPairs(segments, mask);
-		for (var {segment, submask} of pairs) {
-			processSegment(segment, submask);
+		var startTime = performance.now();
+
+		var nodeMap = new Map();
+		var nextTokenGroup = createTokenGroupIterator(tokens, mask);
+		var group;
+
+		while (group = nextTokenGroup()) {
+
+			//clearZeroNodes(group);
+
+			var nextFeatureSet = createSubGroupFeatureSetIterator(group.tokens, group.type);
+			var feats;
+
+			while(feats = nextFeatureSet()) {
+
+				var nodes = highlightTokens(feats.tokens, feats.type,
+					feats.leftSpace, feats.rightSpace);
+
+				if (nodeMap.has(feats.node)) {
+					var newNodes = nodeMap.get(feats.node);
+					newNodes.push.apply(newNodes, nodes); // extend in place
+				}
+				else
+					nodeMap.set(feats.node, nodes);
+			}
+		}
+		nodeMap.forEach((newNodes, oldNode) => replaceNodeWithMultiples(oldNode, newNodes));
+
+		var endTime = performance.now();
+		console.log('highlight() took ' + (endTime - startTime) + ' ms');
+	}
+
+	function clearZeroNodes(group) {
+
+		if (group.type !== 0)
+			return;
+
+		var zeroNodes = [];
+				
+		for (token of group.tokens)
+			if(zeroNodes.indexOf(token.node) === -1)
+				zeroNodes.push(token.node);
+
+		zeroNodes.pop();
+		zeroNodes.shift();
+
+		group.tokens = group.tokens.filter(tok => zeroNodes.indexOf(tok.node) == -1);
+	}
+
+	function createTokenGroupIterator(tokens, mask) {
+
+		var start = 0;
+		var end = 1;
+
+		return function() {
+
+			if (start === tokens.length)
+				return null;
+
+			while (mask[start] === mask[end])
+				end++;
+
+			var group = {
+				tokens: tokens.slice(start, end),
+				type: mask[start]
+			};
+
+			start = end;
+			end++;
+
+			return group;
+		};
+	}
+
+	function createSubGroupFeatureSetIterator(tokens, type) {
+
+		var subGroups = getSubGroups(tokens, type);
+		var i = 0;
+		var firstPos = 0;
+		var lastPos = subGroups.length-1;
+
+		return function() {
+			
+			var leftSpace, rightSpace;
+
+			if(!subGroups[i])
+				return null;
+
+			// determine left space
+			if (i == firstPos || !isSpanningType(type))
+				leftSpace = false;
+			else if (withinSameBlockElement(
+						subGroups[i][0].node, 
+						subGroups[i-1][0].node))
+				leftSpace = true;
+			else
+				leftSpace = false;
+
+			// determine reight space
+			if (i == lastPos  || !isSpanningType(type))
+				rightSpace = false;
+			else if (withinSameBlockElement(
+						subGroups[i][0].node,
+						subGroups[i+1][0].node))
+				rightSpace = true;
+			else
+				rightSpace = false;
+
+			var tokens = subGroups[i]
+			var node = tokens[0].node;
+			i++; 
+
+			return {
+				tokens: tokens,
+				type: type,
+				node: node,
+				leftSpace: leftSpace,
+				rightSpace: rightSpace
+			};
 		}
 	}
 
-	function getSegmentSubmaskPairs(segments, mask) {
+	function getSubGroups(tokens, type) {
+
+		var start = 0;
+		var end = 1;
+		var subGroups = [];
+
+		if (!isSpanningType(type)) {
+			return tokens.map(val => [val]);
+		}
+
+		while (start != tokens.length) {
+
+			try {
+				while (tokens[start].node === tokens[end].node)
+					end++;
+			} 
+			catch (e) {
+				if (e.name === 'TypeError') {}
+				else throw e;
+			}
+
+			subGroups.push(tokens.slice(start, end));
+				
+			start = end;
+			end++;			
+		};
+
+		return subGroups;
+	}
+
+	function isSpanningType(type) {
+		return !(type % 2);
+	}
+
+	function withinSameBlockElement(node1, node2) {
+
+		function getNearestBlockElement(node) {
+			while (node = node.parentElement) {
+				var display = window.getComputedStyle(node).display;
+				if (display === 'block')
+					return node;
+			}
+		}
+		return getNearestBlockElement(node1) === getNearestBlockElement(node2);
+	}
+
+	function highlightTokens(tokens, type, leftSpace, rightSpace) {
+
+		var nodes = [];
+		var string = tokens.map(tok => tok.form).join('');
 		
-		var pairs = [];
-		for (var i=0; i<segments.length; i++) {
-			len = segments[i].tokens.length;
-			pairs.push({
-				segment: segments[i],
-				submask: mask.splice(0, len)
+		if (!leftSpace)
+			string = string.replace(/^\s*/, function(match) {
+				nodes.push(document.createTextNode(match));
+				return '';
 			});
-    	}
-    	return pairs;
-	}
 
-	function processSegment(segment, submask) {
-
-		// container for text nodes that will replace 
-		// the current text node
-    	var newNodes = [];
-
-    	// first we restore the leading space of segment
-    	var space = segment.leadingSpaceToken.space;
-    	newNodes.push(document.createTextNode(space));
-
-    	var start = 0;
-
-    	for (var i=0, next=1; i<segment.tokens.length; i++, next++) {
-
-        	if (submask[i] != submask[next]) {
-
-            	var tokens = segment.tokens.slice(start, next);
-
-            	if ((submask[i]%2) === 0) {
-            		newNodes = newNodes.concat(highlightTokens(tokens, submask[i]))
-            	}	
-            	else {
-            		for (var token of tokens)
-            			newNodes = newNodes.concat(highlightTokens([token], submask[i]))
-            	}
-
-	            start = next;
-        	} 
-    	}
-
-    	replaceNodeWithMultipleNodes(segment.node, newNodes);
-    	//jQuery(segment.node).replaceWith(newNodes);
-	}
-
-	function highlightTokens(tokens, type) {
-
-		// restore string from tokens
-		var string = tokenize.concat(tokens);
+		var textNode = document.createTextNode(string);
 		
-		// create text node from string without trailing space
-		textNode = document.createTextNode(string.trim());
-		
-		// move trailing space in extra node
-		var space = string.match(/\s*$/)[0];
-		var spaceNode = document.createTextNode(space);
-		
-		// wrap text node in a styled span element if type is known
 		if (type in pencilMap) {
 			var element = document.createElement('SPAN');
 			element.classList.add(GLOBAL_CLASS_NAME);
 			element.classList.add(pencilMap[type]);
 			element.appendChild(textNode);
-			return [element, spaceNode];
+			nodes.push(element);
 		}
-		else
-			return [textNode, spaceNode];
+		else {
+			nodes.push(textNode);
+		}
+
+		if(!rightSpace)
+			textNode.data = textNode.data.replace(/\s*$/, function(match) {
+				nodes.push(document.createTextNode(match));
+				return '';
+			});
+
+		return nodes;
 	}
 
-	function replaceNodeWithMultipleNodes(oldNode, newNodes) {
+	function replaceNodeWithMultiples(oldNode, newNodes) {
 
 		var parentNode = oldNode.parentNode;
 		for (newNode of newNodes)
 			parentNode.insertBefore(newNode, oldNode)
 		parentNode.removeChild(oldNode);
+		parentNode.normalize();
 	}
 
 	function remove() {
