@@ -12,8 +12,7 @@
     ],
 
     "background": {
-        "scripts": [
-            "tests.js", 
+        "scripts": [ 
             "markerdb.js",
             "request.js", 
             "extension-control.js"
