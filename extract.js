@@ -1,10 +1,15 @@
-
+/** @module extract */
 var extract = (function() {
 
-    function getTokens() {
+    /**
+    * Extract the relevant tokens form the web page.
+    *
+    * @return {Array of tokenize.Token}
+    */
+    function getPageTokens() {
 
         var textRoot = document.body; 
-        var tokens = [];
+        var pageTokens = [];
 
         var walker = document.createTreeWalker(
             textRoot,
@@ -20,20 +25,24 @@ var extract = (function() {
             
             var forms = tokenize.split(walker.currentNode.data);
             for (form of forms)
-                tokens.push(new tokenize.Token(form, walker.currentNode));
+                pageTokens.push(new tokenize.Token(form, walker.currentNode));
         }
 
-        return tokens;
+        return pageTokens;
     }
 
+    /**
+    * Return words from tokens.
+    *
+    * @return {Array of String}
+    */
     function getWords(tokens) {
-
         return tokens.map(token => token.form.trim());
     }
 
+    /** module interfaces */
     return {
-
-        getTokens : getTokens,
+        getPageTokens : getPageTokens,
         getWords: getWords 
     };
 
