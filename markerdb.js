@@ -32,8 +32,8 @@ var markerdb = (function() {
                     url: 'http://mauser.pythonanywhere.com/upper-case/'
                 };
                 var infos2 = {
-                    name: 'Proper Nouns',
-                    url: 'http://mauser.pythonanywhere.com/proper-nouns/'
+                    name: 'Proper Names',
+                    url: 'http://mauser.pythonanywhere.com/proper-names/'
                 };
                 var infos3 = {
                     name: 'Local Test',
