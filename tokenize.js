@@ -1,12 +1,24 @@
-
+/** @module tokenize */
 var tokenize = (function() {
 
-    function Token(form, node) {
+    /**
+    * Represents a token, i.e. a part of a text node.
+    *
+    * @param {String} form - string representation
+    * @param {DOM Text Node} textNode - the text node the token is part of
+    */
+    function Token(form, textNode) {
 
         this.form = form;
-        this.node = node;
+        this.textNode = textNode;
     }
 
+    /** 
+    * Splits a string in token forms.
+    *
+    * @param {String} string - string to tokenize
+    * @return {Array of String} - token forms
+    */
     function split(string) {
 
         var reSplitSpace = /\s*\S+\s*/g;
@@ -16,8 +28,8 @@ var tokenize = (function() {
         var tokens = [];
 
         for (var sub of string.match(reSplitSpace)) {
-            
-            // split leading punctuation from sub token
+
+            // split leading punctuation marks from sub token
             while (1) {
                 var before = sub.length;
                 sub = sub.replace(reLeadingPuncts, function(match) {
@@ -28,7 +40,7 @@ var tokenize = (function() {
                     break;
             }
             
-            // extract abbreviation if there is one
+            // extract the abbreviation if there is one
             sub = sub.replace(reAbbreviation, function(match) {
                 tokens.push(match);
                 return '';
