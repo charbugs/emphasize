@@ -1,47 +1,82 @@
-
+/** @module markerdb */
 var markerdb = (function() {
 
     /**
-    * Respresents a Marker
-    *
-    * So far there is no need to instantiate this type, since it can and will
-    * be created with simple object notation. It rather serves as a reference
-    * of what a full-fledged marker is made of. Markers in the storage are of 
-    * this type.    
+    * Holds informations about a marker.
     * 
     * @param {Number} id - id of the marker
-    * @param {String} title - title of the marker
+    * @param {String} name - name of the marker
     * @param {String} url - url of the marker programm
-    * @param {JSON String} custom - customizing string
     */
-    function Marker(id, title, url, custom) {
-        
+    function Marker(id, name, url) {
+
         this.id = id;
-        this.title = title;
+        this.name = name;
         this.url = url;
     }
 
     /**
-    * Return one or all marker(s) from storage.
+    * If the storage is empty init it and set some default markers.
+    */
+    function initStorage() {
+
+        chrome.storage.local.get(null, function(items) {
+            if (Object.keys(items).length == 0) {
+                chrome.storage.local.set({
+                    lastId: 0,
+                    markers: []
+                });
+
+                var infos1 = {
+                    name: 'Upper Case',
+                    url: 'http://mauser.pythonanywhere.com/upper-case/'
+                };
+                var infos2 = {
+                    name: 'Proper Nouns',
+                    url: 'http://mauser.pythonanywhere.com/proper-nouns/'
+                };
+                var infos3 = {
+                    name: 'Local Test',
+                    url: 'http://localhost/test/'
+                };
+
+                add(infos1, function() {
+                    add(infos2, function() {
+                        add(infos3);
+                    });
+                });
+            }
+        });
+    }
+
+    /**
+    * Throws an error if an object misses one of the given properties.
+    *
+    * @param {Objekt} obj - object in question
+    * @param {Array of String} props - list of properites
+    */
+    function checkProperties(obj, props) {
+
+        for (var prop of props)
+            if(!obj.hasOwnProperty(prop))
+                throw new Error('object has no property: ' + prop);
+    }
+
+    /**
+    * Returns one or all marker(s) from storage.
     * 
     * @param {Number | null} id - id of the marker to return (null if all)
     * @param {Function} - callback
-    *    @param {Marker | Array of Marker} marker - requested marker(s)
+    *     @param {Marker | Array of Marker} - requested marker(s)
     */
     function get(id, callback) {
-    
+
         chrome.storage.local.get('markers', function(items) {
-
-            if (id === null) {
-   
+            if (id === null)
                 callback(items.markers);
-            }
             else {
-
                 for (key in items.markers) {
-
-                    if (items.markers[key].id === id) {
-                    
+                    if (items.markers[key].id === id) {                        
                         callback(items.markers[key]);
                         break;
                     }
@@ -53,60 +88,63 @@ var markerdb = (function() {
     /**
     * Add a new marker to the storage.
     * 
-    * @param {object} infos - infos about new marker:  
-    *    @prob {String} title - title of marker
+    * @param {object} infos - infos about new marker: 
+    *    @prob {String} name - name of marker
     *    @prob {String} url - url of marker programm
-    *    @prob {String} custom - custom json string
+    * @param {Function} [callback] - without params
     */
-    function add(infos) {
+    function add(infos, callback) {
 
+        checkProperties(infos, ['name', 'url']);
         chrome.storage.local.get('lastId', function(items) {
 
             var curId = ++items.lastId;
-
-            var marker = {
-                id: curId,
-                title: infos.title,
-                url: infos.url,
-                custom: infos.custom
-            };
-
+            var marker = new Marker(
+                curId,
+                infos.name,
+                infos.url
+            );
             chrome.storage.local.get('markers', function(items) {
 
                 items.markers.push(marker);
-                chrome.storage.local.set({markers: items.markers});
-                chrome.storage.local.set({lastId: curId});
+                chrome.storage.local.set(
+                    {markers: items.markers, lastId: curId}, function() {
+                        if (callback) callback();
+                });
             });
         });
     }
 
-
     /** 
-    * Change the infos of a marker.
+    * Changes the infos of a marker. Ignores non existing marker IDs.
     * 
     * @param {Number} id - the id of the marker to change
-    * @param {object} infos - infos about new marker:  
-    *    @prob {String} title - title of marker
-    *    @prob {String} url - url of marker programm
-    *    @prob {String} custom - custom json string
+    * @param {object} infos - new infos:  
+    *    @prob {String} [name] - name of marker
+    *    @prob {String} [url] - url of marker programm
+    * @param {Function} [callback] - without params
     */
-    function edit(id, infos) {
-
-        var marker = {
-            id: id,
-            title: infos.title,
-            url: infos.url,
-            custom: infos.custom
-        };
+    function edit(id, infos, callback) {
 
         chrome.storage.local.get('markers', function(items) {
 
-            for (key in items.markers) {
-            
-                if (items.markers[key].id === id) {
-            
-                    items.markers[key] = marker;
-                    chrome.storage.local.set({markers: items.markers});                    
+            var breakIt = false;
+            var markers = items.markers;
+            for (var key in markers) {
+                if (markers[key].id === id) {
+                    var newMarker = new Marker(
+                        id,
+                        infos.name || markers[key].name,
+                        infos.url || markers[key].url
+                    );
+                    markers[key] = newMarker;
+                    chrome.storage.local.set({markers: markers}, function() {
+                        if (callback) callback();
+                        breakIt = true;
+                    });                    
+                }
+                if (breakIt) {
+                    break;
                 }
             }
         });
@@ -115,54 +153,26 @@ var markerdb = (function() {
     /**
     * Remove a marker from storage.
     * 
-    * @param {Number} id - the id of the marker to remove    
+    * @param {Number} id - the id of the marker to remove
+    * @param {Function} [callback] - without params   
     */
-    function remove(id) {
+    function remove(id, callback) {
         
         chrome.storage.local.get('markers', function(items) {
 
-            for (key in items.markers) {
-        
-                if (items.markers[key].id === id) {
-            
-                    items.markers.splice(key, 1);
-                    chrome.storage.local.set({markers: items.markers});
+            var breakIt = false;
+            var markers = items.markers;
+            for (var key in markers) {
+                if (markers[key].id === id) {
+                    markers.splice(key, 1);
+                    chrome.storage.local.set({markers: markers}, function() {
+                        if (callback) callback();
+                        breakIt = true;
+                    });
                 }
-            }
-        });
-    }
-
-    /**
-    * If the storage is empty set some default markers.
-    */
-    function setDefaultMarkers() {
-        
-        chrome.storage.local.get(null, function(items) {
-            
-            if (Object.keys(items).length == 0) {
-
-                var markers = [
-                    {
-                        id: 1, 
-                        title: 'Upper Case', 
-                        url: 'http://mauser.pythonanywhere.com/upper-case/', 
-                    },
-
-                    {
-                        id: 2, 
-                        title: 'Proper Names', 
-                        url: 'http://mauser.pythonanywhere.com/proper-names/', 
-                    },
-
-                    {
-                        id: 3, 
-                        title: 'Some Test', 
-                        url: 'http://localhost/test/', 
-                    }
-                ];
-
-                chrome.storage.local.set({markers: markers});
-                chrome.storage.local.set({lastId: markers.length});
+                if (breakIt) {
+                    break;
+                }
             }
         });
     }
@@ -172,14 +182,12 @@ var markerdb = (function() {
         add: add,
         edit: edit,
         remove: remove,
-        setDefaultMarkers: setDefaultMarkers
+        initStorage: initStorage,
     };
     
 }());
 
-markerdb.setDefaultMarkers();
-
-
+markerdb.initStorage();
 
 
 
