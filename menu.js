@@ -1,6 +1,7 @@
 
 var menu = (function() {
 
+    /** Draws the menu. */
     function draw() {
 
         drawMarkerList();
@@ -14,14 +15,10 @@ var menu = (function() {
     function drawMarkerList() {
 
         chrome.runtime.getBackgroundPage(function (bg) {
-
             bg.markerdb.get(null, function(markers) {
-
                 // 'let' because closure in loop
-                for (let marker of markers) {
-                    
-                    var item = addItemToList(marker.title, 'markers');
-
+                for (let marker of markers) {    
+                    var item = addChildElement('markers', 'p', marker.name);
                     item.addEventListener('click', function() {
                         bg.extensionControl.applyMarker(marker.id);
                     });
@@ -30,12 +27,13 @@ var menu = (function() {
         });
     }
 
+    /**
+    * Creates a clickable list of control elements.
+    */
     function drawControlList() {
         
-
         chrome.runtime.getBackgroundPage(function(bg) {
-
-            var itemClear = addItemToList('Clear', 'controls');
+            var itemClear = addChildElement('controls', 'p', 'Clear');
             itemClear.addEventListener('click', function() {
                 bg.extensionControl.removeHighlighting();
             });
@@ -43,19 +41,21 @@ var menu = (function() {
     }
 
     /** 
-    * Puts a new item to the marker list.
+    * Puts a new element to a existing element.
     * 
-    * @param {String} title - title of the marker to add
-    * @return {DOM Element} - reference to the new item
+    * @param {String} id - id of the exisiting element
+    * @param {String} tag - tag of the new element
+    * @param {String} text - text of the node within the new element
+    * @return {DOM Element} - reference to the new element
     */
-    function addItemToList(title, listId) {
+    function addChildElement(id, tag, text) {
     
-        var item = document.createElement('p');
-        var text = document.createTextNode(title);
-        item.appendChild(text);
-        var list = document.getElementById(listId);
-        list.appendChild(item);
-        return item;
+        var newElem = document.createElement(tag);
+        var textNode = document.createTextNode(text);
+        newElem.appendChild(textNode);
+        var existingElem  = document.getElementById(id);
+        existingElem.appendChild(newElem);
+        return newElem;
     }
 
     return {
