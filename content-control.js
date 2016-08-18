@@ -1,44 +1,43 @@
-	
+/** @module contentControl */	
 var contentControl = (function () {
 
-	var tokens;
+	// {Array of tokenize.Token} - Tokens of the web page
+	var pageTokens;
 
+	/**
+	* Create a passiv message channel for communication
+	* with the extension context.
+	*/
 	function createMessageChannel() {
-
 		chrome.runtime.onMessage.addListener(handleMessage);
 	}
 
+	/**
+	* Handle messages from the extension context.
+	*/
 	function handleMessage(message, sender, callback) {
 
+		// Returns true to sender if content scripts already loaded.
 		if (message.command === 'isAlive') {
 			callback(true);
 		}
-
 		else if (message.command === 'getWords') {
-			/*
-			debugger;
-			tokens = extract.getTokens();
-			var mask = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0];
-			highlight.highlight(tokens, mask);
-			*/
 			highlight.remove()
-			tokens = extract.getTokens()
-			callback(extract.getWords(tokens));
+			pageTokens = extract.getPageTokens() // global!
+			callback(extract.getWords(pageTokens));
 		}
-
 		else if (message.command === 'highlight') {
-			highlight.highlight(tokens, message.mask);
+			highlight.highlight(pageTokens, message.mask);
 		}
-
 		else if (message.command === 'removeHighlighting') {
 			highlight.remove();
 		}
-
 		else {
 			console.log('content control: unknown command: ' + message.command);
 		}
 	}
 
+	/** interfaces of module */
 	return {
 		createMessageChannel : createMessageChannel
 	};
