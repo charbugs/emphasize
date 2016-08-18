@@ -1,69 +1,71 @@
-
+/** @module request */
 var request = (function() {
 
-	var numberOfTokens;
+	var numberOfWords;
 
+	/**
+	* Holds properties of marker response.
+	* 
+	* @param {String} responseText - unparsed marker response
+	*/
 	function MarkerResponse(responseText) {
 
 		var parseErrMsg = 'parsing marker response failed: ' 
-
-		// is valid JSON string?
-		try {
-			var response = JSON.parse(responseText);
-		} catch(e) {
-			throw new Error(parseErrMsg + e.message);
-		}
-	
-		// is Array?
-		if (!Array.isArray(response))
+		var mask = JSON.parse(responseText);
+		if (!Array.isArray(mask))
 			throw new Error(parseErrMsg + 'not an array');
-
-		// if shorter then tokens fill with 0
-		var padding = numberOfTokens - response.length;
+		// if length of response mask < length of page tokens 
+		// then fill up with zeros. 
+		var padding = numberOfWords - mask.length;
 		if (padding > 0)
-			response = response.concat(Array(padding).fill(0));
-
-		// all right!
-		this.mask = response;
+			mask = mask.concat(Array(padding).fill(0));
+		// @prop
+		this.mask = mask;
 	}
 
 	/*
-	* @param {markerdb.Marker} - marker
-	* @param {Array of String} - tokens
+	* Calls a marker app with with the respective request data.
+	*
+	* @param {markerdb.Marker} marker
+	* @param {Array of String} words
+	* @param {Function} callback
+	*	  @param {MarkerResponse}
 	*/
-	function callMarkerApp(marker, tokens, callback) {
+	function callMarkerApp(marker, words, callback) {
 
-		numberOfTokens = tokens.length;
-
+		numberOfWords = words.length; // global
 		var xhr = new XMLHttpRequest();
-
 		xhr.onreadystatechange = handleResponse.bind(
 			undefined, xhr, callback);
-
 		xhr.open('POST', marker.url, true);
-		
 		xhr.setRequestHeader('Content-Type', 'application/json');
-
-		var data = compileRequestData(marker, tokens);
-
-		xhr.send(JSON.stringify(data));
+		var requestData = compileRequestData(words);
+		xhr.send(JSON.stringify(requestData));
 	}
 
+	/**
+	* Handle HTTP response.
+	*
+	* @param {XMLHttpRequest} xhr
+	* @param {Function} callback
+	*	  @prop {MarkerResponse}
+	*/
 	function handleResponse(xhr, callback) {
-
 		if (xhr.readyState === 4 && xhr.status === 200) {
-
 			callback(new MarkerResponse(xhr.responseText));
 		}
 	}
 
-	function compileRequestData(marker, tokens) {
-
+	/**
+	* Compile request data for marker
+	*/
+	function compileRequestData(words) {
 		return {
-			tokens: tokens,
+			tokens: words
 		};
 	}
 
+	/** interfaces of module */
 	return {
 		callMarkerApp: callMarkerApp
 	};
