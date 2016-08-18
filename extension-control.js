@@ -1,60 +1,79 @@
-
+/** @module extensionControl */
 var extensionControl = (function() {
 
-	/* content scripts to inject in given order*/
+	/* content scripts to inject in web page in given order*/
 	const scripts = [
-
 		'vink.css',
 		'tokenize.js', 
 		'extract.js',
 		'highlight.js', 
 		'content-control.js'
-	]
+	];
 
+	/**
+	* Remove highlighting made by vink.
+	*/
 	function removeHighlighting() {
 
-		connectWebPage(function(tab) {
+		connectWebPage(function(tabId) {
 			var message = {command: 'removeHighlighting'};
-			chrome.tabs.sendMessage(tab, message);
+			chrome.tabs.sendMessage(tabId, message);
 		});
 	}
 
+	/**
+	* Applys a marker to the current web page.
+	*
+	* @param {Number} markerId - ID of the marker stored in marker database.
+	*/
 	function applyMarker(markerId) {
 
-		connectWebPage(function(tab) {
-			
+		connectWebPage(function(tabId) {
 			var message = {command: 'getWords'};
-			chrome.tabs.sendMessage(tab, message, function (tokens) {
+			chrome.tabs.sendMessage(tabId, message, function (pageTokens) {
 				markerdb.get(markerId, function(marker) {
-					request.callMarkerApp(marker, tokens, function(markerResponse) {
+					request.callMarkerApp(marker, pageTokens, function(markerResponse) {
 						var message = {command: 'highlight', mask: markerResponse.mask};
-						chrome.tabs.sendMessage(tab, message);
+						chrome.tabs.sendMessage(tabId, message);
 					});
 				});
 			});
 		});					
 	}
 
+	/**
+	* Finds out if the content scripts already injected in the current web page.
+	* If not injects them.
+	*
+	* @param {Function} callback
+	*	  @prop {Number} tabId - id of current tab
+	*/
 	function connectWebPage(callback) {
 
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-			
-			var tab = tabs[0].id;
+			var tabId = tabs[0].id;
 			var message = {command: 'isAlive'};
-			
-			chrome.tabs.sendMessage(tab, message, function (respond) {
-				
-				if (respond)
-					callback(tab);
+			chrome.tabs.sendMessage(tabId, message, function (response) {
+				if (response)
+					callback(tabId);
 				else
-					executeScripts(tab, function() {
-						callback(tab);
+					executeScripts(tabId, function() {
+						callback(tabId);
 					});
 			});
 		});
 	}
 
-	function executeScripts(tab, callback) {
+	/**
+	* Inject a list of content scripts in the current web page.
+	*
+	* With slightly changes taken from:
+	* http://stackoverflow.com/questions/21535234
+	*
+	* @param {Number} tabId - id of current tab
+	* @param {Function} callback
+	*/
+	function executeScripts(tabId, callback) {
 
     	function createCallback(tabId, script, callback) {
     		if (script.endsWith('.js'))
@@ -68,12 +87,13 @@ var extensionControl = (function() {
         }
 
 		for (var i = scripts.length - 1; i >= 0; --i)
-        	callback = createCallback(tab, scripts[i], callback);
+        	callback = createCallback(tabId, scripts[i], callback);
 
     	if (callback !== null)
         	callback();   // execute outermost function
 	}
 
+	/** interfaces of module */
 	return {
 		applyMarker: applyMarker,
 		removeHighlighting: removeHighlighting
