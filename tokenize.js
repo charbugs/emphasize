@@ -71,9 +71,20 @@ var tokenize = (function() {
         return tokens;
     }
 
+    /**
+    * Return words from tokens.
+    *
+    * @param {Array of Token} tokens
+    * @return {Array of String}
+    */
+    function getWords(tokens) {
+        return tokens.map(token => token.form.trim());
+    }
+
     return {
         split: split,
-        Token: Token
+        Token: Token,
+        getWords: getWords
     };
 
 }());

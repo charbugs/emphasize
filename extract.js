@@ -31,19 +31,9 @@ var extract = (function() {
         return pageTokens;
     }
 
-    /**
-    * Return words from tokens.
-    *
-    * @return {Array of String}
-    */
-    function getWords(tokens) {
-        return tokens.map(token => token.form.trim());
-    }
-
     /** module interfaces */
     return {
         getPageTokens : getPageTokens,
-        getWords: getWords 
     };
 
 }());

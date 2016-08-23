@@ -21,10 +21,10 @@ var contentControl = (function () {
 		if (message.command === 'isAlive') {
 			callback(true);
 		}
-		else if (message.command === 'getWords') {
+		else if (message.command === 'getPageWords') {
 			highlight.remove()
 			pageTokens = extract.getPageTokens() // global!
-			callback(extract.getWords(pageTokens));
+			callback(tokenize.getWords(pageTokens));
 		}
 		else if (message.command === 'highlight') {
 			highlight.highlight(pageTokens, message.mask);
