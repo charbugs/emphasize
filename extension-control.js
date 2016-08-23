@@ -29,7 +29,7 @@ var extensionControl = (function() {
 	function applyMarker(markerId) {
 
 		connectWebPage(function(tabId) {
-			var message = {command: 'getWords'};
+			var message = {command: 'getPageWords'};
 			chrome.tabs.sendMessage(tabId, message, function (pageTokens) {
 				markerdb.get(markerId, function(marker) {
 					request.callMarkerApp(marker, pageTokens, function(markerResponse) {

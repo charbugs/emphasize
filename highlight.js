@@ -150,7 +150,7 @@ var highlight = (function() {
     }
 
     /**
-    * Returns a token soup group. A token sub group is a subset of tokens 
+    * Returns a token sub group. A token sub group is a subset of tokens 
     * that belongs to a single text node.
     * 
     * @param {Array of tokenize.Token} token
