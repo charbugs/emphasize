@@ -11,6 +11,15 @@ var extensionControl = (function() {
 	];
 
 	/**
+	* Init the system on startup. This is every time the browser loads the extension.
+	*
+	*/
+	function initExtension() {
+
+		markerdb.initStorage();	
+	}
+
+	/**
 	* Remove highlighting made by vink.
 	*/
 	function removeHighlighting() {
@@ -95,8 +104,11 @@ var extensionControl = (function() {
 
 	/** interfaces of module */
 	return {
+		initExtension: initExtension,
 		applyMarker: applyMarker,
 		removeHighlighting: removeHighlighting
 	};
 
 }());
+
+extensionControl.initExtension();

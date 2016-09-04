@@ -187,8 +187,6 @@ var markerdb = (function() {
     
 }());
 
-markerdb.initStorage();
-
 
 
 
