@@ -4,7 +4,7 @@ var request = (function() {
 	var numberOfWords;
 
 	/**
-	* Holds properties of marker response.
+	* Parses and holds properties of marker response.
 	* 
 	* @param {String} responseText - unparsed marker response
 	*/
@@ -12,8 +12,13 @@ var request = (function() {
 
 		var parseErrMsg = 'parsing marker response failed: ' 
 		var mask = JSON.parse(responseText);
+
 		if (!Array.isArray(mask))
 			throw new Error(parseErrMsg + 'not an array');
+
+		if (!mask.every(n => Number.isInteger(n)))
+			throw new Error(parseErrMsg + 'not all items are integers');
+
 		// if length of response mask < length of page tokens 
 		// then fill up with zeros. 
 		var padding = numberOfWords - mask.length;
