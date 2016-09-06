@@ -14,6 +14,107 @@ var highlight = (function() {
         4: 'vink-pen-2'
     };
 
+    function highlight_new(textNodes, mask) {
+
+        for (fts of getTextNodeFeatures(textNodes, mask)) {
+
+            if (!fts.curTextNode.domNode || !fts.curSubmask.some(n => n > 0)) 
+                break;
+            
+            var typeGroups = getTypeGroups(fts.curSubmask);
+            var replaceNodes = [];
+
+            for (var i=0; i<typeGroups.length; i++) {
+
+                // features of current group
+                var groupType = typeGroups[i][0];
+                var groupLen = typeGroups[i].length;
+                var leftSpace = false;
+                var rightSpace = false;
+
+                // check if left whitespace should be highlighted
+                if (i === 0 && // first group
+                    isSpanningType(groupType) &&
+                    groupType === fts.prevLastType &&
+                    withinSameBlockElement(fts.prevDomNode, fts.curTextNode.domNode)) {
+                    var leftSpace = true;
+                }
+
+                // check if right whitespace should be highlighted
+                if (i === typeGroups.length -1 && // last group
+                    isSpanningType(groupType) &&
+                    groupType === fts.nextFirstType &&
+                    withinSameBlockElement(fts.nextDomNode, fts.curTextNode.domNode)) {
+                    var rightSpace = true;
+                }
+
+                // create new text nodes for current group
+                var newNodes = highlightTokens (
+                    fts.curTokens, groupType, leftSpace, rightSpace);
+                replaceNode = replaceNodes.concat(newNodes);
+            }
+            replaceNodeWithMultiples(fts.curDomNode, replaceNodes);
+        }
+    }
+
+    function getTypeGroups(mask) {
+
+        var groups = [];
+        for (var start=0, end=1; end<=mask.length; end++) {
+            if(!isSpanningType(mask[start]) || mask[end] !== mask[start]) {
+                groups.push(mask.slice(start, end));
+                start = end;
+            }
+        }
+        return groups;
+    }
+
+    /**
+    * Yield an object for each text node, that holds several processing infos.
+    * 
+    * @param {Array of extract.TextNode} textNodes
+    * @param {Array of Integer} mask
+    * @return {Object} - processing features
+    *     @prop {Number} prevLastType - highlight type of the previous node's last token
+    *     @prop {DOM Node} prevDomNode - reference to the previous node
+    *     @prob {Number} nextFirstType - highlight type of the next node's first token
+    *     @prob {DOM Node} nextDomNode - reference to the next node
+    *     @prob {Array of Number} curSubmask - submask of current text node
+    *     @prob {extract.TextNode} curTextNode - current text node
+    */
+    function* getTextNodeFeatures(textNodes, mask) {
+
+        const iPrev = 0, iCur = 1, iNext = 2;
+        // We need an extra but empty text node at the end of the list
+        var nodeDummy = { domNode: undefined, tokens: [] };
+        textNodes.push(nodeDummy);
+        // The processing queue consists of a previous, a current 
+        // and a next mask/node object. Inititally it is
+        // filled with dummies. 
+        var dummy = { submask: [], textNode: nodeDummy};
+        var queue = [dummy, dummy, dummy];
+
+        for (var i=0; i<textNodes.length; i++) {
+        
+            queue.shift();
+            queue.push({
+                textNode: textNodes[i],
+                submask: mask.splice(0, textNodes[i].tokens.length)
+            });
+
+            yield {
+                prevLastType: queue[iPrev].submask.pop(), // undefined if dummy
+                prevDomNode : queue[iPrev].textNode.domNode, // undefined if dummy
+
+                nextFirstType: queue[iNext].submask[0], // undefined if dummy
+                nextDomNode : queue[iNext].textNode.domNode, // undefined if dummy
+
+                curSubmask  : queue[iCur].submask, // [] if dummy
+                curTextNode  : queue[iCur].textNode // may be a dummy
+            };
+        }
+    }
+
     /**
     * Highlights tokens of the web page according to a nummerical mask
     * that declares which tokens to be highlighted.
@@ -284,7 +385,9 @@ var highlight = (function() {
     /** interfaces of module */
     return {
         highlight: highlight,
-        remove: remove
+        remove: remove,
+        // public for debug
+        getTextNodeFeatures: getTextNodeFeatures
     };
 
 }());

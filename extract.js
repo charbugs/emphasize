@@ -2,14 +2,25 @@
 var extract = (function() {
 
     /**
-    * Extract the relevant tokens form the web page.
+    * Represents a web page text node.
     *
-    * @return {Array of tokenize.Token}
+    * @prob {DOM Node} domNode - reference to the DOM text node.
+    * @prob {Array of String} tokens - tokens of the text node.
     */
-    function getPageTokens() {
+    function TextNode(domNode, tokens) {
+        this.domNode = domNode;
+        this.tokens = tokens;
+    }
+
+    /**
+    * Extract the relevant text nodes form the web page.
+    *
+    * @return {Array of TextNode}
+    */
+    function getTextNodes() {
 
         var textRoot = document.body; 
-        var pageTokens = [];
+        var textNodes = [];
 
         var walker = document.createTreeWalker(
             textRoot,
@@ -22,18 +33,32 @@ var extract = (function() {
         }});
         
         while(walker.nextNode()) {
-            
-            var forms = tokenize.split(walker.currentNode.data);
-            for (form of forms)
-                pageTokens.push(new tokenize.Token(form, walker.currentNode));
+            var tokens = tokenize.split(walker.currentNode.data);
+            textNodes.push(new TextNode(walker.currentNode, tokens))
         }
 
-        return pageTokens;
+        return textNodes;
+    }
+
+    /**
+    * Return words from text nodes.
+    * A word is a token without leading or trailing withspace.
+    *
+    * @param {Array of TextNode} textNodes
+    * @return {Array of String}
+    */
+    function getWords(textNodes) {
+        var words = [];
+        for (node of textNodes) {
+            words = words.concat(node.tokens.map(tok => tok.trim()));
+        }
+        return words;
     }
 
     /** module interfaces */
     return {
-        getPageTokens : getPageTokens,
+        getTextNodes : getTextNodes,
+        getWords: getWords
     };
 
 }());

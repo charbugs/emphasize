@@ -1,8 +1,8 @@
 /** @module contentControl */	
 var contentControl = (function () {
 
-	// {Array of tokenize.Token} - Tokens of the web page
-	var pageTokens;
+	// {Array of extract.TextNode} - text nodes of the web page
+	var textNodes;
 
 	/**
 	* Create a passiv message channel for communication
@@ -22,12 +22,13 @@ var contentControl = (function () {
 			callback(true);
 		}
 		else if (message.command === 'getPageWords') {
-			highlight.remove()
-			pageTokens = extract.getPageTokens() // global!
-			callback(tokenize.getWords(pageTokens));
+			debugger;
+			//highlight.remove()
+			//textNodes = extract.getTextNodes() // global!
+			//callback(tokenize.getWords(textNodes));
 		}
 		else if (message.command === 'highlight') {
-			highlight.highlight(pageTokens, message.mask);
+			highlight.highlight(textNodes, message.mask);
 		}
 		else if (message.command === 'removeHighlighting') {
 			highlight.remove();

@@ -1,20 +1,10 @@
 /** @module tokenize */
 var tokenize = (function() {
 
-    /**
-    * Represents a token, i.e. a part of a text node.
-    *
-    * @param {String} form - string representation
-    * @param {DOM Text Node} textNode - the text node the token is part of
-    */
-    function Token(form, textNode) {
-
-        this.form = form;
-        this.textNode = textNode;
-    }
-
     /** 
-    * Splits a string in token forms.
+    * Splits a string in tokens. 
+    * Preserve trailing whitespace of each token. 
+    * If the string has leading whitespace, then the first token has also leading whitespace.
     *
     * @param {String} string - string to tokenize
     * @return {Array of String} - token forms
@@ -71,20 +61,8 @@ var tokenize = (function() {
         return tokens;
     }
 
-    /**
-    * Return words from tokens.
-    *
-    * @param {Array of Token} tokens
-    * @return {Array of String}
-    */
-    function getWords(tokens) {
-        return tokens.map(token => token.form.trim());
-    }
-
     return {
         split: split,
-        Token: Token,
-        getWords: getWords
     };
 
 }());
