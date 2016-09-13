@@ -57,6 +57,7 @@ var extract = (function() {
 
     /** module interfaces */
     return {
+        TextNode: TextNode,
         getTextNodes : getTextNodes,
         getWords: getWords
     };

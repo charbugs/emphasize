@@ -22,10 +22,9 @@ var contentControl = (function () {
 			callback(true);
 		}
 		else if (message.command === 'getPageWords') {
-			debugger;
-			//highlight.remove()
-			//textNodes = extract.getTextNodes() // global!
-			//callback(tokenize.getWords(textNodes));
+			highlight.remove();
+			textNodes = extract.getTextNodes(); // global!
+			callback(extract.getWords(textNodes));
 		}
 		else if (message.command === 'highlight') {
 			highlight.highlight(textNodes, message.mask);
