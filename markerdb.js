@@ -109,7 +109,8 @@ var markerdb = (function() {
                 items.markers.push(marker);
                 chrome.storage.local.set(
                     {markers: items.markers, lastId: curId}, function() {
-                        if (callback) callback();
+                        if (callback) 
+                            callback(marker);
                 });
             });
         });
@@ -120,9 +121,9 @@ var markerdb = (function() {
     * 
     * @param {Number} id - the id of the marker to change
     * @param {object} infos - new infos:  
-    *    @prob {String} [name] - name of marker
-    *    @prob {String} [url] - url of marker programm
-    * @param {Function} [callback] - without params
+    *    @prob {String} name - name of marker
+    *    @prob {String} url - url of marker programm
+    * @param {Function} callback - without params
     */
     function edit(id, infos, callback) {
 
@@ -154,7 +155,7 @@ var markerdb = (function() {
     * Remove a marker from storage.
     * 
     * @param {Number} id - the id of the marker to remove
-    * @param {Function} [callback] - without params   
+    * @param {Function} callback - without params   
     */
     function remove(id, callback) {
         
