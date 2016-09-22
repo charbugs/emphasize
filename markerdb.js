@@ -91,7 +91,8 @@ var markerdb = (function() {
     * @param {object} infos - infos about new marker: 
     *    @prob {String} name - name of marker
     *    @prob {String} url - url of marker programm
-    * @param {Function} [callback] - without params
+    * @param {Function} callback
+    *    @param {Marker} - added marker
     */
     function add(infos, callback) {
 
@@ -123,7 +124,8 @@ var markerdb = (function() {
     * @param {object} infos - new infos:  
     *    @prob {String} name - name of marker
     *    @prob {String} url - url of marker programm
-    * @param {Function} callback - without params
+    * @param {Function} callback
+    *    @param {Marker} - changed marker
     */
     function edit(id, infos, callback) {
 
@@ -133,14 +135,15 @@ var markerdb = (function() {
             var markers = items.markers;
             for (var key in markers) {
                 if (markers[key].id === id) {
-                    var newMarker = new Marker(
+                    var changedMarker = new Marker(
                         id,
                         infos.name || markers[key].name,
                         infos.url || markers[key].url
                     );
-                    markers[key] = newMarker;
+                    markers[key] = changedMarker;
                     chrome.storage.local.set({markers: markers}, function() {
-                        if (callback) callback();
+                        if (callback) 
+                            callback(changedMarker);
                         breakIt = true;
                     });                    
                 }
