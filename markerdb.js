@@ -4,15 +4,16 @@ var markerdb = (function() {
     /**
     * Holds informations about a marker.
     * 
-    * @param {Number} id - id of the marker
-    * @param {String} name - name of the marker
-    * @param {String} url - url of the marker programm
+    * @param {Number} id
+    * @param {Object} settings
     */
-    function Marker(id, name, url) {
+    function Marker(id, settings) {
 
         this.id = id;
-        this.name = name;
-        this.url = url;
+        this.url = settings.url;
+        this.name = settings.name;
+        this.description = settings.description;
+        this.queries = settings.queries;
     }
 
     /**
@@ -27,39 +28,26 @@ var markerdb = (function() {
                     markers: []
                 });
 
-                var infos1 = {
+                var settings1 = {
                     name: 'Upper Case',
                     url: 'http://mauser.pythonanywhere.com/upper-case/'
                 };
-                var infos2 = {
+                var settings2 = {
                     name: 'Proper Names',
                     url: 'http://mauser.pythonanywhere.com/proper-names/'
                 };
-                var infos3 = {
+                var settings3 = {
                     name: 'Local Test',
                     url: 'http://localhost/test/'
                 };
 
-                add(infos1, function() {
-                    add(infos2, function() {
-                        add(infos3);
+                add(settings1, function() {
+                    add(settings2, function() {
+                        add(settings3);
                     });
                 });
             }
         });
-    }
-
-    /**
-    * Throws an error if an object misses one of the given properties.
-    *
-    * @param {Objekt} obj - object in question
-    * @param {Array of String} props - list of properites
-    */
-    function checkProperties(obj, props) {
-
-        for (var prop of props)
-            if(!obj.hasOwnProperty(prop))
-                throw new Error('object has no property: ' + prop);
     }
 
     /**
@@ -88,23 +76,17 @@ var markerdb = (function() {
     /**
     * Add a new marker to the storage.
     * 
-    * @param {object} infos - infos about new marker: 
-    *    @prob {String} name - name of marker
-    *    @prob {String} url - url of marker programm
+    * @param {object} settings - properties of the new marker:
     * @param {Function} callback
     *    @param {Marker} - added marker
     */
-    function add(infos, callback) {
+    function add(settings, callback) {
 
-        checkProperties(infos, ['name', 'url']);
         chrome.storage.local.get('lastId', function(items) {
 
             var curId = ++items.lastId;
-            var marker = new Marker(
-                curId,
-                infos.name,
-                infos.url
-            );
+            var marker = new Marker(curId, settings);
+
             chrome.storage.local.get('markers', function(items) {
 
                 items.markers.push(marker);
@@ -114,43 +96,6 @@ var markerdb = (function() {
                             callback(marker);
                 });
             });
-        });
-    }
-
-    /** 
-    * Changes the infos of a marker. Ignores non existing marker IDs.
-    * 
-    * @param {Number} id - the id of the marker to change
-    * @param {object} infos - new infos:  
-    *    @prob {String} name - name of marker
-    *    @prob {String} url - url of marker programm
-    * @param {Function} callback
-    *    @param {Marker} - changed marker
-    */
-    function edit(id, infos, callback) {
-
-        chrome.storage.local.get('markers', function(items) {
-
-            var breakIt = false;
-            var markers = items.markers;
-            for (var key in markers) {
-                if (markers[key].id === id) {
-                    var changedMarker = new Marker(
-                        id,
-                        infos.name || markers[key].name,
-                        infos.url || markers[key].url
-                    );
-                    markers[key] = changedMarker;
-                    chrome.storage.local.set({markers: markers}, function() {
-                        if (callback) 
-                            callback(changedMarker);
-                        breakIt = true;
-                    });                    
-                }
-                if (breakIt) {
-                    break;
-                }
-            }
         });
     }
 
@@ -184,7 +129,6 @@ var markerdb = (function() {
     return {
         get: get,
         add: add,
-        edit: edit,
         remove: remove,
         initStorage: initStorage,
     };
