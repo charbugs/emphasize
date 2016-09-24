@@ -55,11 +55,21 @@ var extract = (function() {
         return words;
     }
 
+    /**
+    * Return the URL of the current web page
+    *
+    * @return {String}
+    */
+    function getUrl() {
+        return document.location.href;
+    }
+
     /** module interfaces */
     return {
         TextNode: TextNode,
         getTextNodes : getTextNodes,
-        getWords: getWords
+        getWords: getWords,
+        getUrl: getUrl
     };
 
 }());
