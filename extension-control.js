@@ -22,11 +22,13 @@ var extensionControl = (function() {
 	/**
 	* Remove highlighting made by vink.
 	*/
-	function removeHighlighting() {
+	function removeHighlighting(callback) {
 
 		connectWebPage(function(tabId) {
 			var message = {command: 'removeHighlighting'};
-			chrome.tabs.sendMessage(tabId, message);
+			chrome.tabs.sendMessage(tabId, message, function() {
+				if (callback) callback;
+			});
 		});
 	}
 

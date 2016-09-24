@@ -31,6 +31,7 @@ var contentControl = (function () {
 		}
 		else if (message.command === 'removeHighlighting') {
 			highlight.remove();
+			if (callback) callback();
 		}
 		else {
 			console.log('content control: unknown command: ' + message.command);
