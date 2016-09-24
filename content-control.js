@@ -22,7 +22,6 @@ var contentControl = (function () {
 			callback(true);
 		}
 		else if (message.command === 'getPageWords') {
-			highlight.remove();
 			textNodes = extract.getTextNodes(); // global!
 			callback(extract.getWords(textNodes));
 		}

@@ -27,7 +27,7 @@ var extensionControl = (function() {
 		connectWebPage(function(tabId) {
 			var message = {command: 'removeHighlighting'};
 			chrome.tabs.sendMessage(tabId, message, function() {
-				if (callback) callback;
+				if (callback) callback();
 			});
 		});
 	}
@@ -39,17 +39,19 @@ var extensionControl = (function() {
 	*/
 	function applyMarker(markerId) {
 
-		connectWebPage(function(tabId) {
-			var message = {command: 'getPageWords'};
-			chrome.tabs.sendMessage(tabId, message, function (pageTokens) {
-				markerdb.get(markerId, function(marker) {
-					request.callMarkerApp(marker, pageTokens, function(markerResponse) {
-						var message = {command: 'highlight', mask: markerResponse.mask};
-						chrome.tabs.sendMessage(tabId, message);
+		removeHighlighting(function() {
+			connectWebPage(function(tabId) {
+				var message = {command: 'getPageWords'};
+				chrome.tabs.sendMessage(tabId, message, function (pageTokens) {
+					markerdb.get(markerId, function(marker) {
+						request.callMarkerApp(marker, pageTokens, function(markerResponse) {
+							var message = {command: 'highlight', mask: markerResponse.mask};
+							chrome.tabs.sendMessage(tabId, message);
+						});
 					});
 				});
 			});
-		});					
+		});
 	}
 
 	/**
