@@ -41,10 +41,10 @@ var extensionControl = (function() {
 
 		removeHighlighting(function() {
 			connectWebPage(function(tabId) {
-				var message = {command: 'getPageWords'};
-				chrome.tabs.sendMessage(tabId, message, function (pageTokens) {
+				var message = {command: 'getWebPageFeatures'};
+				chrome.tabs.sendMessage(tabId, message, function (features) {
 					markerdb.get(markerId, function(marker) {
-						request.callMarkerApp(marker, pageTokens, function(markerResponse) {
+						request.callMarkerApp(marker, features.words, function(markerResponse) {
 							var message = {command: 'highlight', mask: markerResponse.mask};
 							chrome.tabs.sendMessage(tabId, message);
 						});
