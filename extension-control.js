@@ -1,7 +1,7 @@
 /** @module extensionControl */
 var extensionControl = (function() {
 
-	/* content scripts to inject in web page in given order*/
+	/* content scripts to inject in web page in given order */
 	const scripts = [
 		'vink.css',
 		'tokenize.js', 
@@ -12,7 +12,6 @@ var extensionControl = (function() {
 
 	/**
 	* Init the system on startup. This is every time the browser loads the extension.
-	*
 	*/
 	function initExtension() {
 
@@ -21,6 +20,8 @@ var extensionControl = (function() {
 
 	/**
 	* Remove highlighting made by vink.
+	* 
+	* @prop {Function} callback - no params
 	*/
 	function removeHighlighting(callback) {
 
@@ -35,17 +36,18 @@ var extensionControl = (function() {
 	/**
 	* Applys a marker to the current web page.
 	*
-	* @param {Number} markerId - ID of the marker stored in marker database.
+	* @param {Number} markerId - ID of marker.
+	* @param {Array of markerdb.Query} - userQueries
 	*/
-	function applyMarker(markerId) {
+	function applyMarker(markerId, userQueries) {
 
 		removeHighlighting(function() {
 			connectWebPage(function(tabId) {
 				var message = {command: 'getWebPageFeatures'};
 				chrome.tabs.sendMessage(tabId, message, function (features) {
 					markerdb.get(markerId, function(marker) {
-						request.callMarkerApp(marker, features.words, function(markerResponse) {
-							var message = {command: 'highlight', mask: markerResponse.mask};
+						request.requestMarking(marker, features, userQueries, function(markingResponse) {
+							var message = {command: 'highlight', mask: markingResponse.mask};
 							chrome.tabs.sendMessage(tabId, message);
 						});
 					});

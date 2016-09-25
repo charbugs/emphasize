@@ -1,78 +1,66 @@
 /** @module request */
 var request = (function() {
 
-	var numberOfWords;
-
-	/**
-	* Parses and holds properties of marker response.
-	* 
-	* @param {String} responseText - unparsed marker response
-	*/
-	function MarkerResponse(responseText) {
-
+	function MarkingResponse(responseText, numOfTokens) {
+		
 		var parseErrMsg = 'parsing marker response failed: ' 
-		var mask = JSON.parse(responseText);
-
-		if (!Array.isArray(mask))
-			throw new Error(parseErrMsg + 'not an array');
-
-		if (!mask.every(n => Number.isInteger(n)))
-			throw new Error(parseErrMsg + 'not all items are integers');
-
-		// if length of response mask < length of page tokens 
-		// then fill up with zeros. 
-		var padding = numberOfWords - mask.length;
+		var response = JSON.parse(responseText);
+		
+		if (!Array.isArray(response.mask))
+			throw new Error(parseErrMsg + 'response.mask is not an array');
+		
+		if (!response.mask.every(n => Number.isInteger(n)))
+			throw new Error(parseErrMsg + 'not all items of response.mask are integers');
+		
+		var padding = numOfTokens - response.mask.length;
 		if (padding > 0)
-			mask = mask.concat(Array(padding).fill(0));
-		// @prop
-		this.mask = mask;
+			response.mask = response.mask.concat(Array(padding).fill(0));
+
+		this.mask = response.mask;
 	}
 
-	/*
-	* Calls a marker app with with the respective request data.
-	*
-	* @param {markerdb.Marker} marker
-	* @param {Array of String} words
-	* @param {Function} callback
-	*	  @param {MarkerResponse}
-	*/
-	function callMarkerApp(marker, words, callback) {
+	function SettingsResponse() {}
 
-		numberOfWords = words.length; // global
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = handleResponse.bind(
-			undefined, xhr, callback);
-		xhr.open('POST', marker.url, true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		var requestData = compileRequestData(words);
-		xhr.send(JSON.stringify(requestData));
-	}
-
-	/**
-	* Handle HTTP response.
-	*
-	* @param {XMLHttpRequest} xhr
-	* @param {Function} callback
-	*	  @prop {MarkerResponse}
-	*/
-	function handleResponse(xhr, callback) {
-		if (xhr.readyState === 4 && xhr.status === 200) {
-			callback(new MarkerResponse(xhr.responseText));
-		}
-	}
-
-	/**
-	* Compile request data for marker
-	*/
-	function compileRequestData(words) {
-		return {
-			tokens: words
+	function requestMarking(marker, webPageFeatures, userQueries, callback) {
+		
+		var data = {
+			request: 'mark',
+			tokens: webPageFeatures.words,
+			url: webPageFeatures.url,
+			queries: userQueries
 		};
+		
+		request(marker.url, data, function(responseText) {
+			callback(new MarkingResponse(
+				responseText,
+				webPageFeatures.words.length
+			));
+		});
+	}
+
+	function requestSettings() {}
+
+	function request(url, data, callback) {
+		
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			handleResponse(xhr, callback);
+		};
+		xhr.open('POST', url, true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify(data));
+	}
+
+	function handleResponse(xhr, callback) {
+
+		if (xhr.readyState === 4 && xhr.status === 200) {
+			callback(xhr.responseText);
+		}
 	}
 
 	/** interfaces of module */
 	return {
-		callMarkerApp: callMarkerApp
+		requestMarking: requestMarking
 	};
 
 }());
