@@ -2,10 +2,14 @@
 var markerdb = (function() {
 
     /**
-    * Holds informations about a marker.
+    * Represents a Marker.
     * 
-    * @param {Number} id
+    * @param {Number} id - unique id
     * @param {Object} settings
+    *   @prop {String} url
+    *   @prop {String} name
+    *   @prop {String} description
+    *   @prop {Array of Query} queries - user inputs provided my marker
     */
     function Marker(id, settings) {
 
@@ -14,6 +18,21 @@ var markerdb = (function() {
         this.name = settings.name;
         this.description = settings.description;
         this.queries = settings.queries;
+    }
+
+    /**
+    * Represents a user input that a marker can provide for its purposes.
+    * 
+    * @param {Object} attributes
+    *   @prop {String} id - a marker app can identify the query by this id
+    *   @prop {String} label - to show in user interfaces
+    *   @prop {String} hint - to show in user interfaces
+    */
+    function Query(attributes) {
+
+        this.id = attributes.id;
+        this.label = attributes.label;
+        this.hint = attributes.hint;
     }
 
     /**
