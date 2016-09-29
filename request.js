@@ -1,16 +1,32 @@
 /** @module request */
 var request = (function() {
 
-	function MarkingResponse(responseText, numOfTokens) {
+	function parseMarkingResponse(responseText, numOfTokens) {
 		
 		var parseErrMsg = 'parsing marker response failed: '; 
+
+		function testObject(object) {
+			if (object.constructor.name !== 'Object')
+				throw new Error(parseErrMsg + 'testObject()');
+			return true;
+		}
+
+		function testProperty(object, property, type, required) {
+			if (object.hasOwnProperty(property)) {
+				if (object[property].constructor.name !== type)
+					throw new Error(parseErrMsg + 'testProperty()');
+			}
+			else {
+				if (required)
+					throw new Error(parseErrMsg + 'testProperty()');
+			}
+			return true;
+		}
+
 		var response = JSON.parse(responseText);
 		
-		if (!response.constructor.name === 'Object')
-			throw new Error(parseErrMsg + 'response is not an Object');
-
-		if (!Array.isArray(response.mask))
-			throw new Error(parseErrMsg + 'response.mask is not an array');
+		testObject(response);
+		testProperty(response, 'mask', 'Array', true);
 		
 		if (!response.mask.every(n => Number.isInteger(n)))
 			throw new Error(parseErrMsg + 'not all items of response.mask are integers');
@@ -19,7 +35,7 @@ var request = (function() {
 		if (padding > 0)
 			response.mask = response.mask.concat(Array(padding).fill(0));
 
-		this.mask = response.mask;
+		return response;
 	}
 
 	function parseSettingsResponse(responseText) {
