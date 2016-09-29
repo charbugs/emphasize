@@ -1,83 +1,7 @@
 /** @module request */
 var request = (function() {
 
-	function parseMarkingResponse(responseText, numOfTokens) {
-		
-		var parseErrMsg = 'parsing marker response failed: '; 
-
-		function testObject(object) {
-			if (object.constructor.name !== 'Object')
-				throw new Error(parseErrMsg + 'testObject()');
-			return true;
-		}
-
-		function testProperty(object, property, type, required) {
-			if (object.hasOwnProperty(property)) {
-				if (object[property].constructor.name !== type)
-					throw new Error(parseErrMsg + 'testProperty()');
-			}
-			else {
-				if (required)
-					throw new Error(parseErrMsg + 'testProperty()');
-			}
-			return true;
-		}
-
-		var response = JSON.parse(responseText);
-		
-		testObject(response);
-		testProperty(response, 'mask', 'Array', true);
-		
-		if (!response.mask.every(n => Number.isInteger(n)))
-			throw new Error(parseErrMsg + 'not all items of response.mask are integers');
-		
-		var padding = numOfTokens - response.mask.length;
-		if (padding > 0)
-			response.mask = response.mask.concat(Array(padding).fill(0));
-
-		return response;
-	}
-
-	function parseSettingsResponse(responseText) {
-
-		var parseErrMsg = 'parsing marker response failed: '; 
-
-		function testObject(object) {
-			if (object.constructor.name !== 'Object')
-				throw new Error(parseErrMsg + 'testObject()');
-			return true;
-		}
-
-		function testProperty(object, property, type, required) {
-			if (object.hasOwnProperty(property)) {
-				if (object[property].constructor.name !== type)
-					throw new Error(parseErrMsg + 'testProperty()');
-			}
-			else {
-				if (required)
-					throw new Error(parseErrMsg + 'testProperty()');
-			}
-			return true;
-		}
-
-		var response = JSON.parse(responseText);
-		
-		testObject(response);
-		testProperty(response, 'name', 'String', false);
-		testProperty(response, 'description', 'String', false);
-		testProperty(response, 'queries', 'Array', false);
-
-		if (response.queries) {
-			for (var query of response.queries) {
-				testObject(query);
-				testProperty(query, 'id', 'String', true);
-				testProperty(query, 'label', 'String', false);
-				testProperty(query, 'hint', 'String', false);
-			}
-		}
-
-		return response;
-	}
+	var parseErrMsg = 'parsing marker response failed: '; 
 
 	function requestMarking(marker, webPageFeatures, userQueries, callback) {
 		
@@ -89,7 +13,7 @@ var request = (function() {
 		};
 		
 		request(marker.url, data, function(responseText) {
-			callback(new MarkingResponse(responseText, 
+			callback(parseMarkingResponse(responseText, 
 				webPageFeatures.words.length));
 		});
 	}
@@ -99,7 +23,7 @@ var request = (function() {
 		var data = { request: 'settings' };
 
 		request(url, data, function(responseText) {
-			callback(new SettingsResponse(responseText));
+			callback(parseSettingsResponse(responseText));
 		});
 	}
 
@@ -121,11 +45,66 @@ var request = (function() {
 		}
 	}
 
+	function parseMarkingResponse(responseText, numOfTokens) {
+
+		var response = JSON.parse(responseText);
+		
+		testObject(response);
+		testProperty(response, 'mask', 'Array', true);
+		
+		if (!response.mask.every(n => Number.isInteger(n)))
+			throw new Error(parseErrMsg + 'not all items of response.mask are integers');
+		
+		var padding = numOfTokens - response.mask.length;
+		if (padding > 0)
+			response.mask = response.mask.concat(Array(padding).fill(0));
+
+		return response;
+	}
+
+	function parseSettingsResponse(responseText) {
+
+		var response = JSON.parse(responseText);
+		
+		testObject(response);
+		testProperty(response, 'name', 'String', false);
+		testProperty(response, 'description', 'String', false);
+		testProperty(response, 'queries', 'Array', false);
+
+		if (response.queries) {
+			for (var query of response.queries) {
+				testObject(query);
+				testProperty(query, 'id', 'String', true);
+				testProperty(query, 'label', 'String', false);
+				testProperty(query, 'hint', 'String', false);
+			}
+		}
+
+		return response;
+	}
+
+	function testObject(object) {
+		if (object.constructor.name !== 'Object')
+			throw new Error(parseErrMsg + 'testObject()');
+		return true;
+	}
+
+	function testProperty(object, property, type, required) {
+		if (object.hasOwnProperty(property)) {
+			if (object[property].constructor.name !== type)
+				throw new Error(parseErrMsg + 'testProperty()');
+		}
+		else {
+			if (required)
+				throw new Error(parseErrMsg + 'testProperty()');
+		}
+		return true;
+	}
+
 	/** interfaces of module */
 	return {
 		requestMarking: requestMarking,
-		// for debug
-		SettingsResponse: SettingsResponse
+		requestSettings: requestSettings
 	};
 
 }());
