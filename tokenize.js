@@ -10,11 +10,11 @@ var tokenize = (function() {
     * @return {Array of String} - token forms
     */
     function split(string) {
-
+        
         var reSplitSpace = /\s*\S+\s*/g;
         var reLeadingPuncts = /^\s*[\.\:\,\;\!\?\-\"\'\(\)\[\]\{\}\%\&\/]\s*/;
         var reTrailingPuncts = /[\.\:\,\;\!\?\-\"\'\(\)\[\]\{\}\%\&\/]\s*$/;
-        var reAbbreviation = /^\s*z\.B\.|ggf\.|allg\.|bzw\.|bspw\.|usw\.|etc\.|d\.h\./;
+        var reAbbreviation = /^\s*(z\.B\.|ggf\.|allg\.|bzw\.|bspw\.|usw\.|etc\.|d\.h\.)\s*$/;
         var tokens = [];
 
         for (var sub of string.match(reSplitSpace)) {
