@@ -66,21 +66,26 @@ var request = (function() {
 
 		var response = JSON.parse(responseText);
 		
-		testObject(response);
-		testProperty(response, 'name', 'String', false);
-		testProperty(response, 'description', 'String', false);
-		testProperty(response, 'queries', 'Array', false);
-
-		if (response.queries) {
-			for (var query of response.queries) {
-				testObject(query);
-				testProperty(query, 'id', 'String', true);
-				testProperty(query, 'label', 'String', false);
-				testProperty(query, 'hint', 'String', false);
+		if (!response) {
+			return {}
+		} 
+		else if (response.constructor.name !== 'Object') {
+			return {}
+		} 
+		else {
+			testProperty(response, 'name', 'String', false);
+			testProperty(response, 'description', 'String', false);
+			testProperty(response, 'queries', 'Array', false);
+			if (response.queries) {
+				for (var query of response.queries) {
+					testObject(query);
+					testProperty(query, 'id', 'String', true);
+					testProperty(query, 'label', 'String', false);
+					testProperty(query, 'hint', 'String', false);
+				}
 			}
+			return response
 		}
-
-		return response;
 	}
 
 	function testObject(object) {
