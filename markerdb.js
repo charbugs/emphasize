@@ -49,15 +49,18 @@ var markerdb = (function() {
 
                 var settings1 = {
                     name: 'Upper Case',
-                    url: 'http://mauser.pythonanywhere.com/upper-case/'
+                    url: 'http://mauser.pythonanywhere.com/upper-case/',
+                    description: 'Highlights all upper case words.'
                 };
                 var settings2 = {
                     name: 'Proper Names',
-                    url: 'http://mauser.pythonanywhere.com/proper-names/'
+                    url: 'http://mauser.pythonanywhere.com/proper-names/',
+                    description: 'Highlights all proper names.'
                 };
                 var settings3 = {
                     name: 'Local Test',
-                    url: 'http://localhost/test/'
+                    url: 'http://localhost/test/',
+                    description: 'Test runs on localhost.'
                 };
 
                 add(settings1, function() {
