@@ -66,35 +66,31 @@ var request = (function() {
 
 		var response = JSON.parse(responseText);
 		
-		if (!response) {
-			return {}
-		} 
-		else if (response.constructor.name !== 'Object') {
-			return {}
-		} 
-		else {
-			testProperty(response, 'name', 'String', false);
-			testProperty(response, 'description', 'String', false);
-			testProperty(response, 'queries', 'Array', false);
-			if (response.queries) {
-				for (var query of response.queries) {
-					testObject(query);
-					testProperty(query, 'id', 'String', true);
-					testProperty(query, 'label', 'String', false);
-					testProperty(query, 'hint', 'String', false);
-				}
+		testIfObject(response);
+		testIfUnknownProperties(response, ['name', 'description', 'queries']);
+		testPropertyType(response, 'name', 'String', true);
+		testPropertyType(response, 'description', 'String', true);
+		testPropertyType(response, 'queries', 'Array', false);
+
+		if (response.queries) {
+			for (var query of response.queries) {
+				testIfObject(query);
+				testIfUnknownProperties(query, ['id', 'label', 'hint']);
+				testPropertyType(query, 'id', 'String', true);
+				testPropertyType(query, 'label', 'String', false);
+				testPropertyType(query, 'hint', 'String', false);
 			}
-			return response
 		}
+		return response
 	}
 
-	function testObject(object) {
+	function testIfObject(object) {
 		if (object.constructor.name !== 'Object')
 			throw new Error(parseErrMsg + 'testObject()');
 		return true;
 	}
 
-	function testProperty(object, property, type, required) {
+	function testPropertyType(object, property, type, required) {
 		if (object.hasOwnProperty(property)) {
 			if (object[property].constructor.name !== type)
 				throw new Error(parseErrMsg + 'testProperty()');
@@ -106,10 +102,17 @@ var request = (function() {
 		return true;
 	}
 
+	function testIfUnknownProperties(object, knownProps) {
+		for (var key in object) {
+			if (knownProps.indexOf(key) === -1)
+				throw new Error(parseErrMsg + 'unexpected property: ' + key);
+		}
+	}
+
 	/** interfaces of module */
 	return {
 		requestMarking: requestMarking,
-		requestSettings: requestSettings
+		requestSettings: requestSettings,
 	};
 
 }());
