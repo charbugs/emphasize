@@ -3,6 +3,11 @@ var request = (function() {
 
 	var parseErrMsg = 'parsing marker response failed: '; 
 
+	function ResponseParserError(message) {
+		this.message = message;
+	}
+	ResponseParserError.prototype = Object.create(Error.prototype);
+
 	function requestMarking(marker, webPageFeatures, userQueries, callback) {
 		
 		var data = {
@@ -47,13 +52,23 @@ var request = (function() {
 
 	function parseMarkingResponse(responseText, numOfTokens) {
 
+		var key;
 		var response = JSON.parse(responseText);
 		
-		testObject(response);
-		testProperty(response, 'mask', 'Array', true);
+		if (!isObject(response))
+			throw new ResponseParserError('Marker response must be an JSON object.');
+
+		if (key = firstUnsupportedProperty(response, ['mask']))
+			throw new ResponseParserError('Unknown property "' + key + '" in marker response.');
+
+		if (key = firstMissingProperty(response, ['mask']))
+			throw new ResponseParserError('Missing property "' + key + '" in marker response.');
+
+		if (key = firstMistypedProperty(response, { mask: 'Array' }))
+			throw new ResponseParserError('Property "' + key + '" of marker response has wrong type.');
 		
 		if (!response.mask.every(n => Number.isInteger(n)))
-			throw new Error(parseErrMsg + 'not all items of response.mask are integers');
+			throw new ResponseParserError('All items of mask must be integers.');
 		
 		var padding = numOfTokens - response.mask.length;
 		if (padding > 0)
@@ -64,55 +79,76 @@ var request = (function() {
 
 	function parseSettingsResponse(responseText) {
 
+		var key;
 		var response = JSON.parse(responseText);
 		
-		testIfObject(response);
-		testIfUnknownProperties(response, ['name', 'description', 'queries']);
-		testPropertyType(response, 'name', 'String', true);
-		testPropertyType(response, 'description', 'String', true);
-		testPropertyType(response, 'queries', 'Array', false);
+		if (!isObject(response))
+			throw new ResponseParserError('Marker settings must be an JSON object.');
+
+		if (key = firstUnsupportedProperty(response, ['name', 'description', 'queries']))
+			throw new ResponseParserError('Unknown property "' + key + '" in marker settings.');
+
+		if (key = firstMissingProperty(response, ['name', 'description']))
+			throw new ResponseParserError('Missing property "' + key + '" in marker settings.');
+
+		if (key = firstMistypedProperty(response, { name: 'String', description: 'String', queries: 'Array' }))
+			throw new ResponseParserError('Property "' + key + '" of marker settings has wrong type.');
 
 		if (response.queries) {
 			for (var query of response.queries) {
-				testIfObject(query);
-				testIfUnknownProperties(query, ['id', 'label', 'hint']);
-				testPropertyType(query, 'id', 'String', true);
-				testPropertyType(query, 'label', 'String', false);
-				testPropertyType(query, 'hint', 'String', false);
+				
+				if (!isObject(query))
+					throw new ResponseParserError('Items of "queries" must be JSON objects');
+
+				if (key = firstUnsupportedProperty(query, ['id', 'label', 'hint']))
+					throw new ResponseParserError('Unknown property "' + key + '" in query object.');
+
+				if (key = firstMissingProperty(query, ['id']))
+					throw new ResponseParserError('Missing property "' + key + '" in query object.');
+
+				if (key = firstMistypedProperty(query, { id: 'String', label: 'String', hint: 'String'}))
+					throw new ResponseParserError('Property "' + key + '" of query object has wrong type.');
 			}
 		}
 		return response
 	}
 
-	function testIfObject(object) {
-		if (object.constructor.name !== 'Object')
-			throw new Error(parseErrMsg + 'testObject()');
-		return true;
+	function isObject(object) {
+		if (object.constructor.name === 'Object')
+			return true;
+		else
+			return false;
 	}
 
-	function testPropertyType(object, property, type, required) {
-		if (object.hasOwnProperty(property)) {
-			if (object[property].constructor.name !== type)
-				throw new Error(parseErrMsg + 'testProperty()');
+	function firstMissingProperty(object, needed) {
+		for (var key of needed) {
+			if (!object.hasOwnProperty(key))
+				return key;
 		}
-		else {
-			if (required)
-				throw new Error(parseErrMsg + 'testProperty()');
-		}
-		return true;
+		return false;
 	}
 
-	function testIfUnknownProperties(object, knownProps) {
+	function firstMistypedProperty(object, typeMap) {
 		for (var key in object) {
-			if (knownProps.indexOf(key) === -1)
-				throw new Error(parseErrMsg + 'unexpected property: ' + key);
+			if (object[key].constructor.name !== typeMap[key])
+				return key;
 		}
+		return false;
+	}
+
+	function firstUnsupportedProperty(object, supported) {
+		for (var key in object) {
+			if (supported.indexOf(key) === -1)
+				return key; 
+		}
+		return false;
 	}
 
 	/** interfaces of module */
 	return {
 		requestMarking: requestMarking,
 		requestSettings: requestSettings,
+		parseSettingsResponse: parseSettingsResponse,
+		parseMarkingResponse: parseMarkingResponse
 	};
-
 }());
