@@ -61,7 +61,6 @@ var request = (function() {
 	}
 
 	function handleResponse(xhr, callback) {
-
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			callback(xhr.responseText);
 		}
@@ -165,7 +164,6 @@ var request = (function() {
 	return {
 		requestMarking: requestMarking,
 		requestSettings: requestSettings,
-		parseSettingsResponse: parseSettingsResponse,
-		parseMarkingResponse: parseMarkingResponse
+		request: request
 	};
 }());
