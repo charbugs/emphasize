@@ -5,8 +5,10 @@ var request = (function() {
 
 	function ResponseParserError(message) {
 		this.message = message;
+		this.stack = (new Error()).stack;
 	}
 	ResponseParserError.prototype = Object.create(Error.prototype);
+	ResponseParserError.prototype.name = 'ResponseParserError';
 
 	function requestMarking(marker, webPageFeatures, userQueries, callback) {
 		
@@ -18,8 +20,15 @@ var request = (function() {
 		};
 		
 		request(marker.url, data, function(responseText) {
-			callback(parseMarkingResponse(responseText, 
-				webPageFeatures.words.length));
+			try {
+				var response = parseMarkingResponse(responseText, webPageFeatures.length);
+				callback(null, response);
+			} catch (err) {
+				if (err instanceof ResponseParserError)
+					callback(err, null);
+				else
+					throw err;
+			}
 		});
 	}
 
@@ -28,7 +37,15 @@ var request = (function() {
 		var data = { request: 'settings' };
 
 		request(url, data, function(responseText) {
-			callback(parseSettingsResponse(responseText));
+			try {
+				var response = parseSettingsResponse(responseText);
+				callback(null, response);
+			} catch (err) {
+				if (err instanceof ResponseParserError)
+					callback(err, null);
+				else
+					throw err;
+			}
 		});
 	}
 
@@ -55,7 +72,7 @@ var request = (function() {
 		var key;
 		var response = JSON.parse(responseText);
 		
-		if (!isObject(response))
+		if (!response || !isObject(response))
 			throw new ResponseParserError('Marker response must be an JSON object.');
 
 		if (key = firstUnsupportedProperty(response, ['mask']))
@@ -82,7 +99,7 @@ var request = (function() {
 		var key;
 		var response = JSON.parse(responseText);
 		
-		if (!isObject(response))
+		if (!response || !isObject(response))
 			throw new ResponseParserError('Marker settings must be an JSON object.');
 
 		if (key = firstUnsupportedProperty(response, ['name', 'description', 'queries']))
