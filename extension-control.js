@@ -46,9 +46,13 @@ var extensionControl = (function() {
 				var message = {command: 'getWebPageFeatures'};
 				chrome.tabs.sendMessage(tabId, message, function (features) {
 					markerdb.get(markerId, function(marker) {
-						request.requestMarking(marker, features, userQueries, function(markingResponse) {
-							var message = {command: 'highlight', mask: markingResponse.mask};
-							chrome.tabs.sendMessage(tabId, message);
+						request.requestMarking(marker, features, userQueries, function(err, response) {
+							if (err) {
+								// TODO: error handling
+							} else {
+								var message = {command: 'highlight', mask: response.mask};
+								chrome.tabs.sendMessage(tabId, message);
+							}
 						});
 					});
 				});
