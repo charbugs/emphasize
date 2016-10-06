@@ -29,6 +29,7 @@ var contentControl = (function () {
 		}
 
 		else if (message.command === 'getWebPageFeatures') {
+			debugger;
 			textNodes = extract.getTextNodes();
 			callback({
 				words: extract.getWords(textNodes),
@@ -43,6 +44,26 @@ var contentControl = (function () {
 
 		else if (message.command === 'removeHighlighting') {
 			highlight.remove(message.markerId);
+			if (callback) callback();
+		}
+
+		else if (message.command === 'getStatus') {
+			statuslog.getStatus(message.attrs);
+			if (callback) callback();
+		}
+
+		else if (message.command === 'setStatus') {
+			statuslog.setStatus(message.attrs);
+			if (callback) callback();
+		}
+
+		else if (message.command === 'changeStatus') {
+			statuslog.changeStatus(message.attrs);
+			if (callback) callback();
+		}
+
+		else if (message.command === 'removeStatus') {
+			statuslog.removeStatus(message.attrs);
 			if (callback) callback();
 		}
 
