@@ -49,10 +49,12 @@ var extensionControl = (function() {
 					request.requestMarking(marker, features, userQueries, function(err, response) {
 						if (err) {
 							if (callback) callback(err);
-						} 
+						}
 						else {
 							var message = {command: 'highlight', mask: response.mask};
-							chrome.tabs.sendMessage(tabId, message);
+							chrome.tabs.sendMessage(tabId, message, function() {
+								if (callback) callback();
+							});
 						}
 					});
 				});

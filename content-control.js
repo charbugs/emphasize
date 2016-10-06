@@ -38,6 +38,7 @@ var contentControl = (function () {
 
 		else if (message.command === 'highlight') {
 			highlight.highlight(textNodes, message.mask);
+			if (callback) callback();
 		}
 
 		else if (message.command === 'removeHighlighting') {
