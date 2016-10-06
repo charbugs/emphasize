@@ -19,14 +19,15 @@ var extensionControl = (function() {
 	}
 
 	/**
-	* Remove highlighting made by vink.
+	* Remove highlighting made by a specific marker.
 	* 
-	* @prop {Function} callback - no params
+	* @param {Number} markerId
+	* @param {Function} callback - no params
 	*/
-	function removeHighlighting(callback) {
+	function removeHighlighting(markerId, callback) {
 
 		connectWebPage(function(tabId) {
-			var message = {command: 'removeHighlighting'};
+			var message = {command: 'removeHighlighting', markerId: markerId};
 			chrome.tabs.sendMessage(tabId, message, function() {
 				if (callback) callback();
 			});
@@ -42,21 +43,20 @@ var extensionControl = (function() {
 	*/
 	function applyMarker(marker, userQueries, callback) {
 
-		removeHighlighting(function() {
-			connectWebPage(function(tabId) {
-				var message = {command: 'getWebPageFeatures'};
-				chrome.tabs.sendMessage(tabId, message, function (features) {
-					request.requestMarking(marker, features, userQueries, function(err, response) {
-						if (err) {
-							if (callback) callback(err);
-						}
-						else {
-							var message = {command: 'highlight', mask: response.mask};
-							chrome.tabs.sendMessage(tabId, message, function() {
-								if (callback) callback();
-							});
-						}
-					});
+		connectWebPage(function(tabId) {
+			var message = {command: 'getWebPageFeatures'};
+			chrome.tabs.sendMessage(tabId, message, function (features) {
+				request.requestMarking(marker, features, userQueries, function(err, response) {
+					if (err) {
+						if (callback) callback(err);
+						else throw err;
+					}
+					else {
+						var message = {command: 'highlight', mask: response.mask, markerId: marker.id};
+						chrome.tabs.sendMessage(tabId, message, function() {
+							if (callback) callback();
+						});
+					}
 				});
 			});
 		});

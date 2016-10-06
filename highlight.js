@@ -6,6 +6,10 @@ var highlight = (function() {
     // Class name that identifies elements added by vink
     const GLOBAL_CLASS_NAME = 'vink-element';
 
+    // Class name stub that identifies elements belonging to a specific marker.
+    // Will be filled with a marker id, i.e. "vink-marker-34"
+    const MARKER_ID_STUB = 'vink-marker-';
+
     // Class names for different highlighting styles
     const pencilMap = {
         1: 'vink-pen-1',
@@ -20,8 +24,9 @@ var highlight = (function() {
     *
     * @param {Array of extract.TextNode} textNodes - text nodes of web page
     * @param {Array of Number} mask - numerical response mask of the marker app
+    * @param {Number} markerId - ID of the marker that determines what to highlight
     */
-    function highlight(textNodes, mask) {
+    function highlight(textNodes, mask, markerId) {
 
         var submasks = getSubmasks(textNodes, mask);
 
@@ -46,7 +51,7 @@ var highlight = (function() {
                     nodeFeats.nextSameBlock;
 
                 replaceNodes = replaceNodes.concat(
-                    highlightTokens(groupFeats.tokens, groupFeats.type, leftSpace, rightSpace)
+                    highlightTokens(groupFeats.tokens, groupFeats.type, leftSpace, rightSpace, markerId)
                 );
             }
             var newTextNode = replaceNodeWithMultiples(nodeFeats.textNode.domNode, replaceNodes);
@@ -179,9 +184,10 @@ var highlight = (function() {
     * @param {Number} type - style type
     * @param {Boolean} leftSpace - left space within highlighting
     * @param {Boolean} rightSpace - right space within highlighting
+    * @param {Number} markerId - Id of the marker that determines what to highlight.
     * @return {Array of DOM Node}
     */
-    function highlightTokens(tokens, type, leftSpace, rightSpace) {
+    function highlightTokens(tokens, type, leftSpace, rightSpace, markerId) {
 
         var nodes = [];
         var string = tokens.join('');
@@ -197,6 +203,7 @@ var highlight = (function() {
         if (type in pencilMap) {
             var element = document.createElement('SPAN');
             element.classList.add(GLOBAL_CLASS_NAME);
+            element.classList.add(MARKER_ID_STUB + markerId);
             element.classList.add(pencilMap[type]);
             element.appendChild(textNode);
             nodes.push(element);
@@ -231,11 +238,19 @@ var highlight = (function() {
     }
 
     /**
-    * Remove all elements added by vink by unwrapping the inner content.
+    * Remove all elements added by a specific marker or all elements
+    * made by vink.
+    *
+    * @param {Number} markerId - if falsy remove all. 
     */
-    function remove() {
+    function remove(markerId) {
 
-        while(elem = document.querySelector('.' + GLOBAL_CLASS_NAME)) {
+        if (markerId)
+            var selector = '.' + GLOBAL_CLASS_NAME + '.' + MARKER_ID_STUB + markerId;
+        else
+            var selector = '.' + GLOBAL_CLASS_NAME;
+
+        while(elem = document.querySelector(selector)) {
             var parent = elem.parentNode;
             elem.outerHTML = elem.innerHTML;
             parent.normalize();

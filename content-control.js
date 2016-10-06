@@ -37,12 +37,12 @@ var contentControl = (function () {
 		}
 
 		else if (message.command === 'highlight') {
-			highlight.highlight(textNodes, message.mask);
+			highlight.highlight(textNodes, message.mask, message.markerId);
 			if (callback) callback();
 		}
 
 		else if (message.command === 'removeHighlighting') {
-			highlight.remove();
+			highlight.remove(message.markerId);
 			if (callback) callback();
 		}
 
