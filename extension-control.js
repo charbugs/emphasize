@@ -4,6 +4,7 @@ var extensionControl = (function() {
 	/* content scripts to inject in web page in given order */
 	const scripts = [
 		'vink.css',
+		'statuslog.js',
 		'tokenize.js', 
 		'extract.js',
 		'highlight.js', 
@@ -88,7 +89,7 @@ var extensionControl = (function() {
 	/**
 	* Inject a list of content scripts in the current web page.
 	*
-	* With slightly changes taken from:
+	* With slight changes taken from:
 	* http://stackoverflow.com/questions/21535234
 	*
 	* @param {Number} tabId - id of current tab
