@@ -14,6 +14,25 @@ var statuslog = (function(){
 	StatusLogError.prototype = Object.create(Error.prototype);
 	StatusLogError.prototype.name = 'StatusLogError';
 
+	function getStatus(attrs) {
+
+		var meta = document.querySelector('meta[marker="' + attrs.markerId + '"]');
+		
+		if (meta) {
+
+			return {
+				markerId: meta.getAttribute('marker'),
+				inprogress: meta.getAttribute('inprogress'),
+				message: meta.getAttribute('message')
+			}
+		}
+		else {
+
+			throw new StatusLogError(
+				'Can not return the status for that marker. Status does not exist.');
+		}	
+	}
+
 	function setStatus(attrs) {
 
 		if (!document.querySelector('meta[marker="' + attrs.markerId + '"]')) {
@@ -61,11 +80,12 @@ var statuslog = (function(){
 		}
 		else {
 			throw new StatusLogError(
-				'Can nor remove status for that marker. Status does not exist.');
+				'Can not remove status for that marker. Status does not exist.');
 		}
 	}
 
 	return {
+		getStatus: getStatus,
 		setStatus: setStatus,
 		changeStatus: changeStatus,
 		removeStatus: removeStatus
