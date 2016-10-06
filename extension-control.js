@@ -36,24 +36,22 @@ var extensionControl = (function() {
 	/**
 	* Applys a marker to the current web page.
 	*
-	* @param {Number} markerId - ID of marker.
-	* @param {Array of markerdb.Query} - userQueries
+	* @param {markerdb.Query} marker
+	* @param {Object} userQueries - keys are query ids, values are user inputs.
 	*/
-	function applyMarker(markerId, userQueries) {
+	function applyMarker(marker, userQueries) {
 
 		removeHighlighting(function() {
 			connectWebPage(function(tabId) {
 				var message = {command: 'getWebPageFeatures'};
 				chrome.tabs.sendMessage(tabId, message, function (features) {
-					markerdb.get(markerId, function(marker) {
-						request.requestMarking(marker, features, userQueries, function(err, response) {
-							if (err) {
-								// TODO: error handling
-							} else {
-								var message = {command: 'highlight', mask: response.mask};
-								chrome.tabs.sendMessage(tabId, message);
-							}
-						});
+					request.requestMarking(marker, features, userQueries, function(err, response) {
+						if (err) {
+							// TODO: error handling
+						} else {
+							var message = {command: 'highlight', mask: response.mask};
+							chrome.tabs.sendMessage(tabId, message);
+						}
 					});
 				});
 			});
