@@ -1,8 +1,10 @@
 /** @module request */
 var request = (function() {
 
-	var parseErrMsg = 'parsing marker response failed: '; 
-
+	/**
+	* An Error that will be thrown if the response of a marker app
+	* does not match the communication protocol of marker and extension.
+	*/
 	function ResponseParserError(message) {
 		this.message = message;
 		this.stack = (new Error()).stack;
@@ -10,6 +12,17 @@ var request = (function() {
 	ResponseParserError.prototype = Object.create(Error.prototype);
 	ResponseParserError.prototype.name = 'ResponseParserError';
 
+	/**
+	* Requests a marker app to mark the tokens of the web page.
+	*
+	* @param {markerdb.Marker} marker
+	* @param {Object} webPageFeatures - such as url, language etc.
+	* @param {Object} userQueries - user inputs for queries provided by the marker.
+	*	Keys are query ids, values are user inputs.
+	* @param {Function} callback
+	*	@param {Error}
+	*	@param {response} - response of marker
+	*/
 	function requestMarking(marker, webPageFeatures, userQueries, callback) {
 		
 		var data = {
@@ -32,6 +45,14 @@ var request = (function() {
 		});
 	}
 
+	/**
+	* Requests a marker app to submit its settings.
+	*
+	* @param {String} url - url of marker.
+	* @param {Function} callback
+	*	@param {Error}
+	*	@param {response} - response of marker
+	*/
 	function requestSettings(url, callback) {
 
 		var data = { request: 'settings' };
@@ -49,6 +70,14 @@ var request = (function() {
 		});
 	}
 
+	/** 
+	* Performs a http request.
+	*
+	* @param {String} url
+	* @param {Any able to stringify by JSON} data
+	* @param {Function} callback
+	* 	@param {String} - response to request
+	*/
 	function request(url, data, callback) {
 		
 		var xhr = new XMLHttpRequest();
@@ -60,12 +89,27 @@ var request = (function() {
 		xhr.send(JSON.stringify(data));
 	}
 
+	/**
+	* Handles a http response.
+	*
+	* @param {XMLHttpRequest} xhr
+	* @param {Function} callback
+	* 	@param {String} - response to request 
+	*/
 	function handleResponse(xhr, callback) {
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			callback(xhr.responseText);
 		}
 	}
 
+	/**
+	* Checks if the response to a marking request matches the 
+	* communication protocol of marker and extension.
+	*
+	* @param {String} responseText - response of marker
+	* @param {Number} numOfTokens - number of web page tokens
+	* @return {Object} - object valid to the communication protocol
+	*/
 	function parseMarkingResponse(responseText, numOfTokens) {
 
 		var key;
@@ -93,6 +137,13 @@ var request = (function() {
 		return response;
 	}
 
+	/**
+	* Checks if the response to a settings request matches the 
+	* communication protocol of marker and extension.
+	*
+	* @param {String} responseText - response of marker
+	* @return {Object} - object valid to the communication protocol
+	*/
 	function parseSettingsResponse(responseText) {
 
 		var key;
@@ -136,6 +187,14 @@ var request = (function() {
 			return false;
 	}
 
+	/**
+	* Returns the name of the first missing property 
+	* relative to a list of needed properties.
+	*
+	* @param {Object} object - object to test.
+	* @param {Array of String} needed - names of properties that should be present in object.
+	* @return {String or Boolean} - eighter the name of a missing property or false.
+	*/
 	function firstMissingProperty(object, needed) {
 		for (var key of needed) {
 			if (!object.hasOwnProperty(key))
@@ -144,6 +203,13 @@ var request = (function() {
 		return false;
 	}
 
+	/**
+	* Returns the name of the first property that has a unexpected type.
+	*
+	* @param {Object} object - object to test.
+	* @param {Object} typeMap - keys are prop names, values are types.
+	* @return {String or Boolean} - eighter the name of a wrong typed prop or false. 
+	*/
 	function firstMistypedProperty(object, typeMap) {
 		for (var key in object) {
 			if (object[key].constructor.name !== typeMap[key])
@@ -152,6 +218,12 @@ var request = (function() {
 		return false;
 	}
 
+	/**
+	* Returns the name of the first property that is not supported.
+	*
+	* @param {Object} object - object to test.
+	* @param {Array of String} supported - names of properties that are supported.
+	*/
 	function firstUnsupportedProperty(object, supported) {
 		for (var key in object) {
 			if (supported.indexOf(key) === -1)
