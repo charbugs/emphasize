@@ -38,8 +38,9 @@ var extensionControl = (function() {
 	*
 	* @param {markerdb.Query} marker
 	* @param {Object} userQueries - keys are query ids, values are user inputs.
+	* @param {Function} callback - (err, data)
 	*/
-	function applyMarker(marker, userQueries) {
+	function applyMarker(marker, userQueries, callback) {
 
 		removeHighlighting(function() {
 			connectWebPage(function(tabId) {
@@ -47,8 +48,9 @@ var extensionControl = (function() {
 				chrome.tabs.sendMessage(tabId, message, function (features) {
 					request.requestMarking(marker, features, userQueries, function(err, response) {
 						if (err) {
-							// TODO: error handling
-						} else {
+							if (callback) callback(err);
+						} 
+						else {
 							var message = {command: 'highlight', mask: response.mask};
 							chrome.tabs.sendMessage(tabId, message);
 						}
