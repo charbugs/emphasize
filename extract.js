@@ -2,6 +2,16 @@
 var extract = (function() {
 
     /**
+    * Stores the extractes text nodes of web page.
+    * This variable contains DOM Nodes ans they can not 
+    * be transfered to the extension context.
+    * So they must be stored here.
+    *
+    * @global {Array of TextNode}
+    */
+    var textNodes = [];
+
+    /**
     * Represents a web page text node.
     *
     * @prob {DOM Node} domNode - reference to the DOM text node.
@@ -13,14 +23,15 @@ var extract = (function() {
     }
 
     /**
-    * Extract the relevant text nodes form the web page.
+    * Extract the relevant text nodes form the web page 
+    * and save it to the module-global variable 'textNodes'.
     *
-    * @return {Array of TextNode}
+    * @param {Function} callback
     */
-    function getTextNodes() {
+    function extractTextNodes(callback) {
 
         var textRoot = document.body; 
-        var textNodes = [];
+        textNodes = [];
 
         var walker = document.createTreeWalker(
             textRoot,
@@ -37,36 +48,60 @@ var extract = (function() {
             textNodes.push(new TextNode(walker.currentNode, tokens))
         }
 
-        return textNodes;
+        if (callback) {
+            callback(null, null);
+        }
+    }
+
+    /**
+    * Return the extracted text nodes of web page.
+    *
+    * @param {Function} callback
+    *   @param {Any} - error message
+    *   @param {Array of TextNode} - text nodes
+    */
+    function getTextNodes(callback) {
+        if (callback) {
+            callback(null, textNodes);
+        }
     }
 
     /**
     * Return words from text nodes.
     * A word is a token without leading or trailing withspace.
     *
-    * @param {Array of TextNode} textNodes
-    * @return {Array of String}
+    * @param {Function} callback
+    *   @param {Any} - error message
+    *   @param {Array of String} - words
     */
-    function getWords(textNodes) {
+    function getWords(callback) {
         var words = [];
         for (node of textNodes) {
             words = words.concat(node.tokens.map(tok => tok.trim()));
         }
-        return words;
+        if (callback) {
+            callback(null, words);
+        }
     }
 
     /**
     * Return the URL of the current web page
     *
-    * @return {String}
+    * @param {Function} callback
+    *   @param {Any} - error message
+    *   @param {String} - url
     */
-    function getUrl() {
-        return document.location.href;
+    function getUrl(callback) {
+        var url = document.location.href;
+        if (callback) {
+            callback(null, url);
+        }
     }
 
     /** module interfaces */
     return {
         TextNode: TextNode,
+        extractTextNodes: extractTextNodes,
         getTextNodes : getTextNodes,
         getWords: getWords,
         getUrl: getUrl
