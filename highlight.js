@@ -22,12 +22,13 @@ var highlight = (function() {
     * Highlights text passages of the web page according to the instructions
     * of the numerical response mask of the marker app.
     *
-    * @param {Array of extract.TextNode} textNodes - text nodes of web page
     * @param {Array of Number} mask - numerical response mask of the marker app
     * @param {Number} markerId - ID of the marker that determines what to highlight
+    * @param {Function} callback - doesn't return a value.
     */
-    function highlight(textNodes, mask, markerId) {
+    function highlight(mask, markerId, callback) {
 
+        var textNodes = extract.getTextNodes();
         var submasks = getSubmasks(textNodes, mask);
 
         for (var nodeFeats of getTextNodeFeatures(textNodes, submasks)) {
@@ -56,6 +57,10 @@ var highlight = (function() {
             }
             var newTextNode = replaceNodeWithMultiples(nodeFeats.textNode.domNode, replaceNodes);
             textNodes[nodeFeats.index].domNode = newTextNode;
+        }
+
+        if (callback) {
+            callback();
         }
     }
 
