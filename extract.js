@@ -56,14 +56,10 @@ var extract = (function() {
     /**
     * Return the extracted text nodes of web page.
     *
-    * @param {Function} callback
-    *   @param {Any} - error message
-    *   @param {Array of TextNode} - text nodes
+    * @return {Array of TextNode} - text nodes
     */
-    function getTextNodes(callback) {
-        if (callback) {
-            callback(null, textNodes);
-        }
+    function getTextNodes() {
+        return textNodes;
     }
 
     /**
