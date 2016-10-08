@@ -15,7 +15,7 @@
         "scripts": [ 
             "markerdb.js",
             "request.js", 
-            "extension-control.js"
+            "proxy.js"
         ],
         "persistent": false
      },
