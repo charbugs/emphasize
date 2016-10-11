@@ -1,4 +1,6 @@
-
+/** 
+* @module counterproxy
+*/
 var counterproxy = (function() {
 
 	/**
@@ -14,19 +16,29 @@ var counterproxy = (function() {
 		if (message.command && message.command === 'isAlive') {
 			callback(true);
 		} else {
-			invoke(message, sender, callback);
+			invoke(message, callback);
 		}
 	}
 
-	function invoke(message, sender, callback) {
+	/**
+	* Invokes a function.
+	* Is used by the proxy of the extension context to gain access to
+	* the scripts of the web page context.
+	* 
+	* @param {Object} message - compiled by message sender (the proxy)
+	* 		@prob {String} path - path to function, i.e. 'module.fn'
+			@prob {Array} args - arguments to pass to function
+	* @param {Function} callback - ({Object} resp)
+	*/
+	function invoke(message, callback) {
 
 		var object;
 		var target = window;
 		
-		for (var name of message.call.split('.')) {
+		for (var name of message.path.split('.')) {
 			if (target) {
 				object = target;
-				target = target[name];
+				target = object[name];
 			}
 		}
 
@@ -35,10 +47,18 @@ var counterproxy = (function() {
 			target.apply(object, message.args);
 		}
 		else {
-			callback({ err: 'Error in counterproxy: '+message.call+' is not a function.', data: null });
+			throw new Error('Error in counterproxy: '+message.call+' is not a function.');
 		}
 	}
 
+	/** 
+	* Serves as a generic callback function.  
+	* Checks return values and send them back to the proxy.
+	* 
+	* @param {Function} callback - ({Object} resp)
+	* @param {jsonisable} err
+	* @param {jsonisable} data 
+	*/
 	function callBackProxy(callback, err, data) {
 		if (err) {
 			if (callback) {
@@ -53,6 +73,7 @@ var counterproxy = (function() {
 		}
 	}
 
+	/** interfaces of module */
 	return {
 		createMessageChannel: createMessageChannel
 	};
