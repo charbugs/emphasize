@@ -24,7 +24,7 @@ var highlight = (function() {
     *
     * @param {Array of Number} mask - numerical response mask of the marker app
     * @param {Number} markerId - ID of the marker that determines what to highlight
-    * @param {Function} callback - doesn't return a value.
+    * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
     function highlight(mask, markerId, callback) {
 
@@ -60,7 +60,7 @@ var highlight = (function() {
         }
 
         if (callback) {
-            callback();
+            callback(null, null);
         }
     }
 
@@ -246,9 +246,10 @@ var highlight = (function() {
     * Remove all elements added by a specific marker or all elements
     * made by vink.
     *
-    * @param {Number} markerId - if falsy remove all. 
+    * @param {Number} markerId - if falsy remove all.
+    * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
-    function remove(markerId) {
+    function remove(markerId, callback) {
 
         if (markerId)
             var selector = '.' + GLOBAL_CLASS_NAME + '.' + MARKER_ID_STUB + markerId;
@@ -259,6 +260,10 @@ var highlight = (function() {
             var parent = elem.parentNode;
             elem.outerHTML = elem.innerHTML;
             parent.normalize();
+        }
+
+        if (callback) {
+            callback(null, null);
         }
     }
 
