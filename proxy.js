@@ -1,4 +1,6 @@
-
+/** 
+* @module proxy
+*/
 var proxy = (function(){
 
 	/* content scripts to inject in web page in given order */
@@ -11,14 +13,22 @@ var proxy = (function(){
 		'counterproxy.js'
 	];
 
+	/**
+	* Invokes a function that lives in a script of the web page context.
+	*
+	* First param {String} is the name of the function to invoke. 
+	* Must be given with full module path, as in "module.fn".
+	* Last param {Function} is a callback: ({Any} err, {Any} data)
+	* All other params {jsonisable} will be passed to the target function. 
+	*/ 
 	function invoke() {
 
 		var args = Array.prototype.slice.call(arguments);
-		var call = args.shift();
+		var path = args.shift();
 		var callback = args.pop();
 
 		connectWebPage(function(tabId) {
-			var message = { call: call, args: args };
+			var message = { path: path, args: args };
 			chrome.tabs.sendMessage(tabId, message, function(resp) {
 				if (resp) {
 					if (resp.err) {
@@ -34,7 +44,7 @@ var proxy = (function(){
 					}
 				} else {
 					// probably means that there was an error in sendMessage:
-					// https://developer.chrome.com/extensions/tabs#method-sendMessage
+					// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
 				}
 			});
 		});
