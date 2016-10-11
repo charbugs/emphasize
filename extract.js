@@ -2,10 +2,10 @@
 var extract = (function() {
 
     /**
-    * Stores the extractes text nodes of web page.
-    * This variable contains DOM Nodes ans they can not 
-    * be transfered to the extension context.
-    * So they must be stored here.
+    * Stores the extracted text nodes of the web page.
+    * This variable contains DOM Nodes and they can not be transfered to the
+    * extension context. So they must be stored here. There is a getter to
+    * gain access to this variable.
     *
     * @global {Array of TextNode}
     */
@@ -26,7 +26,7 @@ var extract = (function() {
     * Extract the relevant text nodes form the web page 
     * and save it to the module-global variable 'textNodes'.
     *
-    * @param {Function} callback
+    * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
     function extractTextNodes(callback) {
 
@@ -66,9 +66,7 @@ var extract = (function() {
     * Return words from text nodes.
     * A word is a token without leading or trailing withspace.
     *
-    * @param {Function} callback
-    *   @param {Any} - error message
-    *   @param {Array of String} - words
+    * @param {Function} callback - ({jsonisable} err, {Array of String} words)
     */
     function getWords(callback) {
         var words = [];
@@ -83,9 +81,7 @@ var extract = (function() {
     /**
     * Return the URL of the current web page
     *
-    * @param {Function} callback
-    *   @param {Any} - error message
-    *   @param {String} - url
+    * @param {Function} callback - ({jsonisable} err, {String} url)
     */
     function getUrl(callback) {
         var url = document.location.href;
