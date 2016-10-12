@@ -16,25 +16,24 @@ var request = (function() {
 	* Requests a marker app to mark the tokens of the web page.
 	*
 	* @param {markerdb.Marker} marker
-	* @param {Object} webPageFeatures - such as url, language etc.
+	* @param {Array of String} words - the web page words.
+	* @param {String} url - url of the web page.
 	* @param {Object} userQueries - user inputs for queries provided by the marker.
 	*	Keys are query ids, values are user inputs.
-	* @param {Function} callback
-	*	@param {Error}
-	*	@param {response} - response of marker
+	* @param {Function} callback - ({Error} err, {Object} response)
 	*/
-	function requestMarking(marker, webPageFeatures, userQueries, callback) {
+	function requestMarking(marker, words, url, userQueries, callback) {
 		
 		var data = {
 			request: 'mark',
-			tokens: webPageFeatures.words,
-			url: webPageFeatures.url,
+			tokens: words,
+			url: url,
 			queries: userQueries
 		};
 		
 		request(marker.url, data, function(responseText) {
 			try {
-				var response = parseMarkingResponse(responseText, webPageFeatures.length);
+				var response = parseMarkingResponse(responseText, words.length);
 				callback(null, response);
 			} catch (err) {
 				if (err instanceof ResponseParserError)
@@ -161,7 +160,7 @@ var request = (function() {
 		if (key = firstMistypedProperty(response, { name: 'String', description: 'String', queries: 'Array' }))
 			throw new ResponseParserError('Property "' + key + '" of marker settings has wrong type.');
 
-		if (response.queries) {
+		if (response.hasOwnProperty('queries')) {
 			for (var query of response.queries) {
 				
 				if (!isObject(query))
