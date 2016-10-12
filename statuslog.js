@@ -42,14 +42,14 @@ var statuslog = (function (){
 	* @param {Function} callback - ({jsonisable} err, {Status} status)
 	*/
 	function getStatus(markerId, callback) {
-		
+
 		var meta = document.querySelector('meta[markerid="'+markerId+'"]');
 		
-		if (meta) {
+		if (meta) {	
 
 			var status = new Status (
 				markerId,
-				meta.getAttribute('inprogress'),
+				parseInt(meta.getAttribute('inprogress')),
 				meta.getAttribute('message')
 			);
 
@@ -58,8 +58,9 @@ var statuslog = (function (){
 			}
 
 		} else {
-			throw new StatusLogError(
-				'Can not return the status for that marker. Status does not exist.');
+			if (callback) {
+				callback(null, null);
+			}
 		}	
 	}
 
