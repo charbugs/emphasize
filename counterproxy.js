@@ -16,7 +16,7 @@ var counterproxy = (function() {
 		if (message.command === 'isAlive')
 			callback(true);
 		else if (message.command === 'invoke')
-			invoke(message.path, message.myargs, callback);
+			invoke(message.path, message.args, callback);
 	}
 
 	/**
@@ -28,7 +28,7 @@ var counterproxy = (function() {
 	* @param {Array} args - arguments to pass to function
 	* @param {Function} callback - ({Object} resp)
 	*/
-	function invoke(path, myargs, callback) {
+	function invoke(path, args, callback) {
 
 		var object;
 		var target = window;
@@ -41,8 +41,8 @@ var counterproxy = (function() {
 		}
 
 		if (target instanceof Function) {
-			myargs.push(callBackProxy.bind(this, callback));
-			target.apply(object, myargs);
+			args.push(callBackProxy.bind(this, callback));
+			target.apply(object, args);
 		}
 		else {
 			throw new Error('Error in counterproxy: '+path+' is not a function.');
