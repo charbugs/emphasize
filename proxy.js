@@ -28,8 +28,8 @@ var proxy = (function(){
 		var callback = args.pop();
 
 		connectWebPage(function(tabId) {
-			var message = { path: path, args: args };
-			chrome.tabs.sendMessage(tabId, message, function(resp) {
+			var message = { command: 'invoke', path: path, args: args };
+			chrome.tabs.sendMessage(tabId, message, null, function(resp) {
 				if (resp) {
 					if (resp.err) {
 						if (callback) {
