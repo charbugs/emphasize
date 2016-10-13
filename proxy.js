@@ -19,44 +19,44 @@ var proxy = (function(){
 	* Precondition: Content script are already injected in web page.
 	*		This can be done by connectWebPage().
 	*
-	* First param {String} is the name of the function to invoke. 
-	* Must be given with full module path, as in "module.fn".
+	* First param {Number} is the tab id.
+	* Second param {String} is the name of the function to invoke. 
+	* (Must be given with full module path, as in "module.fn".)
 	* Last param {Function} is a callback: ({Any} err, {Any} data)
 	* All other params {jsonisable} will be passed to the target function. 
 	*/ 
 	function invoke() {
 		
+		console.log(arguments);
+
 		var args = Array.prototype.slice.call(arguments);
+		var tabId = args.shift()
 		var path = args.shift();
 		var callback = args.pop();
+		var message = { command: 'invoke', path: path, args: args };
 
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-
-			var tabId = tabs[0].id;
-			var message = { command: 'invoke', path: path, args: args };
-
-			chrome.tabs.sendMessage(tabId, message, null, function(resp) {
-				if (resp) {
-					if (resp.err) {
-						if (callback) {
-							callback(resp.err, null);
-						} else {
-							throw resp.err;
-						}
+		chrome.tabs.sendMessage(tabId, message, null, function(resp) {
+			if (resp) {
+				if (resp.err) {
+					if (callback) {
+						callback(resp.err, null);
 					} else {
-						if (callback) {
-							callback(null, resp.data);
-						}
+						throw resp.err;
 					}
 				} else {
-					throw new Error('some error with sendMessage()');
-					// probably means that there was an error in sendMessage:
-					// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
+					if (callback) {
+						callback(null, resp.data);
+					}
 				}
-			});
+			} else {
+				// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
+				if (chrome.runtime.lastError) {
+					throw chrome.runtime.lastError.message;
+				} else {
+					throw new Error('some error with sendMessage()');
+				}
+			}
 		});
-
-		
 	}
 
 	/**
