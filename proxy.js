@@ -16,19 +16,25 @@ var proxy = (function(){
 	/**
 	* Invokes a function that lives in a script of the web page context.
 	*
+	* Precondition: Content script are already injected in web page.
+	*		This can be done by connectWebPage().
+	*
 	* First param {String} is the name of the function to invoke. 
 	* Must be given with full module path, as in "module.fn".
 	* Last param {Function} is a callback: ({Any} err, {Any} data)
 	* All other params {jsonisable} will be passed to the target function. 
 	*/ 
 	function invoke() {
-
+		
 		var args = Array.prototype.slice.call(arguments);
 		var path = args.shift();
 		var callback = args.pop();
 
-		connectWebPage(function(tabId) {
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+			var tabId = tabs[0].id;
 			var message = { command: 'invoke', path: path, args: args };
+
 			chrome.tabs.sendMessage(tabId, message, null, function(resp) {
 				if (resp) {
 					if (resp.err) {
@@ -43,11 +49,14 @@ var proxy = (function(){
 						}
 					}
 				} else {
+					throw new Error('some error with sendMessage()');
 					// probably means that there was an error in sendMessage:
 					// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
 				}
 			});
 		});
+
+		
 	}
 
 	/**
@@ -104,7 +113,8 @@ var proxy = (function(){
 
 	/** interfaces of module */
 	return {
-		invoke: invoke
+		invoke: invoke,
+		connectWebPage: connectWebPage
 	};
 
 }());
