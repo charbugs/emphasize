@@ -56,11 +56,15 @@ var menu = (function() {
         });
     }
 
-    function MarkerListItem(list, marker) {
+    function MarkerListItem(list, marker, tabId) {
+
+        ///////////////////////////////////////////////////////////////////////
+        // Views
+        ///////////////////////////////////////////////////////////////////////
 
         this.header = function() {
             return $('<div>').text(this.marker.name || 'Marker ' + this.marker.id);
-        }
+        };
 
         this.queryView = function() {
 
@@ -68,7 +72,7 @@ var menu = (function() {
             var container = $('<div>');
             $('<p>').text(this.marker.description).appendTo(container);
 
-            if (this.marker.queries) {
+            if (this.marker.hasOwnProperty('queries')) {
                 for (var query of this.marker.queries) {
                     $('<label>', { for: query.id }).text(query.label).appendTo(container);
                     inputs.push($('<input>', { type: 'text', name: query.id }).appendTo(container));
@@ -78,19 +82,22 @@ var menu = (function() {
             var markButton = $('<input>', { type: 'button', value: 'Mark' }).appendTo(container);
             markButton.on('click', this.applyMarker.bind(this, inputs));
 
+            return container;
+        };
+
+        this.progressView = function() {
+            var container = $('<div>');
+            $('<h3>').text('in progress ...').appendTo(container);
+            return container;
+        };
+
+        this.resultView = function(results) {
+            var container = $('<div>');
+            $('<h3>').text(results).appendTo(container);
             var clearButton = $('<input>', { type: 'button', value: 'Clear' }).appendTo(container);
             clearButton.on('click', this.removeHighlighting.bind(this));
-
             return container;
-        }
-
-        this.showQuery = function() {
-            this.panel = this.queryView;
-            this.list.drawItem(this);
-        }
-
-        /*this.resultView = function(results) {
-        }
+        };
 
         this.errorView = function(message) {
             var that = this;
@@ -101,41 +108,116 @@ var menu = (function() {
                 that.showQuery();
             }).appendTo(container);
             return container;
-        }
+        };
 
-        this.showError = function(message) {
-            this.panel = this.errorView.bind(this, message);
+        ///////////////////////////////////////////////////////////////////////
+        // Shows
+        ///////////////////////////////////////////////////////////////////////
+
+        this.showQuery = function() {
+            this.panel = this.queryView;
             this.list.drawItem(this);
-        }
+        };
+        this.showProgress = function() {
+            this.panel = this.progressView;
+            this.list.drawItem(this);
+        };
         this.showResult = function(results) {
             this.panel = this.resultView.bind(this, results);
             this.list.drawItem(this);
-        }*/
+        };
+        this.showError = function(message) {
+            this.panel = this.errorView.bind(this, message);
+            this.list.drawItem(this);
+        };
 
+        ///////////////////////////////////////////////////////////////////////
+        // Event handlers
+        ///////////////////////////////////////////////////////////////////////
+
+        // precondition: there is no status for that marker
+        // precondition: there is no highlighting for that marker
         this.applyMarker = function(inputs) {
-            
+
             var that = this;
-            var userQueries = {};
-            for (var input of inputs) {
-                userQueries[input.attr('name')] = input.val();
-            }
             chrome.runtime.getBackgroundPage(function(bg) {
-                bg.extensionControl.applyMarker(that.marker, userQueries);
+                bg.proxy.invoke(that.tabId, 'statuslog.setStatus', { markerId: that.marker.id, inprogress: 1 }, function() {
+                    that.showProgress();
+                    bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', function() {
+                        bg.proxy.invoke(that.tabId, 'extract.getWords', function(err, words) {
+                            bg.proxy.invoke(that.tabId, 'extract.getUrl', function(err, url) {
+                                bg.request.requestMarking(that.marker, words, url, that.compileUserQueries(inputs), function(err, resp) {
+                                    if (err) {
+                                        if (err.name === 'ResponseParserError') {
+                                            bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', that.marker.id, function() {
+                                                that.showError(err.message);    
+                                            });  
+                                        } 
+                                        else {
+                                            throw err;
+                                        }
+                                    } else {
+                                        bg.proxy.invoke(that.tabId, 'highlight.highlight', resp.mask, that.marker.id, function() {
+                                                bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', { markerId: that.marker.id, inprogress: 0, message:'n.a.'}, function() {
+                                                    that.showResult('n.A.');
+                                                });
+                                        });
+                                    }
+                                });
+                            });
+                        });
+                    });
+                });
             });
-        }
+        };
 
         this.removeHighlighting = function() {
 
             var that = this;
             chrome.runtime.getBackgroundPage(function(bg) {
-                bg.extensionControl.removeHighlighting(that.marker.id);
+                bg.proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, function() {
+                    bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', that.marker.id, function() {
+                        that.showQuery();
+                    });
+                });
             });
-        }
+        };
+
+        ///////////////////////////////////////////////////////////////////////
+        // Utils
+        ///////////////////////////////////////////////////////////////////////
+
+        this.compileUserQueries = function(inputs) {
+            var userQueries = {};
+            for (var input of inputs) {
+                userQueries[input.attr('name')] = input.val();
+            }
+            return userQueries;
+        };
+
+        this.determineFirstView = function() {
+            var that = this;
+            chrome.runtime.getBackgroundPage(function(bg) {
+                bg.proxy.invoke(that.tabId, 'statuslog.getStatus', that.marker.id, function(err, status) {
+                    if(!status)
+                        that.showQuery();
+                    else if (status.inprogress > 0)
+                        that.showProgress();
+                    else if (status.inprogress === 0)
+                        that.showResult(status.message);
+                });
+            });
+        };
+
+        ///////////////////////////////////////////////////////////////////////
+        // Init
+        ///////////////////////////////////////////////////////////////////////
 
         this.list = list;
         this.marker = marker;
+        this.tabId = tabId;
         this.panel;
-        this.showQuery();
+        this.determineFirstView();
     }
 
     /** Draws the menu. */
@@ -144,13 +226,17 @@ var menu = (function() {
     }
 
     function drawMarkerList() {
-        var list = new AccordionList('#markers');
+
         chrome.runtime.getBackgroundPage(function(bg) {
-            bg.markerdb.get(null, function(markers) {
-                for (var marker of markers) {
-                    new MarkerListItem(list, marker);
-                }
-            });
+            bg.proxy.connectWebPage(function(tabId) {
+                bg.markerdb.get(null, function(markers) {
+                    var list = new AccordionList('#markers');
+                    for (var marker of markers) {
+                        new MarkerListItem(list, marker, tabId);
+                    }
+
+                });
+            }); 
         });
     }
 
