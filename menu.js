@@ -140,25 +140,52 @@ var menu = (function() {
         this.applyMarker = function(inputs) {
 
             var that = this;
+
             chrome.runtime.getBackgroundPage(function(bg) {
-                bg.proxy.invoke(that.tabId, 'statuslog.setStatus', { markerId: that.marker.id, inprogress: 1 }, function() {
+
+                bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
+                    { markerId: that.marker.id, inprogress: 1 }, 
+                    function() {
+
                     that.showProgress();
-                    bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', function() {
-                        bg.proxy.invoke(that.tabId, 'extract.getWords', function(err, words) {
-                            bg.proxy.invoke(that.tabId, 'extract.getUrl', function(err, url) {
-                                bg.request.requestMarking(that.marker, words, url, that.compileUserQueries(inputs), function(err, resp) {
+
+                    bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', 
+                        function() {
+                        
+                        bg.proxy.invoke(that.tabId, 'extract.getWords', 
+                            function(err, words) {
+                            
+                            bg.proxy.invoke(that.tabId, 'extract.getUrl', 
+                                function(err, url) {
+                                
+                                bg.request.requestMarking(that.marker, words, url, 
+                                    that.compileUserQueries(inputs), 
+                                    function(err, resp) {
+                                    
                                     if (err) {
+
                                         if (err.name === 'ResponseParserError') {
-                                            bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', that.marker.id, function() {
+
+                                            bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
+                                                that.marker.id, function() {
+                                                
                                                 that.showError(err.message);    
                                             });  
                                         } 
                                         else {
                                             throw err;
                                         }
-                                    } else {
-                                        bg.proxy.invoke(that.tabId, 'highlight.highlight', resp.mask, that.marker.id, function() {
-                                                bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', { markerId: that.marker.id, inprogress: 0, message:'n.a.'}, function() {
+                                    } 
+
+                                    else {
+                                        bg.proxy.invoke(that.tabId, 'highlight.highlight', 
+                                            resp.mask, that.marker.id, 
+                                            function() {
+                                            
+                                                bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
+                                                    { markerId: that.marker.id, inprogress: 0, message:'n.a.'}, 
+                                                    function() {
+                                                    
                                                     that.showResult('n.A.');
                                                 });
                                         });
