@@ -111,19 +111,23 @@ var request = (function() {
 	*/
 	function parseMarkingResponse(responseText, numOfTokens) {
 
+		var supported = ['mask', 'result'];
+		var needed = ['mask'];
+		var typeMap = { mask: 'Array', result: 'String'};
+
 		var key;
 		var response = JSON.parse(responseText);
 		
 		if (!response || !isObject(response))
 			throw new ResponseParserError('Marker response must be an JSON object.');
 
-		if (key = firstUnsupportedProperty(response, ['mask']))
+		if (key = firstUnsupportedProperty(response, supported))
 			throw new ResponseParserError('Unknown property "' + key + '" in marker response.');
 
-		if (key = firstMissingProperty(response, ['mask']))
+		if (key = firstMissingProperty(response, needed))
 			throw new ResponseParserError('Missing property "' + key + '" in marker response.');
 
-		if (key = firstMistypedProperty(response, { mask: 'Array' }))
+		if (key = firstMistypedProperty(response, typeMap))
 			throw new ResponseParserError('Property "' + key + '" of marker response has wrong type.');
 		
 		if (!response.mask.every(n => Number.isInteger(n)))
@@ -145,19 +149,27 @@ var request = (function() {
 	*/
 	function parseSettingsResponse(responseText) {
 
+		var supported = ['name', 'description', 'queries'];
+		var needed = ['name', 'description'];
+		var typeMap = { name: 'String', description: 'String', queries: 'Array' };
+
+		var supportedOfQuery = ['id', 'label', 'hint'];
+		var neededOfQuery = ['id'];
+		var typeMapOfQuery = { id: 'String', label: 'String', hint: 'String'};
+
 		var key;
 		var response = JSON.parse(responseText);
 		
 		if (!response || !isObject(response))
 			throw new ResponseParserError('Marker settings must be an JSON object.');
 
-		if (key = firstUnsupportedProperty(response, ['name', 'description', 'queries']))
+		if (key = firstUnsupportedProperty(response, supported))
 			throw new ResponseParserError('Unknown property "' + key + '" in marker settings.');
 
-		if (key = firstMissingProperty(response, ['name', 'description']))
+		if (key = firstMissingProperty(response, needed))
 			throw new ResponseParserError('Missing property "' + key + '" in marker settings.');
 
-		if (key = firstMistypedProperty(response, { name: 'String', description: 'String', queries: 'Array' }))
+		if (key = firstMistypedProperty(response, typeMap))
 			throw new ResponseParserError('Property "' + key + '" of marker settings has wrong type.');
 
 		if (response.hasOwnProperty('queries')) {
@@ -166,13 +178,13 @@ var request = (function() {
 				if (!isObject(query))
 					throw new ResponseParserError('Items of "queries" must be JSON objects');
 
-				if (key = firstUnsupportedProperty(query, ['id', 'label', 'hint']))
+				if (key = firstUnsupportedProperty(query, supportedOfQuery))
 					throw new ResponseParserError('Unknown property "' + key + '" in query object.');
 
-				if (key = firstMissingProperty(query, ['id']))
+				if (key = firstMissingProperty(query, neededOfQuery))
 					throw new ResponseParserError('Missing property "' + key + '" in query object.');
 
-				if (key = firstMistypedProperty(query, { id: 'String', label: 'String', hint: 'String'}))
+				if (key = firstMistypedProperty(query, typeMapOfQuery))
 					throw new ResponseParserError('Property "' + key + '" of query object has wrong type.');
 			}
 		}

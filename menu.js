@@ -91,9 +91,9 @@ var menu = (function() {
             return container;
         };
 
-        this.resultView = function(results) {
+        this.resultView = function(result) {
             var container = $('<div>');
-            $('<h3>').text(results).appendTo(container);
+            $('<p>').text(result).appendTo(container);
             var clearButton = $('<input>', { type: 'button', value: 'Clear' }).appendTo(container);
             clearButton.on('click', this.removeHighlighting.bind(this));
             return container;
@@ -122,8 +122,8 @@ var menu = (function() {
             this.panel = this.progressView;
             this.list.drawItem(this);
         };
-        this.showResult = function(results) {
-            this.panel = this.resultView.bind(this, results);
+        this.showResult = function(result) {
+            this.panel = this.resultView.bind(this, result);
             this.list.drawItem(this);
         };
         this.showError = function(message) {
@@ -183,10 +183,10 @@ var menu = (function() {
                                             function() {
                                             
                                                 bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
-                                                    { markerId: that.marker.id, inprogress: 0, message:'n.a.'}, 
+                                                    { markerId: that.marker.id, inprogress: 0, message: resp.result}, 
                                                     function() {
                                                     
-                                                    that.showResult('n.A.');
+                                                    that.showResult(resp.result);
                                                 });
                                         });
                                     }
