@@ -164,7 +164,8 @@ var menu = (function() {
                                     
                                     if (err) {
 
-                                        if (err.name === 'ResponseParserError') {
+                                        if (err.name === 'ResponseParserError' ||
+                                            err.name === 'RequestError') {
 
                                             bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
                                                 that.marker.id, function() {

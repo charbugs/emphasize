@@ -2,8 +2,19 @@
 var request = (function() {
 
 	/**
-	* An Error that will be thrown if the response of a marker app
-	* does not match the communication protocol of marker and extension.
+	* An Error that will be thrown if somthing went wrong while
+	* trying to get the response data from the marker app.
+	*/
+	function RequestError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	RequestError.prototype = Object.create(Error.prototype);
+	RequestError.prototype.name = 'RequestError';
+
+	/**
+	* An Error that will be thrown if the response data of a marker app
+	* does not match the communication protocol of marker and extension
 	*/
 	function ResponseParserError(message) {
 		this.message = message;
@@ -31,15 +42,21 @@ var request = (function() {
 			queries: userQueries
 		};
 		
-		request(marker.url, data, function(responseText) {
-			try {
-				var response = parseMarkingResponse(responseText, words.length);
-				callback(null, response);
-			} catch (err) {
-				if (err instanceof ResponseParserError)
-					callback(err, null);
-				else
-					throw err;
+		request(marker.url, data, function(err, responseText) {
+			if (err) {
+				callback(err, null);
+			} else {
+				try {
+					var response = parseMarkingResponse(responseText, words.length);
+					callback(null, response);
+				} catch (err) {
+					if (err instanceof ResponseParserError)
+						callback(err, null);
+					else if (err instanceof RequestError)
+						callback(err, null);
+					else
+						throw err;
+				}
 			}
 		});
 	}
@@ -56,15 +73,21 @@ var request = (function() {
 
 		var data = { request: 'settings' };
 
-		request(url, data, function(responseText) {
-			try {
-				var response = parseSettingsResponse(responseText);
-				callback(null, response);
-			} catch (err) {
-				if (err instanceof ResponseParserError)
-					callback(err, null);
-				else
-					throw err;
+		request(url, data, function(err, responseText) {
+			if (err) {
+				callback(err, null);
+			} else {
+				try {
+					var response = parseSettingsResponse(responseText);
+					callback(null, response);
+				} catch (err) {
+					if (err instanceof ResponseParserError)
+						callback(err, null);
+					else if (err instanceof RequestError)
+						callback(err, null);
+					else
+						throw err;
+				}
 			}
 		});
 	}
@@ -96,8 +119,19 @@ var request = (function() {
 	* 	@param {String} - response to request 
 	*/
 	function handleResponse(xhr, callback) {
-		if (xhr.readyState === 4 && xhr.status === 200) {
-			callback(xhr.responseText);
+		if (xhr.readyState === xhr.DONE) {
+			if (xhr.status === 0) {
+				var err = new RequestError('Cannot connect to server.'); 
+				callback(err, null);
+			}
+			else if (xhr.status === 200) {
+				callback(null, xhr.responseText);
+			}
+			else {
+				var err = new RequestError(
+					'Failed to receive data from marker. Server answers: ' + xhr.status);
+				callback(err, null);
+			}
 		}
 	}
 
