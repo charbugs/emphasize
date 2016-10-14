@@ -148,9 +148,13 @@ var request = (function() {
 		var supported = ['mask', 'result'];
 		var needed = ['mask'];
 		var typeMap = { mask: 'Array', result: 'String'};
-
 		var key;
-		var response = JSON.parse(responseText);
+
+		try {
+			var response = JSON.parse(responseText);
+		} catch (err) {
+			throw new ResponseParserError('Cannot parse marker response. Probably no valid JSON string.');
+		}
 		
 		if (!response || !isObject(response))
 			throw new ResponseParserError('Marker response must be an JSON object.');
@@ -192,7 +196,12 @@ var request = (function() {
 		var typeMapOfQuery = { id: 'String', label: 'String', hint: 'String'};
 
 		var key;
-		var response = JSON.parse(responseText);
+		
+		try {
+			var response = JSON.parse(responseText);
+		} catch (err) {
+			throw new ResponseParserError('Cannot parse marker response. Probably no valid JSON string.');
+		}
 		
 		if (!response || !isObject(response))
 			throw new ResponseParserError('Marker settings must be an JSON object.');
