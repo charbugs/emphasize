@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="jquery-ui.css">
-	<script type="text/javascript" src="jquery.js"></script>
-	<script type="text/javascript" src="jquery-ui.js"></script>
-    <script type="text/javascript" src="menu.js"></script>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="menu.css">
+	<script type="text/javascript" src="vue.js"></script>
+	<script type="text/javascript" src="menu.js"></script>
 </head>
 <body>
-    <div id="markers"></div>
-    <div id="controls"></div>
+	<div class="list" id="list">
+		<div class="item" v-for="item in markerListItems">
+			<div class="header" v-on:click="item.togglePanel()">
+				<span>{{ item.marker.name }}</span>
+			</div>
+			<div class="panel" v-if="item.panelView">
+				<!-- ########## READY VIEW ########## -->
+				<div class="ready" v-if="item.readyView">
+					<div class="description">
+						<span>{{ item.marker.description }}</span>
+					</div>
+					<div class="form" v-for="query in item.marker.queries">
+						<input type="text" v-bind:placeholder="query.label">
+					</div>
+					<div class="control">
+						
+					</div>
+				</div>
+				<!-- ########## PROGRESS VIEW ########## -->
+				<div class="progress" v-if="item.progressView">
+					PROGRESS
+				</div>
+				<!-- ########## RESULT VIEW ########## -->
+				<div class="result" v-if="item.resultView">
+					RESULT
+				</div>
+				<!-- ########## ERROR VIEW ########## -->
+				<div class="error" v-if="item.errorView">
+					ERROR
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

@@ -1,0 +1,32 @@
+
+.list {
+	width: 400px;
+	color: #444;
+	font-family: "Verdana";
+}
+
+.item {
+	border-bottom: 1px solid #ddd;
+}
+
+.header {
+	padding: 15px;
+	font-size: 15px;
+
+}
+
+.header:after {
+	content: '\02795'; /* Unicode character for "plus" sign (+) */
+	float: right;
+}
+
+.panel {
+	font-size: 12px;
+	border-top: 1px solid #ddd;
+	padding: 20px;
+}
+
+.description {
+	font-style: italic;
+	line-height: 175%;
+}
