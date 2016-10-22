@@ -9,33 +9,48 @@
 <body>
 	<div class="list" id="list">
 		<div class="item" v-for="item in markerListItems">
-			<div class="header" v-on:click="item.togglePanel()">
+			<div class="header" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
 				<span>{{ item.marker.name }}</span>
 			</div>
-			<div class="panel" v-if="item.panelView">
-				<!-- ########## READY VIEW ########## -->
-				<div class="ready" v-if="item.readyView">
-					<div class="description">
+			<div class="panel" v-if="item.views.panel">
+			
+               	<!-- ########## READY VIEW ########## -->
+				<div class="ready" v-if="item.views.ready">
+					<div class="info">
 						<span>{{ item.marker.description }}</span>
 					</div>
-					<div class="form" v-for="query in item.marker.queries">
-						<input type="text" v-bind:placeholder="query.label">
+					<div class="form" v-for="query of item.marker.queries">
+						<input type="text" v-bind:placeholder="query.label" 
+                            v-model="item.userInputs[query.id]">
 					</div>
 					<div class="control">
-						
+						<input type="button" value="Apply" v-on:click="item.applyMarker()">
 					</div>
 				</div>
-				<!-- ########## PROGRESS VIEW ########## -->
-				<div class="progress" v-if="item.progressView">
-					PROGRESS
+				
+                <!-- ########## PROGRESS VIEW ########## -->
+				<div class="progress" v-if="item.views.progress">
+					<div class="loader"></div>
 				</div>
+   
 				<!-- ########## RESULT VIEW ########## -->
-				<div class="result" v-if="item.resultView">
-					RESULT
+				<div class="result" v-if="item.views.result">
+                    <div class="info">
+                        {{ item.resultMessage }}
+                    </div>
+                    <div class="control">
+						<input type="button" value="Clear" v-on:click="item.removeHighlighting()">
+					</div>
 				</div>
+
 				<!-- ########## ERROR VIEW ########## -->
-				<div class="error" v-if="item.errorView">
-					ERROR
+				<div class="error" v-if="item.views.error">
+					<div class="info">
+					    {{ item.errorMessage }}
+					</div>
+                    <div class="control">
+						<input type="button" value="Back" v-on:click="item.backToReady()">
+					</div>
 				</div>
 			</div>
 		</div>

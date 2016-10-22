@@ -1,50 +1,185 @@
 
 var menu = (function() {
 
-	function MarkerListItem(marker) {
-		
-		this.marker = marker;
-		this.panelView = false;
-		this.readyView = true;
-		this.progressView = false;
-		this.resultView = false;
-		this.errorView = false;
+	function MarkerListItem(marker, tabId) {
+
+
+        this.createUserInputStorage = function() {
+            this.userInputs = {};
+            if (this.marker.queries) {
+                for (var query of this.marker.queries) {
+                    this.userInputs[query.id] = '';
+                }
+            }
+        };
+
+        
+        this.determineView = function() {
+            var that = this;
+            chrome.runtime.getBackgroundPage(function(bg) {
+                bg.proxy.invoke(that.tabId, 'statuslog.getStatus', that.marker.id, function(err, status) {
+                    if(!status) {
+                        that.switchView({ ready:true });
+                    }
+                    else if (status.inprogress > 0) {
+                        that.switchView({ progress:true });
+                    }
+                    else if (status.inprogress === 0) {
+                        that.resultMessage = status.message;
+                        that.switchView({ result:true });
+                    }
+                });
+            });
+        };
+
+        this.switchView = function(views) {
+            this.views.ready = views.ready || false;
+            this.views.progress = views.progress || false;
+            this.views.result = views.result || false;
+            this.views.error = views.error || false;    
+        };
+
 
 		this.togglePanel = function() {
-			this.panelView = !this.panelView;
+			this.views.panel = !this.views.panel;
 		};
+
+        
+        this.backToReady = function() {
+            this.switchView({ ready:true });
+        };
+
+
+        this.removeHighlighting = function() {
+            var that = this;
+            chrome.runtime.getBackgroundPage(function(bg) {
+                bg.proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, function() {
+                    bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', that.marker.id, function() {
+                        that.switchView({ ready:true });
+                    });
+                });
+            });
+        };
+
+
+        this.applyMarker = function() {
+
+            var that = this;
+            chrome.runtime.getBackgroundPage(function(bg) {
+
+                bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
+                    { markerId: that.marker.id, inprogress: 1 }, 
+                    function() {
+
+                    that.switchView({ progress:true });
+
+                    bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', 
+                        function() {
+                        
+                        bg.proxy.invoke(that.tabId, 'extract.getWords', 
+                            function(err, words) {
+                            
+                            bg.proxy.invoke(that.tabId, 'extract.getUrl', 
+                                function(err, url) {
+
+                                bg.request.requestMarking(that.marker, words, url, 
+                                    that.userInputs, 
+                                    function(err, resp) {
+                                    
+                                    if (err) {
+                                        if (err.name === 'ResponseParserError' ||
+                                            err.name === 'RequestError') {
+                                            bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
+                                                that.marker.id, function() {
+  
+                                                that.errorMessage = err.message;
+                                                that.switchView({ error:true });    
+                                            });  
+                                        } 
+                                        else {
+                                            throw err;
+                                        }
+                                    } 
+
+                                    else {
+                                        bg.proxy.invoke(that.tabId, 'highlight.highlight', 
+                                            resp.mask, that.marker.id, 
+                                            function() {
+                                            
+                                                bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
+                                                    { markerId: that.marker.id, inprogress: 0, message: resp.result}, 
+                                                    function() {
+                                                    
+                                                    that.resultMessage = resp.result;
+                                                    that.switchView({ result:true })
+                                                });
+                                        });
+                                    }
+                                });
+                            });                    
+                        });
+                    });
+                });
+            });
+            
+        };
+        
+
+        this.marker = marker;
+        this.tabId = tabId;
+
+        this.userInputs;
+        this.errorMessage;
+        this.resultMessage;
+
+        this.views = {
+            panel: false,
+            ready: false,
+            progress: false,
+            result: false,
+            error: false
+        };
+        
+        this.createUserInputStorage();
+        this.determineView();
 	}
+
 
 	function draw() {
 
 		chrome.runtime.getBackgroundPage(function(bg) {
-			bg.markerdb.get(null, function(markers) {
+            bg.proxy.connectWebPage(function(tabId) {
+                bg.markerdb.get(null, function(markers) {
 
-				var markerListItems = [];
-				for (var marker of markers) {
-					markerListItems.push(new MarkerListItem(marker));
-				}
+				    var markerListItems = [];
+				    for (var marker of markers) {
+					    markerListItems.push(new MarkerListItem(marker, tabId));
+				    }
 
-				var list = new Vue({
-					el: '#list',
-					data: {
-						markerListItems: markerListItems
-					}
-				});
+				    var list = new Vue({
+					    el: '#list',
+					    data: {
+						    markerListItems: markerListItems
+					    }
+				    });
 
-				// remove separator from last item
-				var items = document.getElementsByClassName('item');
-				var lastItem = items[items.length-1];
-				lastItem.style.border = 'none';
-			});
+				    // remove separator from last item
+				    var items = document.getElementsByClassName('item');
+				    var lastItem = items[items.length-1];
+				    lastItem.style.border = 'none';
+			    });
+            });
 		});
 	}
+
 
 	return {
 		draw: draw
 	}
+
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
 	menu.draw();
 });
+

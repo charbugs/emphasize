@@ -1,8 +1,15 @@
 
+@import url(http://fonts.googleapis.com/css?family=Montserrat);
+
+body {
+    /*padding: 0px;
+    margin: 0px;*/
+}
+
 .list {
 	width: 400px;
 	color: #444;
-	font-family: "Verdana";
+	font-family: montserrat, arial, verdana;
 }
 
 .item {
@@ -12,21 +19,76 @@
 .header {
 	padding: 15px;
 	font-size: 15px;
+    
+}
 
+.header:hover {
+    cursor: pointer;
+    background-color: #eee;
 }
 
 .header:after {
-	content: '\02795'; /* Unicode character for "plus" sign (+) */
-	float: right;
+    content: '\0002B'; 
+    float: right;
+}
+
+.header[active]:after {
+    content: '\02212';
+    float: right;
+    font-weight: normal;
 }
 
 .panel {
 	font-size: 12px;
 	border-top: 1px solid #ddd;
 	padding: 20px;
+    text-align: center;
 }
 
-.description {
-	font-style: italic;
+.info {
 	line-height: 175%;
+    margin-bottom: 15px;
+}
+
+input[type=text] {
+    padding: 15px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin-bottom: 10px;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: montserrat;
+	color: #2C3E50;
+	font-size: 13px;
+}
+
+input[type=button] {
+    width: 100px;
+	background: #3498db;
+	font-weight: bold;
+	color: white;
+	border: 0 none;
+	border-radius: 1px;
+	cursor: pointer;
+	padding: 10px 5px;
+	margin: 10px 5px;
+}
+
+.loader {
+    border: 12px solid #f3f3f3; /* Light grey */
+    border-top: 12px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    color: #db3445;
 }
