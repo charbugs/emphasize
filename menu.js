@@ -1,9 +1,20 @@
-
+/** @module menu */
 var menu = (function() {
 
+    /**
+    * Represents an item in the marker list of the menu.
+    *
+    * @param {markerdb.Marker} marker
+    * @parma {Number} tabId - id of the current browser tab.
+    */
 	function MarkerListItem(marker, tabId) {
 
-
+        /**
+        * Creates on object for to store user inputs.
+        * 
+        * @changes {Object} this.userInputs - 
+        *        keys are input ids, vals are user inputs.
+        */
         this.createUserInputStorage = function() {
             this.userInputs = {};
             if (this.marker.queries) {
@@ -13,7 +24,9 @@ var menu = (function() {
             }
         };
 
-        
+        /**
+        * On menu create, decides which panel view should be shown for the marker.
+        */
         this.determineView = function() {
             var that = this;
             chrome.runtime.getBackgroundPage(function(bg) {
@@ -32,6 +45,12 @@ var menu = (function() {
             });
         };
 
+        /**
+        * Switches between the different panel views of the item.
+        * 
+        * @param {Object} views - witch views should be shown or hide?
+        *       keys are panel names, values are boolean.
+        */
         this.switchView = function(views) {
             this.views.ready = views.ready || false;
             this.views.progress = views.progress || false;
@@ -39,17 +58,23 @@ var menu = (function() {
             this.views.error = views.error || false;    
         };
 
-
+        /**
+        * Toggles the panel of the item.
+        */
 		this.togglePanel = function() {
 			this.views.panel = !this.views.panel;
 		};
 
-        
+        /**
+        * Switches back to the ready view.
+        */
         this.backToReady = function() {
             this.switchView({ ready:true });
         };
 
-
+        /**
+        * Removes the highlighting made by the marker.
+        */
         this.removeHighlighting = function() {
             var that = this;
             chrome.runtime.getBackgroundPage(function(bg) {
@@ -61,7 +86,9 @@ var menu = (function() {
             });
         };
 
-
+        /**
+        * Applies the marker to the current web page.
+        */
         this.applyMarker = function() {
 
             var that = this;
@@ -145,6 +172,9 @@ var menu = (function() {
 	}
 
 
+    /**
+    * Inits and shows the menu.
+    */
 	function draw() {
 
 		chrome.runtime.getBackgroundPage(function(bg) {
@@ -172,7 +202,7 @@ var menu = (function() {
 		});
 	}
 
-
+    /** module interfaces */
 	return {
 		draw: draw
 	}
