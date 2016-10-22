@@ -157,8 +157,9 @@ var markerdb = (function() {
     
 }());
 
-
-
+document.addEventListener('DOMContentLoaded', function() {
+    markerdb.initStorage();
+});
 
 
 
