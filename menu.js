@@ -167,10 +167,18 @@ var menu = (function() {
             error: false
         };
         
+        console.log('4');
         this.createUserInputStorage();
         this.determineView();
 	}
 
+
+    /**
+    * Informs that the menu is disabled on the current tab.
+    */
+    function showTabDisabledMessage() {
+        document.body.innerHTML = '<div class="list error">Cannot work on this browser tab.</div>';
+    }
 
     /**
     * Inits and shows the menu.
@@ -179,25 +187,31 @@ var menu = (function() {
 
 		chrome.runtime.getBackgroundPage(function(bg) {
             bg.proxy.connectWebPage(function(tabId) {
-                bg.markerdb.get(null, function(markers) {
 
-				    var markerListItems = [];
-				    for (var marker of markers) {
-					    markerListItems.push(new MarkerListItem(marker, tabId));
-				    }
+                if (!tabId) {
+                    showTabDisabledMessage();
+                }
+                else {
+                    bg.markerdb.get(null, function(markers) {
 
-				    var list = new Vue({
-					    el: '#list',
-					    data: {
-						    markerListItems: markerListItems
-					    }
-				    });
+				        var markerListItems = [];
+				        for (var marker of markers) {
+					        markerListItems.push(new MarkerListItem(marker, tabId));
+				        }
 
-				    // remove separator from last item
-				    var items = document.getElementsByClassName('item');
-				    var lastItem = items[items.length-1];
-				    lastItem.style.border = 'none';
-			    });
+				        var list = new Vue({
+					        el: '#list',
+					        data: {
+						        markerListItems: markerListItems
+					        }
+				        });
+
+				        // remove separator from last item
+				        var items = document.getElementsByClassName('item');
+				        var lastItem = items[items.length-1];
+				        lastItem.style.border = 'none';
+			        });
+                }
             });
 		});
 	}

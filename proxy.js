@@ -13,6 +13,11 @@ var proxy = (function(){
 		'counterproxy.js'
 	];
 
+    /* urls the extension will/should not work on */
+    const blockedUrls = [
+        /^chrome:\/\// // not possible to inject content scripts here
+    ];
+
 	/**
 	* Invokes a function that lives in a script of the web page context.
 	*
@@ -59,26 +64,45 @@ var proxy = (function(){
 		});
 	}
 
+    /**
+    * Checks if an url is blocked by the system.
+    */
+    function isBlockedUrl(url) {
+        for (var re of blockedUrls) {
+            if (url.match(re)) {
+                return true;
+            }
+        }
+    }
+
 	/**
 	* Finds out if the content scripts already injected in the current web page.
 	* If not injects them.
 	*
 	* @param {Function} callback
-	*	  @prop {Number} tabId - id of current tab
+	*	  @prop {Number} tabId - id of current tab, null if blocked url
 	*/
 	function connectWebPage(callback) {
 
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-			var tabId = tabs[0].id;
-			var message = {command: 'isAlive'};
-			chrome.tabs.sendMessage(tabId, message, function (response) {
-				if (response)
-					callback(tabId);
-				else
-					executeScripts(tabId, function() {
-						callback(tabId);
-					});
-			});
+
+            if (isBlockedUrl(tabs[0].url)) {
+                callback(null);
+            } 
+            else {
+			    var tabId = tabs[0].id;
+			    var message = {command: 'isAlive'};
+			    chrome.tabs.sendMessage(tabId, message, function (response) {
+				    if (response) {
+					    callback(tabId);
+                    }
+				    else {
+					    executeScripts(tabId, function() {
+						    callback(tabId);
+					    });
+                    }
+			    });
+            }
 		});
 	}
 
