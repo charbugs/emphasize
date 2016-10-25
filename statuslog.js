@@ -137,17 +137,13 @@ var statuslog = (function (){
 		var meta = document.querySelector('meta[markerid="' + markerId + '"]');
 
 		if (meta) {
-
 			meta.parentElement.removeChild(meta);
-
-			if (callback) {
-				callback(null, null);
-			}
-
-		} else {
-			throw new StatusLogError(
-				'Can not remove status for that marker. Status does not exist.');
+        }
+      	if (callback) {
+		    callback(null, null);
 		}
+
+
 	}
 
 	return {
