@@ -7,53 +7,98 @@
 	<script type="text/javascript" src="menu.js"></script>
 </head>
 <body>
-	<div class="list" id="list">
-		<div class="item" v-for="item in markerListItems">
-			<div class="header" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
-				<span>{{ item.marker.name }}</span>
-			</div>
-			<div class="panel" v-if="item.views.panel">
+<div class="menu" id="menu">
+
+	<div class="marker-list">
+
+		<div class="item" v-for="item in markerItems">
 			
+            <div class="header" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
+				{{ item.marker.name }}
+			</div>
+
+			<div class="panel" v-if="item.views.panel">
+
                	<!-- ########## READY VIEW ########## -->
-				<div class="ready" v-if="item.views.ready">
+				<div class="view" v-if="item.views.ready">
+
 					<div class="info">
-						<span>{{ item.marker.description }}</span>
+						{{ item.marker.description }}
 					</div>
-					<div class="form" v-for="query of item.marker.queries">
-						<input type="text" v-bind:placeholder="query.label" 
+
+                    <div class="edit" v-on:click="item.showEditView()">
+                        Edit
+                    </div>
+
+                    <input  v-for="query of item.marker.queries"  
+                            type="text" 
+                            v-bind:placeholder="query.label" 
                             v-model="item.userInputs[query.id]">
-					</div>
-					<div class="control">
-						<input type="button" value="Apply" v-on:click="item.applyMarker()">
-					</div>
+
+					<input  type="button" 
+                            value="Apply" 
+                            v-on:click="item.applyMarker()">
 				</div>
 				
                 <!-- ########## PROGRESS VIEW ########## -->
-				<div class="progress" v-if="item.views.progress">
-					<div class="loader"></div>
+				<div class="view" v-if="item.views.progress">
+					
+                    <div class="loader"></div>
+
 				</div>
    
 				<!-- ########## RESULT VIEW ########## -->
-				<div class="result" v-if="item.views.result">
+				<div class="view" v-if="item.views.result">
+                    
                     <div class="info">
                         {{ item.resultMessage }}
                     </div>
-                    <div class="control">
-						<input type="button" value="Clear" v-on:click="item.removeHighlighting()">
-					</div>
+
+                    <div class="edit" v-on:click="item.showEditView()">
+                        Edit
+                    </div>
+
+					<input  type="button" 
+                            value="Clear" 
+                            v-on:click="item.resetMarker()">
 				</div>
 
 				<!-- ########## ERROR VIEW ########## -->
-				<div class="error" v-if="item.views.error">
+				<div class="view" v-if="item.views.error">
+
 					<div class="info">
 					    {{ item.errorMessage }}
 					</div>
-                    <div class="control">
-						<input type="button" value="Back" v-on:click="item.backToReady()">
-					</div>
+
+                    <div class="edit" v-on:click="item.showEditView()">
+                        Edit
+                    </div>
+
+					<input  type="button" 
+                            value="Back" 
+                            v-on:click="item.showReadyView()">			
 				</div>
+
+                <!-- ########## EDIT VIEW ########## -->
+				<div class="view" v-if="item.views.edit">
+                
+                    <div class="info">
+                        <b>URL:</b><br>
+                        {{ item.marker.url }}
+                    </div>
+                
+                    <input  type="button" 
+                            value="Back" 
+                            v-on:click="item.showReadyView()">			
+
+                    <input  type="button" 
+                            value="Remove" 
+                            v-on:click="item.removeMarker()">
+                    
+                </div>
 			</div>
 		</div>
 	</div>
+<div>
 </body>
 </html>

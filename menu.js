@@ -6,8 +6,10 @@ var menu = (function() {
     *
     * @param {markerdb.Marker} marker
     * @parma {Number} tabId - id of the current browser tab.
+    * @param {Array} markerItems - a reference to the container 
+    *        that holds all items of the marker list.
     */
-	function MarkerListItem(marker, tabId) {
+	function MarkerItem(marker, tabId, markerItems) {
 
         /**
         * Creates on object for to store user inputs.
@@ -56,6 +58,7 @@ var menu = (function() {
             this.views.progress = views.progress || false;
             this.views.result = views.result || false;
             this.views.error = views.error || false;    
+            this.views.edit = views.edit || false;    
         };
 
         /**
@@ -68,14 +71,21 @@ var menu = (function() {
         /**
         * Switches back to the ready view.
         */
-        this.backToReady = function() {
+        this.showReadyView = function() {
             this.switchView({ ready:true });
+        };
+
+        /** 
+        * Switches to edit view.
+        */
+        this.showEditView = function() {
+            this.switchView({ edit:true });
         };
 
         /**
         * Removes the highlighting made by the marker.
         */
-        this.removeHighlighting = function() {
+        this.resetMarker = function() {
             var that = this;
             chrome.runtime.getBackgroundPage(function(bg) {
                 bg.proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, function() {
@@ -84,6 +94,26 @@ var menu = (function() {
                     });
                 });
             });
+        };
+
+        /**
+        * Removes the marker from system and list.
+        */
+        this.removeMarker = function() {
+            var that = this;
+            chrome.runtime.getBackgroundPage(function(bg) {
+                bg.proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, function() {
+                    bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', that.marker.id, function() {
+                        bg.markerdb.remove(that.marker.id, function() {
+                            for (var i=0; i<that.markerItems.length; i++) {
+                                if (that.markerItems[i] === that) {
+                                    that.markerItems.splice(i, 1);    
+                                }
+                            }    
+                        });    
+                    });
+                });
+            });                
         };
 
         /**
@@ -154,6 +184,7 @@ var menu = (function() {
 
         this.marker = marker;
         this.tabId = tabId;
+        this.markerItems = markerItems;
 
         this.userInputs;
         this.errorMessage;
@@ -164,7 +195,8 @@ var menu = (function() {
             ready: false,
             progress: false,
             result: false,
-            error: false
+            error: false,
+            edit: false
         };
         
         console.log('4');
@@ -177,7 +209,7 @@ var menu = (function() {
     * Informs that the menu is disabled on the current tab.
     */
     function showTabDisabledMessage() {
-        document.body.innerHTML = '<div class="list error">Cannot work on this browser tab.</div>';
+        document.body.innerHTML = '<div class="menu">Cannot work on this browser tab.</div>';
     }
 
     /**
@@ -194,22 +226,17 @@ var menu = (function() {
                 else {
                     bg.markerdb.get(null, function(markers) {
 
-				        var markerListItems = [];
+				        var markerItems = [];
 				        for (var marker of markers) {
-					        markerListItems.push(new MarkerListItem(marker, tabId));
+					        markerItems.push(new MarkerItem(marker, tabId, markerItems));
 				        }
 
 				        var list = new Vue({
-					        el: '#list',
+					        el: '#menu',
 					        data: {
-						        markerListItems: markerListItems
+						        markerItems: markerItems
 					        }
 				        });
-
-				        // remove separator from last item
-				        var items = document.getElementsByClassName('item');
-				        var lastItem = items[items.length-1];
-				        lastItem.style.border = 'none';
 			        });
                 }
             });

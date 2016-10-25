@@ -1,19 +1,11 @@
-
-@import url(http://fonts.googleapis.com/css?family=Montserrat);
-
-body {
-    /*padding: 0px;
-    margin: 0px;*/
-}
-
-.list {
-	width: 400px;
+.menu {
+    width: 400px;
 	color: #444;
 	font-family: montserrat, arial, verdana;
 }
 
 .item {
-	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
 }
 
 .header {
@@ -41,13 +33,26 @@ body {
 .panel {
 	font-size: 12px;
 	border-top: 1px solid #ddd;
-	padding: 20px;
-    text-align: center;
+	padding-left: 30px;
+    padding-right: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .info {
+    width: 85%;
 	line-height: 175%;
     margin-bottom: 15px;
+    text-align: justify;
+    float: left;
+}
+
+.edit {
+    line-height: 175%;
+    margin-bottom: 15px;
+    text-align: right;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 input[type=text] {
@@ -57,7 +62,7 @@ input[type=text] {
 	margin-bottom: 10px;
 	width: 100%;
 	box-sizing: border-box;
-	font-family: montserrat;
+	font-family: arial, verdana;
 	color: #2C3E50;
 	font-size: 13px;
 }
@@ -71,7 +76,7 @@ input[type=button] {
 	border-radius: 1px;
 	cursor: pointer;
 	padding: 10px 5px;
-	margin: 10px 5px;
+	/*margin: 10px 5px;*/
 }
 
 .loader {
@@ -87,8 +92,4 @@ input[type=button] {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-.error {
-    color: #db3445;
 }
