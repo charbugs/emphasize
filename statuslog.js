@@ -31,13 +31,14 @@ var statuslog = (function (){
 	* @param {Number} markerId
 	* @param {Number} inprogress - greater then 0 if the marker was called but the highlighting process is not done so far.
 	* @param {String} message - message of marker app.
+    * @param {String} hlStyleClass - css highlight class
 	*/
-	function Status(markerId, inprogress, message, face) {
+	function Status(markerId, inprogress, message, hlStyleClass) {
 		
 		this.markerId = markerId;
 		this.inprogress = inprogress;
 		this.message = message;
-        this.face = face;
+        this.hlStyleClass = hlStyleClass
 	}
 
 	/**
@@ -56,7 +57,7 @@ var statuslog = (function (){
 				markerId,
 				parseInt(meta.getAttribute('inprogress')),
 				meta.getAttribute('message'),
-                parseInt(meta.getAttribute('face'))
+                meta.getAttribute('hlStyleClass')
 			);
 
             if (callback) {
@@ -86,7 +87,7 @@ var statuslog = (function (){
                     meta.getAttribute('markerid'),
     				parseInt(meta.getAttribute('inprogress')),
     				meta.getAttribute('message'),
-                    parseInt(meta.getAttribute('face'))
+                    meta.getAttribute('hlStyleClass')
                 ));
             }
             
@@ -120,7 +121,7 @@ var statuslog = (function (){
 			meta.setAttribute('markerid', status.markerId);
 			meta.setAttribute('inprogress', status.inprogress || '');
 			meta.setAttribute('message', status.message || '');
-            meta.setAttribute('face', status.face || '');
+            meta.setAttribute('hlStyleClass', status.hlStyleClass || '');
 
 			document.querySelector('head').appendChild(meta);
 

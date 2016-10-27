@@ -1,6 +1,12 @@
 /** @module menu */
 var menu = (function() {
 
+    var hlStyleClasses = [
+        'vink-face-1',
+        'vink-face-2',
+        'vink-face-3'
+    ];
+
     function Control() {
         
         this.showOptionsView = function() {
@@ -45,7 +51,8 @@ var menu = (function() {
         };
 
         /**
-        * On menu create, decides which panel view should be shown for the marker.
+        * On menu create, decides which panel view should be shown for the marker
+        * and how the header should be shown (color);
         */
         this.determineView = function() {
             var that = this;
@@ -60,6 +67,7 @@ var menu = (function() {
                     else if (status.inprogress === 0) {
                         that.resultMessage = status.message;
                         that.switchView({ result:true });
+                        that.headerClass = status.hlStyleClass;
                     }
                 });
             });
@@ -109,6 +117,7 @@ var menu = (function() {
                 bg.proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, function() {
                     bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', that.marker.id, function() {
                         that.switchView({ ready:true });
+                        that.headerClass = '';
                     });
                 });
             });
@@ -135,18 +144,18 @@ var menu = (function() {
         };
 
 
-        this.determineHighlightFace = function(statuses) {
+        this.determineHlStyleClass = function(statuses) {
 
             if(!statuses) {
-                return 1;
+                return hlStyleClasses[0];
             }
             else {
+    
+                var existingClasses = statuses.map((status) => status.hlStyleClass);
 
-                var existingFaces = statuses.map((status) => status.face);
-
-                for (var face = 1; face <= 100; face++) {
-                    if (existingFaces.indexOf(face) == -1) {
-                        return face;
+                for (var class_ of hlStyleClasses) {
+                    if (existingClasses.indexOf(class_) == -1) {
+                        return class_;
                     }
                 }
             }
@@ -164,11 +173,10 @@ var menu = (function() {
                 bg.proxy.invoke(that.tabId, 'statuslog.getAllStatuses', 
                 function(err, statuses) {
 
-                    var face = that.determineHighlightFace(statuses);
-                    console.log(face);
+                    var hlStyleClass = that.determineHlStyleClass(statuses);
 
                     bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
-                        { markerId: that.marker.id, inprogress: 1, face: face}, 
+                        { markerId: that.marker.id, inprogress: 1, hlStyleClass: hlStyleClass}, 
                         function() {
 
                         that.switchView({ progress:true });
@@ -203,7 +211,7 @@ var menu = (function() {
 
                                         else {
                                             bg.proxy.invoke(that.tabId, 'highlight.highlight', 
-                                                resp.mask, that.marker.id, face,
+                                                resp.mask, that.marker.id, hlStyleClass,
                                                 function() {
                                                 
                                                 bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
@@ -211,7 +219,8 @@ var menu = (function() {
                                                     function() {
                                                     
                                                     that.resultMessage = resp.result;
-                                                    that.switchView({ result:true })
+                                                    that.switchView({ result:true });
+                                                    that.headerClass = hlStyleClass;
                                                 });
                                             });
                                         }
@@ -228,6 +237,8 @@ var menu = (function() {
         this.marker = marker;
         this.tabId = tabId;
         this.markerItems = markerItems;
+
+        this.headerClass = '';
 
         this.userInputs;
         this.errorMessage;
@@ -307,7 +318,6 @@ var menu = (function() {
         this.successMessage = "Marker successfully added."
         this.errorMessage;
         this.inputUrl;
-        
     
         this.views = {
             panel: false,

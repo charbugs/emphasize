@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="menu.css">
+    <link rel="stylesheet" type="text/css" href="vink.css">
 	<script type="text/javascript" src="vue.js"></script>
 	<script type="text/javascript" src="menu.js"></script>
 </head>
@@ -31,7 +32,7 @@
 
 		<div class="item" v-for="item in markerItems">
 			
-            <div class="header" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
+            <div class="header" v-bind:class="item.headerClass" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
 				{{ item.marker.name }}
 			</div>
 

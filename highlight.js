@@ -9,24 +9,17 @@ var highlight = (function() {
     // Class name stub that identifies elements belonging to a specific marker.
     // Will be filled with a marker id, i.e. "vink-marker-34"
     const MARKER_ID_STUB = 'vink-marker-';
-
-    // Class names for different highlighting styles
-    const faceMap = {
-        1: 'vink-face-1',
-        2: 'vink-face-2',
-        3: 'vink-face-3'
-    };
-
+    
     /** 
     * Highlights text passages of the web page according to the instructions
     * of the numerical response mask of the marker app.
     *
     * @param {Array of Number} mask - numerical response mask of the marker app
-    * @param {Number} markerId - ID of the marker that determines what to highlight
-    * @param {Number} face - indicates the highlighting style to apply.
+    * @param {String} markerId - ID of the marker that determines what to highlight
+    * @param {String} hlStyleClass - the css style class that defines the highlight face.
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
-    function highlight(mask, markerId, face, callback) {
+    function highlight(mask, markerId, hlStyleClass, callback) {
 
         var textNodes = extract.getTextNodes();
         var submasks = getSubmasks(textNodes, mask);
@@ -53,7 +46,7 @@ var highlight = (function() {
 
                 replaceNodes = replaceNodes.concat(highlightTokens(
                     groupFeats.tokens, 
-                    groupFeats.type ? face : 0, 
+                    groupFeats.type ? hlStyleClass : null, 
                     leftSpace, 
                     rightSpace, markerId
                 ));
@@ -189,14 +182,14 @@ var highlight = (function() {
     * as plain text nodes if not within the highlighting.
     *
     * @param {Array of tokenize.Token} tokens - to be highlighted
-    * @param {Number} face - indicates the highlighting style.
+    * @param {String} hlStyleClass - the css style class that defines the highlight face.
     * @param {Boolean} leftSpace - left space within highlighting
     * @param {Boolean} rightSpace - right space within highlighting
     * @param {Number} markerId - Id of the marker that determines what to highlight.
     * @return {Array of DOM Node}
     */
-    function highlightTokens(tokens, face, leftSpace, rightSpace, markerId) {
-        console.log(face);
+    function highlightTokens(tokens, hlStyleClass, leftSpace, rightSpace, markerId) {
+
         var nodes = [];
         var string = tokens.join('');
         
@@ -208,11 +201,11 @@ var highlight = (function() {
 
         var textNode = document.createTextNode(string);
         
-        if (face in faceMap) {
+        if (hlStyleClass) {
             var element = document.createElement('SPAN');
             element.classList.add(GLOBAL_CLASS_NAME);
             element.classList.add(MARKER_ID_STUB + markerId);
-            element.classList.add(faceMap[face]);
+            element.classList.add(hlStyleClass);
             element.appendChild(textNode);
             nodes.push(element);
         }
