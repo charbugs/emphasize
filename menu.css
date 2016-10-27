@@ -1,7 +1,22 @@
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
+
 .menu {
     width: 400px;
 	color: #444;
 	font-family: montserrat, arial, verdana;
+}
+
+.control {
+    padding-top: 10px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.control-element {
+    text-decoration: underline;
+    cursor: pointer;
+    letter-spacing: 1px;
 }
 
 .item {
@@ -93,3 +108,26 @@ input[type=button] {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.option {
+    font-size: 15px;
+    padding-left: 15px;
+    padding-right: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    cursor: pointer;
+    line-height: 175%;
+}
+
+.option:hover {
+    background-color: #eee;
+}
+
+em {
+    color: #3498db;
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+

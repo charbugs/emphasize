@@ -1,6 +1,24 @@
 /** @module menu */
 var menu = (function() {
 
+    function Control() {
+        
+        this.showOptionsView = function() {
+            this.views.markers = false;
+            this.views.options = true;
+        };
+
+        this.showMarkersView = function() {
+            this.views.markers = true;
+            this.views.options = false;
+        };
+
+        this.views = {
+            markers: true,
+            options: false,
+        };
+    }
+
     /**
     * Represents an item in the marker list of the menu.
     *
@@ -177,8 +195,7 @@ var menu = (function() {
                         });
                     });
                 });
-            });
-            
+            });  
         };
         
 
@@ -204,6 +221,75 @@ var menu = (function() {
         this.determineView();
 	}
 
+    
+    function Register(tabId, markerItems) {
+
+        this.togglePanel = function() {
+            this.views.panel = !this.views.panel;
+        };
+
+        this.switchView = function(views) {
+            this.views.input = views.input || false;
+            this.views.success = views.success || false;
+            this.views.error = views.error || false;
+        };
+
+        /**
+        * Switches back to the input view.
+        */
+         this.showInputView = function() {
+            this.switchView({ input:true });
+        };
+
+        /**
+        * Registers a new marker to the system based on 
+        * an url given by user input. The new marker will be
+        * added to the marker list on success.
+        */
+        this.registerMarker = function() {
+            var that = this;
+            if (!that.checkInputUrl(that.inputUrl)) {
+                that.errorMessage = 'Need a valid http url that starts with "http://" or "https://".';
+                that.switchView({ error:true });
+            } else {
+                chrome.runtime.getBackgroundPage(function(bg) {
+                    bg.request.requestSettings(that.inputUrl, function(err, settings) {
+                        if (err) {
+                            that.errorMessage = err.message;
+                            that.switchView({ error:true });
+                        } else {
+                            settings.url = that.inputUrl;
+                            bg.markerdb.add(settings, function(marker) {
+                                that.markerItems.push(new MarkerItem(marker, that.tabId, that.markerItems));
+                                that.switchView({ success:true });
+                            });
+                        }
+                    });
+                });
+            }
+        };
+
+        /**
+        * Checks if a url is valid in terms of the system.
+        */
+        this.checkInputUrl = function(url) {
+            return url.search(/^(http:\/\/|https:\/\/)/) === -1 ? false : true;
+        }
+
+        this.tabId = tabId;
+        this.markerItems = markerItems;
+        this.successMessage = "Marker successfully added."
+        this.errorMessage;
+        this.inputUrl;
+        
+    
+        this.views = {
+            panel: false,
+            input: true,
+            success: false,
+            error: false
+        };
+    }
 
     /**
     * Informs that the menu is disabled on the current tab.
@@ -234,7 +320,9 @@ var menu = (function() {
 				        var list = new Vue({
 					        el: '#menu',
 					        data: {
-						        markerItems: markerItems
+						        markerItems: markerItems,
+                                control: new Control(),
+                                register: new Register(tabId, markerItems)
 					        }
 				        });
 			        });

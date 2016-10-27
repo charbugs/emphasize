@@ -9,7 +9,25 @@
 <body>
 <div class="menu" id="menu">
 
-	<div class="marker-list">
+    <div class="control">
+        
+        <div class="view" v-if="control.views.markers">
+
+            <span class="control-element">Vink.io</span>
+            <span>&nbsp; | &nbsp;</span>
+            <span class="control-element" v-on:click="control.showOptionsView()">Options</span>
+
+        </div>
+
+        <div class="view" v-if="control.views.options">
+
+            <span class="control-element" v-on:click="control.showMarkersView()">Back</span>
+
+        </div>
+
+    </div>
+
+	<div class="marker-list" v-if="control.views.markers">
 
 		<div class="item" v-for="item in markerItems">
 			
@@ -99,6 +117,71 @@
 			</div>
 		</div>
 	</div>
+
+    <div class="option-list" v-if="control.views.options">
+
+        <div class="item">
+            <div class="option">
+                <em>Subscribe</em> additional markers on the vink website.
+            </div>
+        </div>
+
+        <!-- ### Register Option Item ### -->
+
+        <div class="item">
+
+            <!-- ### Header ### -->
+            <div class="option" v-on:click="register.togglePanel()">
+                <em>Add</em> a new marker by entering the marker's URL.
+            </div>
+
+            <!-- ### Panel ### -->
+            <div class="panel" v-if="register.views.panel">
+                <!-- ### Input View ### -->
+                <div class="view" v-if="register.views.input">
+                        
+                    <input  type="text"
+                            placeholder="http://mymarkers.com/mark/" 
+                            v-model="register.inputUrl">
+                    
+                    <input  type="button" 
+                            value="Register" 
+                            v-on:click="register.registerMarker()">
+
+                </div>
+                <!-- ### Success View ### -->
+                <div class="view" v-if="register.views.success">
+
+                    <div class="info">
+                        {{ register.successMessage }}                        
+                    </div>
+                    
+                    <input  type="button" 
+                            value="Back" 
+                            v-on:click="register.showInputView()">
+
+                </div>
+                <!-- ### Error View ### -->
+                <div class="view" v-if="register.views.error">
+
+                    <div class="info">
+                        {{ register.errorMessage }}                        
+                    </div>
+                    
+                    <input  type="button" 
+                            value="Back" 
+                            v-on:click="register.showInputView()">
+                </div>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="option">
+                <em>Learn</em> how to include your text mining program to vink.
+            </div>
+        </div>
+    </div>
+
 <div>
 </body>
 </html>
