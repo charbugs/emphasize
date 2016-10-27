@@ -134,6 +134,25 @@ var menu = (function() {
             });                
         };
 
+
+        this.determineHighlightFace = function(statuses) {
+
+            if(!statuses) {
+                return 1;
+            }
+            else {
+
+                var existingFaces = statuses.map((status) => status.face);
+
+                for (var face = 1; face <= 100; face++) {
+                    if (existingFaces.indexOf(face) == -1) {
+                        return face;
+                    }
+                }
+            }
+            
+        };
+
         /**
         * Applies the marker to the current web page.
         */
@@ -142,45 +161,51 @@ var menu = (function() {
             var that = this;
             chrome.runtime.getBackgroundPage(function(bg) {
 
-                bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
-                    { markerId: that.marker.id, inprogress: 1 }, 
-                    function() {
+                bg.proxy.invoke(that.tabId, 'statuslog.getAllStatuses', 
+                function(err, statuses) {
 
-                    that.switchView({ progress:true });
+                    var face = that.determineHighlightFace(statuses);
+                    console.log(face);
 
-                    bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', 
+                    bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
+                        { markerId: that.marker.id, inprogress: 1, face: face}, 
                         function() {
-                        
-                        bg.proxy.invoke(that.tabId, 'extract.getWords', 
-                            function(err, words) {
+
+                        that.switchView({ progress:true });
+
+                        bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', 
+                            function() {
                             
-                            bg.proxy.invoke(that.tabId, 'extract.getUrl', 
-                                function(err, url) {
+                            bg.proxy.invoke(that.tabId, 'extract.getWords', 
+                                function(err, words) {
+                                
+                                bg.proxy.invoke(that.tabId, 'extract.getUrl', 
+                                    function(err, url) {
 
-                                bg.request.requestMarking(that.marker, words, url, 
-                                    that.userInputs, 
-                                    function(err, resp) {
-                                    
-                                    if (err) {
-                                        if (err.name === 'ResponseParserError' ||
-                                            err.name === 'RequestError') {
-                                            bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
-                                                that.marker.id, function() {
-  
-                                                that.errorMessage = err.message;
-                                                that.switchView({ error:true });    
-                                            });  
+                                    bg.request.requestMarking(that.marker, words, url, 
+                                        that.userInputs, 
+                                        function(err, resp) {
+                                        
+                                        if (err) {
+                                            if (err.name === 'ResponseParserError' ||
+                                                err.name === 'RequestError') {
+                                                bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
+                                                    that.marker.id, function() {
+      
+                                                    that.errorMessage = err.message;
+                                                    that.switchView({ error:true });    
+                                                });  
+                                            } 
+                                            else {
+                                                throw err;
+                                            }
                                         } 
-                                        else {
-                                            throw err;
-                                        }
-                                    } 
 
-                                    else {
-                                        bg.proxy.invoke(that.tabId, 'highlight.highlight', 
-                                            resp.mask, that.marker.id, 
-                                            function() {
-                                            
+                                        else {
+                                            bg.proxy.invoke(that.tabId, 'highlight.highlight', 
+                                                resp.mask, that.marker.id, face,
+                                                function() {
+                                                
                                                 bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
                                                     { markerId: that.marker.id, inprogress: 0, message: resp.result}, 
                                                     function() {
@@ -188,10 +213,11 @@ var menu = (function() {
                                                     that.resultMessage = resp.result;
                                                     that.switchView({ result:true })
                                                 });
-                                        });
-                                    }
-                                });
-                            });                    
+                                            });
+                                        }
+                                    });
+                                });                    
+                            });
                         });
                     });
                 });

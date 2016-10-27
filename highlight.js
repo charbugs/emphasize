@@ -11,11 +11,10 @@ var highlight = (function() {
     const MARKER_ID_STUB = 'vink-marker-';
 
     // Class names for different highlighting styles
-    const pencilMap = {
-        1: 'vink-pen-1',
-        2: 'vink-pen-1',
-        3: 'vink-pen-2',
-        4: 'vink-pen-2'
+    const faceMap = {
+        1: 'vink-face-1',
+        2: 'vink-face-2',
+        3: 'vink-face-3'
     };
 
     /** 
@@ -24,9 +23,10 @@ var highlight = (function() {
     *
     * @param {Array of Number} mask - numerical response mask of the marker app
     * @param {Number} markerId - ID of the marker that determines what to highlight
+    * @param {Number} face - indicates the highlighting style to apply.
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
-    function highlight(mask, markerId, callback) {
+    function highlight(mask, markerId, face, callback) {
 
         var textNodes = extract.getTextNodes();
         var submasks = getSubmasks(textNodes, mask);
@@ -51,9 +51,12 @@ var highlight = (function() {
                     groupFeats.type === nodeFeats.nextFirstType &&
                     nodeFeats.nextSameBlock;
 
-                replaceNodes = replaceNodes.concat(
-                    highlightTokens(groupFeats.tokens, groupFeats.type, leftSpace, rightSpace, markerId)
-                );
+                replaceNodes = replaceNodes.concat(highlightTokens(
+                    groupFeats.tokens, 
+                    groupFeats.type ? face : 0, 
+                    leftSpace, 
+                    rightSpace, markerId
+                ));
             }
             var newTextNode = replaceNodeWithMultiples(nodeFeats.textNode.domNode, replaceNodes);
             textNodes[nodeFeats.index].domNode = newTextNode;
@@ -146,7 +149,7 @@ var highlight = (function() {
     }
 
     /**
-    * Returns true if highligthing type (pencil) is a spanning type, 
+    * Returns true if highligthing type is a spanning type, 
     * i.e. neighbouring tokens of this type will highlight together
     * as in "Franky was [not in school] today." Whereas neighbouring 
     * tokens of a non spanning type will higlighted separat as in 
@@ -186,14 +189,14 @@ var highlight = (function() {
     * as plain text nodes if not within the highlighting.
     *
     * @param {Array of tokenize.Token} tokens - to be highlighted
-    * @param {Number} type - style type
+    * @param {Number} face - indicates the highlighting style.
     * @param {Boolean} leftSpace - left space within highlighting
     * @param {Boolean} rightSpace - right space within highlighting
     * @param {Number} markerId - Id of the marker that determines what to highlight.
     * @return {Array of DOM Node}
     */
-    function highlightTokens(tokens, type, leftSpace, rightSpace, markerId) {
-
+    function highlightTokens(tokens, face, leftSpace, rightSpace, markerId) {
+        console.log(face);
         var nodes = [];
         var string = tokens.join('');
         
@@ -205,11 +208,11 @@ var highlight = (function() {
 
         var textNode = document.createTextNode(string);
         
-        if (type in pencilMap) {
+        if (face in faceMap) {
             var element = document.createElement('SPAN');
             element.classList.add(GLOBAL_CLASS_NAME);
             element.classList.add(MARKER_ID_STUB + markerId);
-            element.classList.add(pencilMap[type]);
+            element.classList.add(faceMap[face]);
             element.appendChild(textNode);
             nodes.push(element);
         }

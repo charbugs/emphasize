@@ -22,10 +22,5 @@
     "browser_action": {
         "default_icon": "menu.png",
         "default_popup": "menu.html"
-    },
-
-    "options_ui": {
-        "page": "options.html",
-        "chrome_style": true
     }
 }

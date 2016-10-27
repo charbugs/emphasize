@@ -3,7 +3,11 @@
 */
 var statuslog = (function (){
 
-	// <meta name="vink-status-log" markerid="id" inprogress="0" message="foobarbazbam">
+	// <meta    name="vink-status-log" 
+    //          markerid="4" 
+    //          inprogress="0" 
+    //          message="foobarbazbam"
+    //          face="3">
 
 	/** Value for the name attribute of meta elements */
 	const META_NAME = 'vink-status-log';
@@ -28,11 +32,12 @@ var statuslog = (function (){
 	* @param {Number} inprogress - greater then 0 if the marker was called but the highlighting process is not done so far.
 	* @param {String} message - message of marker app.
 	*/
-	function Status(markerId, inprogress, message) {
+	function Status(markerId, inprogress, message, face) {
 		
 		this.markerId = markerId;
 		this.inprogress = inprogress;
 		this.message = message;
+        this.face = face;
 	}
 
 	/**
@@ -41,28 +46,58 @@ var statuslog = (function (){
 	* @param {Number} markerId
 	* @param {Function} callback - ({jsonisable} err, {Status} status)
 	*/
-	function getStatus(markerId, callback) {
+    function getStatus(markerId, callback) {
+        
+        var meta = document.querySelector('meta[markerid="'+markerId+'"]');
 
-		var meta = document.querySelector('meta[markerid="'+markerId+'"]');
-		
-		if (meta) {	
+        if (meta) {
 
 			var status = new Status (
 				markerId,
 				parseInt(meta.getAttribute('inprogress')),
-				meta.getAttribute('message')
+				meta.getAttribute('message'),
+                parseInt(meta.getAttribute('face'))
 			);
 
-			if (callback) {
-				callback(null, status);
-			}
+            if (callback) {
+                callback(null, status);
+            }
+        } 
+        else if(callback){
+            callback(null, null);
+        }
+    }
 
-		} else {
-			if (callback) {
-				callback(null, null);
-			}
-		}	
-	}
+    /**
+	* Returns all statuses.
+	* 
+	* @param {Function} callback - ({jsonisable} err, {Array of Status} status)
+	*/
+    function getAllStatuses(callback) {
+        
+        var metas = document.querySelectorAll('meta[markerid]');
+    
+        if(metas.length > 0) {
+
+            var statuses = [];
+            for (var meta of metas) {
+
+                statuses.push(new Status(
+                    meta.getAttribute('markerid'),
+    				parseInt(meta.getAttribute('inprogress')),
+    				meta.getAttribute('message'),
+                    parseInt(meta.getAttribute('face'))
+                ));
+            }
+            
+            if (callback) {
+                callback(null, statuses);
+            }
+        }
+        else if(callback) {
+            callback(null, null);
+        }
+    }
 
 	/**
 	* Set the status for a specific marker.
@@ -85,6 +120,7 @@ var statuslog = (function (){
 			meta.setAttribute('markerid', status.markerId);
 			meta.setAttribute('inprogress', status.inprogress || '');
 			meta.setAttribute('message', status.message || '');
+            meta.setAttribute('face', status.face || '');
 
 			document.querySelector('head').appendChild(meta);
 
@@ -148,6 +184,7 @@ var statuslog = (function (){
 
 	return {
 		getStatus: getStatus,
+        getAllStatuses: getAllStatuses,
 		setStatus: setStatus,
 		changeStatus: changeStatus,
 		removeStatus: removeStatus
