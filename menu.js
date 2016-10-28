@@ -92,6 +92,7 @@ var menu = (function() {
         */
 		this.togglePanel = function() {
 			this.views.panel = !this.views.panel;
+			this.toggleCharakter = this.views.panel ? '-' : '+';
 		};
 
         /**
@@ -239,6 +240,7 @@ var menu = (function() {
         this.markerItems = markerItems;
 
         this.headerClass = '';
+        this.toggleCharakter = '+';
 
         this.userInputs;
         this.errorMessage;

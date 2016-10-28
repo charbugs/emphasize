@@ -31,9 +31,13 @@
 	<div class="marker-list" v-if="control.views.markers">
 
 		<div class="item" v-for="item in markerItems">
-			
-            <div class="header" v-bind:class="item.headerClass" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
-				{{ item.marker.name }}
+
+			<div class="colorbar" v-bind:class="item.headerClass">
+				<span>{{ item.toggleCharakter }}</span>
+			</div>
+
+            <div class="header" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
+            		{{ item.marker.name }}	
 			</div>
 
 			<div class="panel" v-if="item.views.panel">

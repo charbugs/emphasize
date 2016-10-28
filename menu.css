@@ -24,17 +24,24 @@
 }
 
 .header {
-	padding: 15px;
+	padding-top: 15px;
+	padding-bottom: 15px;
 	font-size: 15px;
-    
 }
 
 .header:hover {
     cursor: pointer;
-    background-color: #eee;
 }
 
-.header:after {
+.colorbar {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	font-size: 15px;
+	text-align: center;
+	width: 7%;
+	float: right;
+}
+/*.header:after {
     content: '\0002B'; 
     float: right;
 }
@@ -43,7 +50,7 @@
     content: '\02212';
     float: right;
     font-weight: normal;
-}
+}*/
 
 .panel {
 	font-size: 12px;
@@ -84,13 +91,13 @@ input[type=text] {
 
 input[type=button] {
     width: 100px;
-	background: #3498db;
+	background: #777; /*#3498db;*/
 	font-weight: bold;
 	color: white;
 	border: 0 none;
 	border-radius: 1px;
 	cursor: pointer;
-	padding: 10px 5px;
+	padding: 8px 5px;
 	/*margin: 10px 5px;*/
 }
 
