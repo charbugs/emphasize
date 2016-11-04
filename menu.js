@@ -95,13 +95,6 @@ var menu = (function() {
 			this.toggleCharakter = this.views.panel ? '-' : '+';
 		};
 
-        /**
-        * Switches back to the ready view.
-        */
-        this.showReadyView = function() {
-            this.switchView({ ready:true });
-        };
-
         /** 
         * Switches to edit view.
         */
