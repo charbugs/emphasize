@@ -53,10 +53,22 @@
                         Edit
                     </div>
 
-                    <input  v-for="query of item.marker.queries"  
-                            type="text" 
-                            v-bind:placeholder="query.label" 
-                            v-model="item.userInputs[query.id]">
+                    <template v-for="query of item.marker.queries">
+                        <template v-if="query.type == 'text'">
+                            <label>{{ query.label }}</label>
+                            <input  type="text" 
+                                    v-model="item.userInputs[query.id]">          
+                        </template>
+                        <template v-if="query.type == 'select'">
+                            <label>{{ query.label }}</label>
+                            <select v-model="item.userInputs[query.id]">
+                                <option v-for="val of query.values">{{ val }}</option>
+                            </select>
+                            <br>
+                        </template>
+                    </template>
+
+                    
 
 					<input  type="button" 
                             value="Apply" 

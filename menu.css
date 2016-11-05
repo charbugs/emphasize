@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
+/*@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);*/
 
 .menu {
     width: 400px;
@@ -41,16 +41,6 @@
 	width: 7%;
 	float: right;
 }
-/*.header:after {
-    content: '\0002B'; 
-    float: right;
-}
-
-.header[active]:after {
-    content: '\02212';
-    float: right;
-    font-weight: normal;
-}*/
 
 .panel {
 	font-size: 12px;
@@ -77,11 +67,11 @@
     cursor: pointer;
 }
 
-input[type=text] {
-    padding: 15px;
+input[type=text], select {
+    padding: 10px 15px;
 	border: 1px solid #ccc;
 	border-radius: 3px;
-	margin-bottom: 10px;
+	margin-bottom: 15px;
 	width: 100%;
 	box-sizing: border-box;
 	font-family: arial, verdana;
