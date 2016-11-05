@@ -191,9 +191,9 @@ var request = (function() {
 		var needed = ['name', 'description'];
 		var typeMap = { name: 'String', description: 'String', queries: 'Array' };
 
-		var supportedOfQuery = ['id', 'label', 'hint'];
-		var neededOfQuery = ['id'];
-		var typeMapOfQuery = { id: 'String', label: 'String', hint: 'String'};
+		var supportedOfQuery = ['id', 'type', 'label', 'hint', 'values'];
+		var neededOfQuery = ['id', 'type'];
+		var typeMapOfQuery = { id: 'String', type: 'String', label: 'String', hint: 'String', values: 'Array'};
 
 		var key;
 		
@@ -231,7 +231,7 @@ var request = (function() {
 					throw new ResponseParserError('Property "' + key + '" of query object has wrong type.');
 			}
 		}
-		return response
+		return response;
 	}
 
 	function isObject(object) {
