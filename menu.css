@@ -81,14 +81,53 @@ input[type=text], select {
 
 input[type=button] {
     width: 100px;
-	background: #777; /*#3498db;*/
+	background: #777;
 	font-weight: bold;
 	color: white;
 	border: 0 none;
 	border-radius: 1px;
 	cursor: pointer;
 	padding: 8px 5px;
-	/*margin: 10px 5px;*/
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    border-radius: 3px;
+    padding: 5px 5px;
+
+    transition: visibility 0s;
+    transition-delay: 0s;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 84%;
+    right: 5%;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    transition: visibility 0s;
+    transition-delay: 0.75s;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
 }
 
 .loader {

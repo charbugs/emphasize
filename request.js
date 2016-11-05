@@ -191,9 +191,9 @@ var request = (function() {
 		var needed = ['name', 'description'];
 		var typeMap = { name: 'String', description: 'String', queries: 'Array' };
 
-		var supportedOfQuery = ['id', 'type', 'label', 'hint', 'values'];
+		var supportedOfQuery = ['id', 'type', 'label', 'hint', 'values', 'tooltip'];
 		var neededOfQuery = ['id', 'type'];
-		var typeMapOfQuery = { id: 'String', type: 'String', label: 'String', hint: 'String', values: 'Array'};
+		var typeMapOfQuery = { id: 'String', type: 'String', label: 'String', hint: 'String', values: 'Array', tooltip: 'String'};
 
 		var key;
 		

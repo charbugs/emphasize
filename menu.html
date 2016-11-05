@@ -53,22 +53,17 @@
                         Edit
                     </div>
 
-                    <template v-for="query of item.marker.queries">
-                        <template v-if="query.type == 'text'">
-                            <label>{{ query.label }}</label>
-                            <input  type="text" 
-                                    v-model="item.userInputs[query.id]">          
-                        </template>
-                        <template v-if="query.type == 'select'">
-                            <label>{{ query.label }}</label>
-                            <select v-model="item.userInputs[query.id]">
-                                <option v-for="val of query.values">{{ val }}</option>
-                            </select>
-                            <br>
-                        </template>
-                    </template>
-
-                    
+                    <div class="tooltip" v-for="query of item.marker.queries">
+                        <label>{{ query.label }}</label>
+                        <input  v-if="query.type=='text'"
+                                type="text"
+                                v-model="item.userInputs[query.id]">
+                        <select v-if="query.type=='select'"
+                                v-model="item.userInputs[query.id]">
+                            <option v-for="val of query.values">{{ val }}</option>
+                        </select>
+                        <span v-if="query.tooltip" class="tooltiptext">{{ query.tooltip }}</span>
+                    </div>
 
 					<input  type="button" 
                             value="Apply" 
