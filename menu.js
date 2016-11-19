@@ -1,12 +1,6 @@
 /** @module menu */
 var menu = (function() {
 
-    var hlStyleClasses = [
-        'vink-face-1',
-        'vink-face-2',
-        'vink-face-3'
-    ];
-
     function Control() {
         
         this.showOptionsView = function() {
@@ -67,7 +61,7 @@ var menu = (function() {
                     else if (status.inprogress === 0) {
                         that.resultMessage = status.message;
                         that.switchView({ result:true });
-                        that.headerClass = status.hlStyleClass;
+                        that.headerClass = that.marker.styleClass;
                     }
                 });
             });
@@ -138,24 +132,6 @@ var menu = (function() {
         };
 
 
-        this.determineHlStyleClass = function(statuses) {
-
-            if(!statuses) {
-                return hlStyleClasses[0];
-            }
-            else {
-    
-                var existingClasses = statuses.map((status) => status.hlStyleClass);
-
-                for (var class_ of hlStyleClasses) {
-                    if (existingClasses.indexOf(class_) == -1) {
-                        return class_;
-                    }
-                }
-            }
-            
-        };
-
         /**
         * Applies the marker to the current web page.
         */
@@ -164,63 +140,57 @@ var menu = (function() {
             var that = this;
             chrome.runtime.getBackgroundPage(function(bg) {
 
-                bg.proxy.invoke(that.tabId, 'statuslog.getAllStatuses', 
-                function(err, statuses) {
+                bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
+                    { markerId: that.marker.id, inprogress: 1 }, 
+                    function() {
 
-                    var hlStyleClass = that.determineHlStyleClass(statuses);
+                    that.switchView({ progress:true });
 
-                    bg.proxy.invoke(that.tabId, 'statuslog.setStatus', 
-                        { markerId: that.marker.id, inprogress: 1, hlStyleClass: hlStyleClass}, 
+                    bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', 
                         function() {
-
-                        that.switchView({ progress:true });
-
-                        bg.proxy.invoke(that.tabId, 'extract.extractTextNodes', 
-                            function() {
+                        
+                        bg.proxy.invoke(that.tabId, 'extract.getWords', 
+                            function(err, words) {
                             
-                            bg.proxy.invoke(that.tabId, 'extract.getWords', 
-                                function(err, words) {
-                                
-                                bg.proxy.invoke(that.tabId, 'extract.getUrl', 
-                                    function(err, url) {
+                            bg.proxy.invoke(that.tabId, 'extract.getUrl', 
+                                function(err, url) {
 
-                                    bg.request.requestMarking(that.marker, words, url, 
-                                        that.userInputs, 
-                                        function(err, resp) {
-                                        
-                                        if (err) {
-                                            if (err.name === 'ResponseParserError' ||
-                                                err.name === 'RequestError') {
-                                                bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
-                                                    that.marker.id, function() {
-      
-                                                    that.errorMessage = err.message;
-                                                    that.switchView({ error:true });    
-                                                });  
-                                            } 
-                                            else {
-                                                throw err;
-                                            }
+                                bg.request.requestMarking(that.marker, words, url, 
+                                    that.userInputs, 
+                                    function(err, resp) {
+                                    
+                                    if (err) {
+                                        if (err.name === 'ResponseParserError' ||
+                                            err.name === 'RequestError') {
+                                            bg.proxy.invoke(that.tabId, 'statuslog.removeStatus', 
+                                                that.marker.id, function() {
+  
+                                                that.errorMessage = err.message;
+                                                that.switchView({ error:true });    
+                                            });  
                                         } 
-
                                         else {
-                                            bg.proxy.invoke(that.tabId, 'highlight.highlight', 
-                                                resp.mask, that.marker.id, hlStyleClass,
+                                            throw err;
+                                        }
+                                    } 
+
+                                    else {
+                                        bg.proxy.invoke(that.tabId, 'highlight.highlight', 
+                                            resp.mask, that.marker,
+                                            function() {
+                                            
+                                            bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
+                                                { markerId: that.marker.id, inprogress: 0, message: resp.result}, 
                                                 function() {
                                                 
-                                                bg.proxy.invoke(that.tabId, 'statuslog.changeStatus', 
-                                                    { markerId: that.marker.id, inprogress: 0, message: resp.result}, 
-                                                    function() {
-                                                    
-                                                    that.resultMessage = resp.result;
-                                                    that.switchView({ result:true });
-                                                    that.headerClass = hlStyleClass;
-                                                });
+                                                that.resultMessage = resp.result;
+                                                that.switchView({ result:true });
+                                                that.headerClass = that.marker.styleClass;
                                             });
-                                        }
-                                    });
-                                });                    
-                            });
+                                        });
+                                    }
+                                });
+                            });                    
                         });
                     });
                 });

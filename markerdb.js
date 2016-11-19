@@ -10,6 +10,7 @@ var markerdb = (function() {
     *   @prop {String} name
     *   @prop {String} description
     *   @prop {Array of Query} queries - user inputs provided my marker
+    *   @prob {String} styleClass - class attribute to style highlightings
     */
     function Marker(id, settings) {
 
@@ -18,6 +19,7 @@ var markerdb = (function() {
         this.name = settings.name;
         this.description = settings.description;
         this.queries = settings.queries;
+        this.styleClass = settings.styleClass;
     }
 
     /**

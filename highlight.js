@@ -15,11 +15,10 @@ var highlight = (function() {
     * of the numerical response mask of the marker app.
     *
     * @param {Array of Number} mask - numerical response mask of the marker app
-    * @param {String} markerId - ID of the marker that determines what to highlight
-    * @param {String} hlStyleClass - the css style class that defines the highlight face.
+    * @param {markerdb.Marker} marker 
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
-    function highlight(mask, markerId, hlStyleClass, callback) {
+    function highlight(mask, marker, callback) {
 
         var textNodes = extract.getTextNodes();
         var submasks = getSubmasks(textNodes, mask);
@@ -46,9 +45,10 @@ var highlight = (function() {
 
                 replaceNodes = replaceNodes.concat(highlightTokens(
                     groupFeats.tokens, 
-                    groupFeats.type ? hlStyleClass : null, 
+                    groupFeats.type ? marker.styleClass : null, 
                     leftSpace, 
-                    rightSpace, markerId
+                    rightSpace, 
+                    marker.id
                 ));
             }
             var newTextNode = replaceNodeWithMultiples(nodeFeats.textNode.domNode, replaceNodes);
@@ -182,13 +182,13 @@ var highlight = (function() {
     * as plain text nodes if not within the highlighting.
     *
     * @param {Array of tokenize.Token} tokens - to be highlighted
-    * @param {String} hlStyleClass - the css style class that defines the highlight face.
+    * @param {String} styleClass - the css style class that defines the highlight face.
     * @param {Boolean} leftSpace - left space within highlighting
     * @param {Boolean} rightSpace - right space within highlighting
     * @param {Number} markerId - Id of the marker that determines what to highlight.
     * @return {Array of DOM Node}
     */
-    function highlightTokens(tokens, hlStyleClass, leftSpace, rightSpace, markerId) {
+    function highlightTokens(tokens, styleClass, leftSpace, rightSpace, markerId) {
 
         var nodes = [];
         var string = tokens.join('');
@@ -201,11 +201,11 @@ var highlight = (function() {
 
         var textNode = document.createTextNode(string);
         
-        if (hlStyleClass) {
+        if (styleClass) {
             var element = document.createElement('SPAN');
             element.classList.add(GLOBAL_CLASS_NAME);
             element.classList.add(MARKER_ID_STUB + markerId);
-            element.classList.add(hlStyleClass);
+            element.classList.add(styleClass);
             element.appendChild(textNode);
             nodes.push(element);
         }
