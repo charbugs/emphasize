@@ -260,10 +260,13 @@ var menu = (function() {
                             that.errorMessage = err.message;
                             that.switchView({ error:true });
                         } else {
-                            settings.url = that.inputUrl;
-                            bg.markerdb.add(settings, function(marker) {
-                                that.markerItems.push(new MarkerItem(marker, that.tabId, that.markerItems));
-                                that.switchView({ success:true });
+                            that.determineStyleClass(function(styleClass) {
+                                settings.styleClass = styleClass;
+                                settings.url = that.inputUrl;
+                                bg.markerdb.add(settings, function(marker) {
+                                    that.markerItems.push(new MarkerItem(marker, that.tabId, that.markerItems));
+                                    that.switchView({ success:true });
+                                });
                             });
                         }
                     });
@@ -276,7 +279,32 @@ var menu = (function() {
         */
         this.checkInputUrl = function(url) {
             return url.search(/^(http:\/\/|https:\/\/)/) === -1 ? false : true;
-        }
+        };
+
+        this.determineStyleClass = function(callback) {
+
+            var that = this;
+            chrome.runtime.getBackgroundPage(function(bg) {
+                bg.markerdb.get(null, function(markers) {
+
+                    var exists = markers.map(marker => marker.styleClass);
+                    var styleClass;
+
+                    for (var i=0; i<that.styleClasses.length; i++) {
+                        if (exists.indexOf(that.styleClasses[i]) == -1) {
+                            styleClass = that.styleClasses[i];
+                            break;
+                        }
+                    }
+
+                    if (styleClass) {
+                        callback(styleClass);
+                    } else {
+                        callback(that.styleClasses[Math.floor(Math.random()*that.styleClasses.length)]);
+                    }
+                });
+            });
+        };
 
         this.tabId = tabId;
         this.markerItems = markerItems;
@@ -290,6 +318,19 @@ var menu = (function() {
             success: false,
             error: false
         };
+
+        this.styleClasses = [
+            'vink-face-1',
+            'vink-face-2',
+            'vink-face-3',
+            'vink-face-4',
+            'vink-face-5',
+            'vink-face-6',
+            'vink-face-7',
+            'vink-face-8',
+            'vink-face-9',
+            'vink-face-10'
+        ];
     }
 
     /**
