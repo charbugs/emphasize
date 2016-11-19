@@ -52,7 +52,7 @@ var markerdb = (function() {
                 var settings1 = {
                     name: 'Upper Case',
                     url: 'http://mauser.pythonanywhere.com/upper-case/',
-                    description: 'Highlights all upper case words.'
+                    description: 'Highlights all upper case words.',
                 };
                 var settings2 = {
                     name: 'Proper Names',
@@ -65,11 +65,11 @@ var markerdb = (function() {
                     description: 'Test runs on localhost.'
                 };
 
-                add(settings1, function() {
+                /*add(settings1, function() {
                     add(settings2, function() {
                         add(settings3);
                     });
-                });
+                });*/
             }
         });
     }
