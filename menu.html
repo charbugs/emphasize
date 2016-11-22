@@ -2,198 +2,313 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="menu.css">
-    <link rel="stylesheet" type="text/css" href="vink.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="w3.css">
+    <link rel="stylesheet" href="w3-theme-grey.css">
+    <link rel="stylesheet" href="faces.css">
 	<script type="text/javascript" src="vue.js"></script>
 	<script type="text/javascript" src="menu.js"></script>
+    <style type="text/css" media="screen">
+    
+        .loader {
+            border: 12px solid #ececec; /* ww3-theme-l4 */
+            border-top: 12px solid #7e7e7e; /* w3-theme-d3 */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+    
 </head>
 <body>
-<div class="menu" id="menu">
 
-    <div class="control">
+<div id="menu" style="width:400px;">
+
+    <!-- navigation bar -->
+
+    <ul class="w3-navbar w3-border-bottom"> 
+
+        <!-- marker button -->
+      
+        <li><a  id="markers-tab-link"
+                v-bind:class="{ 'w3-theme-d3' : menuUI.views.markers }"
+                class="tab-link w3-hover-theme-l3"
+                href="#"
+                v-on:click="menuUI.switchView({ markers: true })">Markers</a></li>
+
+        <!-- add button -->
+
+        <li><a  id="options-tab-link"
+                class="tab-link w3-hover-theme-l3"
+                v-bind:class="{ 'w3-theme-d3' : menuUI.views.add }"
+                href="#"
+                v-on:click="menuUI.switchView({ add: true })">Add</a></li>
+    </ul>
+
+
+    <!-- markers tab -->
+
+    <div v-if="menuUI.views.markers">
         
-        <div class="view" v-if="control.views.markers">
+        <!-- marker user interface -->
 
-            <span class="control-element">Vink.io</span>
-            <span>&nbsp; | &nbsp;</span>
-            <span class="control-element" v-on:click="control.showOptionsView()">Options</span>
+        <div v-for="ui of markerUIs" v-bind:id="ui.marker.id" class="marker-ui">
+            
+            <!-- header -->
 
-        </div>
+            <div class="w3-row w3-accordion w3-border-bottom" 
+                v-on:click="ui.togglePanel()">
 
-        <div class="view" v-if="control.views.options">
+                <!-- header tail -->
 
-            <span class="control-element" v-on:click="control.showMarkersView()">Back</span>
+                <div v-bind:class="ui.views.result ? ui.marker.styleClass : ''"
+                    class="header-tail w3-col w3-right w3-padding w3-center"    
+                    style="width:40px">+
+                </div>
 
-        </div>
+                <!-- header main part -->
 
-    </div>
+                <div class="w3-rest w3-padding">
+                    {{ ui.marker.name }}
+                </div>
 
-	<div class="marker-list" v-if="control.views.markers">
+            </div>
 
-		<div class="item" v-for="item in markerItems">
+            <!-- panel -->
 
-			<div class="colorbar" v-bind:class="item.headerClass">
-				<span>{{ item.toggleCharakter }}</span>
-			</div>
+            <div v-if="ui.panel" 
+                class="w3-container w3-padding-12 w3-small w3-border-bottom">
 
-            <div class="header" v-on:click="item.togglePanel()" v-bind:active="item.views.panel">
-            		{{ item.marker.name }}	
-			</div>
+                <!-- ready view -->
+                
+                <div v-if="ui.views.ready">
 
-			<div class="panel" v-if="item.views.panel">
+                    <!-- description -->
 
-               	<!-- ########## READY VIEW ########## -->
-				<div class="view" v-if="item.views.ready">
+                    <p>{{ ui.marker.description }}</p>
 
-					<div class="info">
-						{{ item.marker.description }}
-					</div>
+                    <!-- inputs -->
 
-                    <div class="edit" v-on:click="item.showEditView()">
-                        Edit
-                    </div>
+                    <p v-for="query in ui.marker.queries" class="w3-tooltip">
 
-                    <div class="tooltip" v-for="query of item.marker.queries">
+                        <!-- text input -->                
+
                         <label>{{ query.label }}</label>
-                        <input  v-if="query.type=='text'"
-                                type="text"
-                                v-model="item.userInputs[query.id]">
+                        <input v-if="query.type=='text'"
+                            class="w3-input w3-border"
+                            type="text"
+                            v-model="ui.userInputs[query.id]">
+
+                        <!-- select input -->
+
                         <select v-if="query.type=='select'"
-                                v-model="item.userInputs[query.id]">
-                            <option v-for="val of query.values">{{ val }}</option>
+                            class="w3-input w3-border"
+                            v-model="ui.userInputs[query.id]">
+                            <option v-for="val of query.values">
+                                {{ val }}
+                            </option>
                         </select>
-                        <span v-if="query.tooltip" class="tooltiptext">{{ query.tooltip }}</span>
-                    </div>
 
-					<input  type="button" 
-                            value="Apply" 
-                            v-on:click="item.applyMarker()">
-				</div>
-				
-                <!-- ########## PROGRESS VIEW ########## -->
-				<div class="view" v-if="item.views.progress">
-					
+                        <!-- tooltip -->
+        
+                        <span class="w3-text w3-tag w3-animate-opacity"
+                            style="position:absolute;right:0px;top:54px;width:280px">
+                            {{ query.tooltip }}
+                        </span>
+                    <p>
+
+                    <!-- apply button -->
+
+                    <button v-on:click="ui.applyMarker()"
+                        v-bind:class="ui.marker.styleClass"
+                        class="w3-btn">
+                        Apply</button>
+
+                    <!-- more button -->
+                
+                    <a v-on:click="ui.switchView({ more: true })"
+                        class="w3-right" href='#'>More</a>
+
+                </div>
+
+                <!-- progress view -->
+            
+                <div v-if="ui.views.progress">
                     <div class="loader"></div>
-
-				</div>
-   
-				<!-- ########## RESULT VIEW ########## -->
-				<div class="view" v-if="item.views.result">
-                    
-                    <div class="info">
-                        {{ item.resultMessage }}
-                    </div>
-
-                    <div class="edit" v-on:click="item.showEditView()">
-                        Edit
-                    </div>
-
-					<input  type="button" 
-                            value="Clear" 
-                            v-on:click="item.resetMarker()">
-				</div>
-
-				<!-- ########## ERROR VIEW ########## -->
-				<div class="view" v-if="item.views.error">
-
-					<div class="info">
-					    {{ item.errorMessage }}
-					</div>
-
-                    <div class="edit" v-on:click="item.showEditView()">
-                        Edit
-                    </div>
-
-					<input  type="button" 
-                            value="Back" 
-                            v-on:click="item.determineView()">			
-				</div>
-
-                <!-- ########## EDIT VIEW ########## -->
-				<div class="view" v-if="item.views.edit">
-                
-                    <div class="info">
-                        <b>URL:</b><br>
-                        {{ item.marker.url }}
-                    </div>
-                
-                    <input  type="button" 
-                            value="Back" 
-                            v-on:click="item.determineView()">			
-
-                    <input  type="button" 
-                            value="Remove" 
-                            v-on:click="item.removeMarker()">
-                    
                 </div>
-			</div>
-		</div>
-	</div>
 
-    <div class="option-list" v-if="control.views.options">
+                <!-- result view -->
+            
+                <div v-if="ui.views.result">
+                    
+                    <!-- message -->
 
-        <div class="item">
-            <div class="option">
-                <em>Subscribe</em> additional markers on the vink website.
+                    <p>{{ ui.resultMessage }}</p>
+
+                    <!-- clear button -->
+
+                    <button v-on:click="ui.resetMarker()"
+                        v-bind:class="ui.marker.styleClass" 
+                        class="w3-btn">
+                        Clear
+                    </button>
+
+                </div>
+
+                <!-- error view -->
+            
+                <div v-if="ui.views.error">
+                    
+                    <!-- message -->
+
+                    <p>{{ ui.errorMessage }}</p>
+
+                    <!-- back button -->
+
+                    <button v-on:click="ui.switchView({ ready: true })"
+                        v-bind:class="ui.marker.styleClass" 
+                        class="w3-btn">
+                        Back
+                    </button>
+
+                </div>
+
+                <!-- more view -->
+            
+                <div v-if="ui.views.more">
+                    
+                    <!-- marker infos -->
+                    
+                    <p>
+                    <b>URL:</b><br>
+                    {{ ui.marker.url }}
+                    </p>
+
+                    <!-- back button -->
+
+                    <button v-on:click="ui.switchView({ ready: true })" 
+                        v-bind:class="ui.marker.styleClass"
+                        class="w3-btn">
+                        Back
+                    </button>
+
+                    <!-- remove button -->
+
+                    <button v-on:click="ui.removeMarker()" 
+                        v-bind:class="ui.marker.styleClass"
+                        class="w3-btn">
+                        Remove
+                    </button>
+
+                </div>
+
             </div>
+
         </div>
 
-        <!-- ### Register Option Item ### -->
-
-        <div class="item">
-
-            <!-- ### Header ### -->
-            <div class="option" v-on:click="register.togglePanel()">
-                <em>Add</em> a new marker by entering the marker's URL.
-            </div>
-
-            <!-- ### Panel ### -->
-            <div class="panel" v-if="register.views.panel">
-                <!-- ### Input View ### -->
-                <div class="view" v-if="register.views.input">
-                        
-                    <input  type="text"
-                            placeholder="http://mymarkers.com/mark/" 
-                            v-model="register.inputUrl">
-                    
-                    <input  type="button" 
-                            value="Register" 
-                            v-on:click="register.registerMarker()">
-
-                </div>
-                <!-- ### Success View ### -->
-                <div class="view" v-if="register.views.success">
-
-                    <div class="info">
-                        {{ register.successMessage }}                        
-                    </div>
-                    
-                    <input  type="button" 
-                            value="Back" 
-                            v-on:click="register.showInputView()">
-
-                </div>
-                <!-- ### Error View ### -->
-                <div class="view" v-if="register.views.error">
-
-                    <div class="info">
-                        {{ register.errorMessage }}                        
-                    </div>
-                    
-                    <input  type="button" 
-                            value="Back" 
-                            v-on:click="register.showInputView()">
-                </div>
-            </div>
-        </div>
-
-        <div class="item">
-            <div class="option">
-                <em>Learn</em> how to include your text mining program to vink.
-            </div>
-        </div>
     </div>
 
-<div>
+    <!-- options tab -->
+
+    <div v-if="menuUI.views.add" class="w3-container w3-padding-12 w3-small">
+        
+        <!-- input view -->
+        
+        <div v-if="registerUI.views.input">
+            
+            <!-- info text -->
+
+            <p>Add a marker by entering the marker's URL.</p>
+
+            <!-- url input -->
+            
+            <p>
+                <label>URL</label>
+                <input v-model="registerUI.inputUrl"
+                class="w3-input w3-border"
+                type="text">
+            </p>
+
+            <!-- add button -->
+
+            <button v-on:click="registerUI.registerMarker()"
+                class="w3-btn w3-theme-d3">
+                Add</button>
+        </div>
+
+        <!-- progress view -->
+
+        <div v-if="registerUI.views.progress">
+            <div class="loader"></div>
+        </div>
+
+        <!-- success view -->
+
+        <div v-if="registerUI.views.success">
+            
+            <!-- info text -->
+
+            <p>{{ registerUI.successMessage }}</p>
+
+            <!-- back button -->
+
+            <button v-on:click="registerUI.switchView({ input: true })"
+                class="w3-btn w3-theme-d3">
+                Back</button>
+        </div>
+
+
+        <!-- error view -->
+
+        <div v-if="registerUI.views.error">
+            
+            <!-- info text -->
+
+            <p>{{ registerUI.errorMessage }}</p>
+
+            <!-- back button -->
+
+            <button v-on:click="registerUI.switchView({ input: true })"
+                class="w3-btn w3-theme-d3">
+                Back</button>
+        </div>
+
+    </div>
+
+</div>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,7 +5,7 @@ var proxy = (function(){
 
 	/* content scripts to inject in web page in given order */
 	const scripts = [
-		'vink.css',
+		'faces.css',
 		'statuslog.js',
 		'tokenize.js', 
 		'extract.js',
