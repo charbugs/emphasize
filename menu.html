@@ -40,14 +40,14 @@
       
         <li><a  id="markers-tab-link"
                 v-bind:class="{ 'w3-theme-d3' : menuUI.views.markers }"
-                class="tab-link w3-hover-theme-l3"
+                class="w3-hover-theme-l3"
                 href="#"
                 v-on:click="menuUI.switchView({ markers: true })">Markers</a></li>
 
         <!-- add button -->
 
         <li><a  id="options-tab-link"
-                class="tab-link w3-hover-theme-l3"
+                class="w3-hover-theme-l3"
                 v-bind:class="{ 'w3-theme-d3' : menuUI.views.add }"
                 href="#"
                 v-on:click="menuUI.switchView({ add: true })">Add</a></li>
@@ -60,7 +60,7 @@
         
         <!-- marker user interface -->
 
-        <div v-for="ui of markerUIs" v-bind:id="ui.marker.id" class="marker-ui">
+        <div v-for="ui of markerUIs">
             
             <!-- header -->
 
@@ -70,7 +70,7 @@
                 <!-- header tail -->
 
                 <div v-bind:class="ui.views.result ? ui.marker.styleClass : ''"
-                    class="header-tail w3-col w3-right w3-padding w3-center"    
+                    class="w3-col w3-right w3-padding w3-center"    
                     style="width:40px">+
                 </div>
 
