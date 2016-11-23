@@ -210,7 +210,7 @@ var uilogic = (function() {
         * Supported interface views
         */
         this.views = {
-            ready: false,
+            ready: true,
             progress: false,
             result: false,
             error: false,
