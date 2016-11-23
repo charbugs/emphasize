@@ -14,7 +14,8 @@
         "scripts": [ 
             "markerdb.js",
             "request.js", 
-            "proxy.js"
+            "proxy.js",
+			"uilogic.js"
         ],
         "persistent": false
      },
