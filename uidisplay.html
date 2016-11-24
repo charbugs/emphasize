@@ -142,7 +142,16 @@
                 <!-- progress view -->
             
                 <div v-if="iface.views.progress">
+        
+                    <!-- loader -->
+
                     <div class="loader"></div>
+
+                    <!-- abort button -->
+
+                    <a v-on:click="iface.abortRequest()"
+                        class="w3-right" href='#'>Abort</a>
+
                 </div>
 
                 <!-- result view -->

@@ -23,9 +23,17 @@ var request = (function() {
 	ResponseParserError.prototype = Object.create(Error.prototype);
 	ResponseParserError.prototype.name = 'ResponseParserError';
 
+    /**
+    * Stores requests.
+    * 
+    * Keys are request ids {String}, values are requests {XMLHttpRequest} 
+    */
+    var requestStorage = {};
+
 	/**
 	* Requests a marker app to mark the tokens of the web page.
 	*
+    * @param {String} id - id of request
 	* @param {markerdb.Marker} marker
 	* @param {Array of String} words - the web page words.
 	* @param {String} url - url of the web page.
@@ -33,7 +41,7 @@ var request = (function() {
 	*	Keys are query ids, values are user inputs.
 	* @param {Function} callback - ({Error} err, {Object} response)
 	*/
-	function requestMarking(marker, words, url, userQueries, callback) {
+	function requestMarking(id, marker, words, url, userQueries, callback) {
 		
 		var data = {
 			request: 'mark',
@@ -42,7 +50,7 @@ var request = (function() {
 			queries: userQueries
 		};
 		
-		request(marker.url, data, function(err, responseText) {
+		request(id, marker.url, data, function(err, responseText) {
 			if (err) {
 				callback(err, null);
 			} else {
@@ -64,16 +72,17 @@ var request = (function() {
 	/**
 	* Requests a marker app to submit its settings.
 	*
+    * @param {String} id - id of request
 	* @param {String} url - url of marker.
 	* @param {Function} callback
 	*	@param {Error}
 	*	@param {response} - response of marker
 	*/
-	function requestSettings(url, callback) {
+	function requestSettings(id, url, callback) {
 
 		var data = { request: 'settings' };
 
-		request(url, data, function(err, responseText) {
+		request(id, url, data, function(err, responseText) {
 			if (err) {
 				callback(err, null);
 			} else {
@@ -92,17 +101,35 @@ var request = (function() {
 		});
 	}
 
+    /**
+    * Aborts a request.
+    * 
+    * This triggers the response handler for this request.
+    * (However the documentation says it does not fire readystatechange:
+    * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort)
+    *
+    * @param {String} id - id of request
+    */
+    function abortRequest(id) {
+        console.log(id, requestStorage);
+        requestStorage[id].abort();
+    }
+
 	/** 
 	* Performs a http request.
 	*
+    * @param {String} id - id of request
 	* @param {String} url
 	* @param {Any able to stringify by JSON} data
 	* @param {Function} callback
 	* 	@param {String} - response to request
 	*/
-	function request(url, data, callback) {
+	function request(id, url, data, callback) {
 		
 		var xhr = new XMLHttpRequest();
+    
+        requestStorage[id] = xhr;
+
 		xhr.onreadystatechange = function() {
 			handleResponse(xhr, callback);
 		};
@@ -121,7 +148,7 @@ var request = (function() {
 	function handleResponse(xhr, callback) {
 		if (xhr.readyState === xhr.DONE) {
 			if (xhr.status === 0) {
-				var err = new RequestError('Cannot connect to server.'); 
+				var err = new RequestError('Something went wrong while requesting marker.'); 
 				callback(err, null);
 			}
 			else if (xhr.status === 200) {
@@ -290,6 +317,6 @@ var request = (function() {
 	return {
 		requestMarking: requestMarking,
 		requestSettings: requestSettings,
-		request: request
+		abortRequest: abortRequest
 	};
 }());

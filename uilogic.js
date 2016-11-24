@@ -213,6 +213,11 @@ var uilogic = (function() {
         this.tabId = tabId;
 
         /**
+        * Id for http requests
+        */
+        this.requestId = String(tabId) + '-' + String(marker.id);
+
+        /**
         * Supported interface views
         */
         this.views = {
@@ -297,7 +302,7 @@ var uilogic = (function() {
                     proxy.invoke(that.tabId, 'extract.getUrl', 
                         function(err, url) {
 
-                        request.requestMarking(that.marker, words, url, 
+                        request.requestMarking(that.requestId, that.marker, words, url, 
                             that.userInputs, 
                             function(err, resp) {
                             
@@ -354,6 +359,16 @@ var uilogic = (function() {
                     });    
             });               
         };
+
+        /**
+        * Aborts a request made by this marker interface.
+        * 
+        * This should trigger the callback to the request 
+        * defined in applyMarker().
+        */
+        this.abortRequest = function() {
+            request.abortRequest(this.requestId);
+        }
         
         // ---------- begin main ---------- //
 
