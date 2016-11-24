@@ -39,37 +39,37 @@
         <!-- marker button -->
       
         <li><a  id="markers-tab-link"
-                v-bind:class="{ 'w3-theme-d3' : menuUI.views.markers }"
+                v-bind:class="{ 'w3-theme-d3' : navigation.views.markers }"
                 class="w3-hover-theme-l3"
                 href="#"
-                v-on:click="menuUI.switchView({ markers: true })">Markers</a></li>
+                v-on:click="navigation.switchView({ markers: true })">Markers</a></li>
 
         <!-- add button -->
 
         <li><a  id="options-tab-link"
                 class="w3-hover-theme-l3"
-                v-bind:class="{ 'w3-theme-d3' : menuUI.views.add }"
+                v-bind:class="{ 'w3-theme-d3' : navigation.views.add }"
                 href="#"
-                v-on:click="menuUI.switchView({ add: true })">Add</a></li>
+                v-on:click="navigation.switchView({ add: true })">Add</a></li>
     </ul>
 
 
     <!-- markers tab -->
 
-    <div v-if="menuUI.views.markers">
+    <div v-if="navigation.views.markers">
         
         <!-- marker user interface -->
 
-        <div v-for="ui of markerUIs">
+        <div v-for="iface of markerIfaces">
             
             <!-- header -->
 
             <div class="w3-row w3-accordion w3-border-bottom" 
-                v-on:click="ui.togglePanel()">
+                v-on:click="iface.togglePanel()">
 
                 <!-- header tail -->
 
-                <div v-bind:class="ui.views.result ? ui.marker.styleClass : ''"
+                <div v-bind:class="iface.views.result ? iface.marker.styleClass : ''"
                     class="w3-col w3-right w3-padding w3-center"    
                     style="width:40px">+
                 </div>
@@ -77,27 +77,27 @@
                 <!-- header main part -->
 
                 <div class="w3-rest w3-padding">
-                    {{ ui.marker.name }}
+                    {{ iface.marker.name }}
                 </div>
 
             </div>
 
             <!-- panel -->
 
-            <div v-if="ui.panel" 
+            <div v-if="iface.panel" 
                 class="w3-container w3-padding-12 w3-small w3-border-bottom">
 
                 <!-- ready view -->
                 
-                <div v-if="ui.views.ready">
+                <div v-if="iface.views.ready">
 
                     <!-- description -->
 
-                    <p>{{ ui.marker.description }}</p>
+                    <p>{{ iface.marker.description }}</p>
 
                     <!-- inputs -->
 
-                    <p v-for="query in ui.marker.queries" class="w3-tooltip">
+                    <p v-for="query in iface.marker.queries" class="w3-tooltip">
 
                         <!-- text input -->                
 
@@ -105,13 +105,13 @@
                         <input v-if="query.type=='text'"
                             class="w3-input w3-border"
                             type="text"
-                            v-model="ui.userInputs[query.id]">
+                            v-model="iface.userInputs[query.id]">
 
                         <!-- select input -->
 
                         <select v-if="query.type=='select'"
                             class="w3-input w3-border"
-                            v-model="ui.userInputs[query.id]">
+                            v-model="iface.userInputs[query.id]">
                             <option v-for="val of query.values">
                                 {{ val }}
                             </option>
@@ -127,36 +127,36 @@
 
                     <!-- apply button -->
 
-                    <button v-on:click="ui.applyMarker()"
-                        v-bind:class="ui.marker.styleClass"
+                    <button v-on:click="iface.applyMarker()"
+                        v-bind:class="iface.marker.styleClass"
                         class="w3-btn">
                         Apply</button>
 
                     <!-- more button -->
                 
-                    <a v-on:click="ui.switchView({ more: true })"
+                    <a v-on:click="iface.switchView({ more: true })"
                         class="w3-right" href='#'>More</a>
 
                 </div>
 
                 <!-- progress view -->
             
-                <div v-if="ui.views.progress">
+                <div v-if="iface.views.progress">
                     <div class="loader"></div>
                 </div>
 
                 <!-- result view -->
             
-                <div v-if="ui.views.result">
+                <div v-if="iface.views.result">
                     
                     <!-- message -->
 
-                    <p>{{ ui.resultMessage }}</p>
+                    <p>{{ iface.resultMessage }}</p>
 
                     <!-- clear button -->
 
-                    <button v-on:click="ui.resetMarker()"
-                        v-bind:class="ui.marker.styleClass" 
+                    <button v-on:click="iface.resetMarker()"
+                        v-bind:class="iface.marker.styleClass" 
                         class="w3-btn">
                         Clear
                     </button>
@@ -165,16 +165,16 @@
 
                 <!-- error view -->
             
-                <div v-if="ui.views.error">
+                <div v-if="iface.views.error">
                     
                     <!-- message -->
 
-                    <p>{{ ui.errorMessage }}</p>
+                    <p>{{ iface.errorMessage }}</p>
 
                     <!-- back button -->
 
-                    <button v-on:click="ui.switchView({ ready: true })"
-                        v-bind:class="ui.marker.styleClass" 
+                    <button v-on:click="iface.switchView({ ready: true })"
+                        v-bind:class="iface.marker.styleClass" 
                         class="w3-btn">
                         Back
                     </button>
@@ -183,27 +183,27 @@
 
                 <!-- more view -->
             
-                <div v-if="ui.views.more">
+                <div v-if="iface.views.more">
                     
                     <!-- marker infos -->
                     
                     <p>
                     <b>URL:</b><br>
-                    {{ ui.marker.url }}
+                    {{ iface.marker.url }}
                     </p>
 
                     <!-- back button -->
 
-                    <button v-on:click="ui.switchView({ ready: true })" 
-                        v-bind:class="ui.marker.styleClass"
+                    <button v-on:click="iface.switchView({ ready: true })" 
+                        v-bind:class="iface.marker.styleClass"
                         class="w3-btn">
                         Back
                     </button>
 
                     <!-- remove button -->
 
-                    <button v-on:click="ui.removeMarker()" 
-                        v-bind:class="ui.marker.styleClass"
+                    <button v-on:click="iface.removeMarker()" 
+                        v-bind:class="iface.marker.styleClass"
                         class="w3-btn">
                         Remove
                     </button>
@@ -218,11 +218,11 @@
 
     <!-- options tab -->
 
-    <div v-if="menuUI.views.add" class="w3-container w3-padding-12 w3-small">
+    <div v-if="navigation.views.add" class="w3-container w3-padding-12 w3-small">
         
         <!-- input view -->
         
-        <div v-if="registerUI.views.input">
+        <div v-if="registration.views.input">
             
             <!-- info text -->
 
@@ -232,35 +232,35 @@
             
             <p>
                 <label>URL</label>
-                <input v-model="registerUI.inputUrl"
+                <input v-model="registration.inputUrl"
                 class="w3-input w3-border"
                 type="text">
             </p>
 
             <!-- add button -->
 
-            <button v-on:click="registerUI.registerMarker()"
+            <button v-on:click="registration.registerMarker()"
                 class="w3-btn w3-theme-d3">
                 Add</button>
         </div>
 
         <!-- progress view -->
 
-        <div v-if="registerUI.views.progress">
+        <div v-if="registration.views.progress">
             <div class="loader"></div>
         </div>
 
         <!-- success view -->
 
-        <div v-if="registerUI.views.success">
+        <div v-if="registration.views.success">
             
             <!-- info text -->
 
-            <p>{{ registerUI.successMessage }}</p>
+            <p>{{ registration.successMessage }}</p>
 
             <!-- back button -->
 
-            <button v-on:click="registerUI.switchView({ input: true })"
+            <button v-on:click="registration.switchView({ input: true })"
                 class="w3-btn w3-theme-d3">
                 Back</button>
         </div>
@@ -268,15 +268,15 @@
 
         <!-- error view -->
 
-        <div v-if="registerUI.views.error">
+        <div v-if="registration.views.error">
             
             <!-- info text -->
 
-            <p>{{ registerUI.errorMessage }}</p>
+            <p>{{ registration.errorMessage }}</p>
 
             <!-- back button -->
 
-            <button v-on:click="registerUI.switchView({ input: true })"
+            <button v-on:click="registration.switchView({ input: true })"
                 class="w3-btn w3-theme-d3">
                 Back</button>
         </div>
