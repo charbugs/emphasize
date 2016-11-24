@@ -23,5 +23,7 @@
     "browser_action": {
         "default_icon": "menu.png",
         "default_popup": "uidisplay.html"
-    }
+    },
+
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
