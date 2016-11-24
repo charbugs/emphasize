@@ -392,6 +392,25 @@ var uilogic = (function() {
         }    
     }
 
+    
+    /** 
+    * Resets a menu to initial state.
+    *
+    * This should be done if the user loads or reloads a webpage on a tab.
+    *
+    * @param {Number} tabId - id of tab the menu belongs to
+    */ 
+    function resetMenu(tabId) {
+        var menu = selectMenu(tabId);
+        if(menu) {
+            for (var iface of menu.markerIfaces) {
+                iface.switchView({ ready:true });
+                iface.errorMessage = '';
+                iface.resultMessage = '';
+            }
+        }
+    }
+
     /**
     * Returns the menu of a specific tab.
     * Undefine if no menu extists for that tab.
@@ -433,10 +452,25 @@ var uilogic = (function() {
         }
     }
 
+    /**
+    * Inits the module.
+    */
+    function init() {
+        chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+            if (info.status === 'loading') {
+                resetMenu(tabId);
+            }
+        });
+    }
+
     return {
         getMenu : getMenu,
-        menus: menus
+        init: init        
     };
 
 }());
+
+document.addEventListener('DOMContentLoaded', function() {
+    uilogic.init();        
+});
 
