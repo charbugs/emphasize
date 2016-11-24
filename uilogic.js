@@ -2,17 +2,29 @@
 var uilogic = (function() {
 
     /**
-    * Holds interface bundles that belong to a certain tab.
-    * Keys {Number} are tab ids, values {Object} are a bundle of ifaces.
-    * Example: { 
-                42: { 
-                        navigation: NavigationInterface,
-                        registration: RegistrationInterface,
-                        markerIfaces: [MarkerInterface, MarkerInterface]
-                    }
-                }
+    * Container for Menu instances.
     */
-    var interfaceStorage = {};
+    var menus = [];
+
+    /**
+    * Represents a system menu for a specific tab.
+    *
+    * It consists of serveral user interfaces. These interfaces
+    * holds data and methods for user interaction. The visual part
+    * of the menu are defined withhin uidisplay.html.
+    *
+    * @param {Number} tabId - id of the tab the menu belongs to.
+    * @param {NavigationInterface} navigation
+    * @param {RegistrationInterface} registration
+    * @param {Array of MarkerInterface} - markerIfaces 
+    */
+    function Menu(tabId, navigation, registration, markerIfaces) {
+
+        this.tabId = tabId;
+        this.navigation = navigation;
+        this.registration = registration;
+        this.markerIfaces = markerIfaces;
+    }
 
     /**
     * Respresents the logic of the menu's navigation interface. 
@@ -50,12 +62,10 @@ var uilogic = (function() {
     * Visual part is defined in uidisplay.html.
     *
     * @param {Number} tabId - id of the current browser tab.
-    * @param {Array} markerIfaces - Container that holds all marker interfaces. 
     */
-    function RegistrationInterface(tabId, markerIfaces) {
+    function RegistrationInterface(tabId) {
 
         this.tabId = tabId;
-        this.markerIfaces = markerIfaces;
     
         /**
         * Supported views
@@ -178,10 +188,8 @@ var uilogic = (function() {
                             settings.url = that.inputUrl;
 
                             markerdb.add(settings, function(marker) {
-
-                                that.markerIfaces.push(new MarkerUserInterface(
-                                    marker, that.tabId, that.markerIfaces));
-
+                                
+                                addMarkerInterface(marker);
                                 that.switchView({ success:true });
                             });
                         });
@@ -198,13 +206,11 @@ var uilogic = (function() {
     * 
     * @param {markerdb.Marker} marker
     * @param {Number} tabId - id of the current browser tab.
-    * @param {Array} markerIfaces - container that holds all marker interfaces
     */
-    function MarkerInterface(marker, tabId, markerIfaces) {
+    function MarkerInterface(marker, tabId) {
 
         this.marker = marker;
         this.tabId = tabId;
-        this.markerIfaces = markerIfaces;
 
         /**
         * Supported interface views
@@ -337,18 +343,14 @@ var uilogic = (function() {
 
 
         /**
-        * Removes the marker from system and list.
+        * Removes the marker from system and the marker interface from menu.
         */
         this.removeMarker = function() {
             var that = this;
             proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, 
                 function() {
                     markerdb.remove(that.marker.id, function() {
-                        for (var i=0; i<that.markerIfaces.length; i++) {
-                            if (that.markerIfaces[i] === that) {
-                                that.markerIfaces.splice(i, 1);    
-                            }
-                        }    
+                        removeMarkerInterface(that.marker.id);                        
                     });    
             });               
         };
@@ -360,42 +362,80 @@ var uilogic = (function() {
         // ---------- end main ---------- //
     }
 
+    
+    /**
+    * Removes a marker interface from all menus.
+    *
+    * @param {Number} markerId - id of the marker whose interface
+    *       should be removed.
+    */
+    function removeMarkerInterface(markerId) {
+        for (var menu of menus) {
+            for (var i=0; i < menu.markerIfaces.length; i++) {
+                if (markerId === menu.markerIfaces[i].marker.id) {
+                    menu.markerIfaces.splice(i,1);
+                }
+            }
+        }
+    }
+
+    /**
+    * Adds a marker interface to all menus.
+    * 
+    * @param {markerdb.Marker} marker.
+    */
+    function addMarkerInterface(marker) {
+        for (var menu of menus) {
+            menu.markerIfaces.push(
+                new MarkerInterface(marker, menu.tabId)
+            );
+        }    
+    }
+
+    /**
+    * Returns the menu of a specific tab.
+    * Undefine if no menu extists for that tab.
+    *
+    * @param {Menu|undefined}
+    */
+    function selectMenu(tabId) {
+        return menus.filter(m => m.tabId == tabId)[0];
+    }
 
     /** 
-    * Returns the bundle of interfaces that belongs to a given tab id.
-    * Creates that bundle if not already extists.
+    * Returns the menu belonging to a specific tab.
+    * Creates that menu if not already extists.
     *
     * @param {Number} tabId
-    * @param {Function} callback - (err, interfaces)
+    * @param {Function} callback - (interfaces)
     */
-    function getInterfaces(tabId, callback) {
-        
-        if (tabId in interfaceStorage) {
-            callback(null, interfaceStorage[tabId]);
+    function getMenu(tabId, callback) {
+       
+        var menu = selectMenu(tabId);
+
+        if (menu) {
+            callback(menu);
         }
         else {
 
             markerdb.get(null, function(markers) {
-                
-                var markerIfaces = [];
-                for (var marker of markers) {
-                    markerIfaces.push(new MarkerInterface(
-                        marker, tabId, markerIfaces));
-                }
+                        
+                menu = new Menu(
+                    tabId,
+                    new NavigationInterface(),
+                    new RegistrationInterface(tabId),
+                    markers.map(m => new MarkerInterface(m, tabId))
+                );
 
-                interfaceStorage[tabId] = {
-                    navigation: new NavigationInterface(),
-                    registration: new RegistrationInterface(tabId, markerIfaces),
-                    markerIfaces: markerIfaces
-                };
-
-                callback(null, interfaceStorage[tabId]);    
+                menus.push(menu);
+                callback(menu);
             });            
         }
     }
 
     return {
-        getInterfaces : getInterfaces
+        getMenu : getMenu,
+        menus: menus
     };
 
 }());
