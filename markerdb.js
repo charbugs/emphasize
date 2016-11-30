@@ -87,7 +87,7 @@ var markerdb = (function() {
             if (id === null)
                 callback(items.markers);
             else {
-                for (key in items.markers) {
+                for (var key in items.markers) {
                     if (items.markers[key].id === id) {                        
                         callback(items.markers[key]);
                         break;
