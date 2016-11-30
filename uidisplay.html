@@ -103,6 +103,7 @@
 
                         <label>{{ query.label }}</label>
                         <input v-if="query.type=='text'"
+                            v-on:keyup.enter="iface.applyMarker()"
                             class="w3-input w3-border"
                             type="text"
                             v-model="iface.userInputs[query.id]">
@@ -242,6 +243,7 @@
             <p>
                 <label>URL</label>
                 <input v-model="registration.inputUrl"
+                v-on:keyup.enter="registration.registerMarker()"
                 class="w3-input w3-border"
                 type="text">
             </p>
