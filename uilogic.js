@@ -132,8 +132,8 @@ var uilogic = (function() {
 
 
         /**
-        * Returns an available style class name
-        * 
+        * Returns an style class name.
+        *
         * @param {Function} callback - ({String} styleClass)
         */
         this.determineStyleClass = function(callback) {
@@ -141,22 +141,17 @@ var uilogic = (function() {
             var that = this;
             markerdb.get(null, function(markers) {
 
-                var exists = markers.map(marker => marker.styleClass);
-                var styleClass;
+                var exist = markers.map(marker => marker.styleClass);
+                var nonExist = that.styleClasses.filter(c => exist.indexOf(c) === -1);
+                var rand = Math.random();
 
-                for (var i=0; i<that.styleClasses.length; i++) {
-                    if (exists.indexOf(that.styleClasses[i]) == -1) {
-                        styleClass = that.styleClasses[i];
-                        break;
-                    }
+                if (nonExist.length === 0) {
+                    i = Math.floor(rand * that.styleClasses.length);
+                    callback(that.styleClasses[i]);
                 }
-
-                if (styleClass) {
-                    callback(styleClass);
-                } else {
-                    len = that.styleClasses.length
-                    rand = Math.floor(Math.random() * len);
-                    callback(that.styleClasses[rand]);
+                else  {
+                    i = Math.floor(rand * nonExist.length);
+                    callback(nonExist[i]);
                 }
             });
         };
