@@ -77,6 +77,11 @@ var uilogic = (function() {
             error: false
         };
 
+        /**
+        * Id for http requests
+        */
+        this.requestId = String(tabId) + '-' + 'registration';
+
         /** 
         * Messages
         */
@@ -175,7 +180,7 @@ var uilogic = (function() {
                 
                 that.switchView({ progress:true });
 
-                request.requestSettings(that.inputUrl, function(err, settings) {
+                request.requestSettings(that.requestId, that.inputUrl, function(err, settings) {
 
                     if (err) {
                         that.errorMessage = err.message;
@@ -196,7 +201,17 @@ var uilogic = (function() {
                     }
                 });                
             }
-        };            
+        };
+
+        /**
+        * Aborts a request made by this registration interface.
+        * 
+        * This should trigger the callback to the request 
+        * defined in registerMarker().
+        */
+        this.abortRequest = function() {
+            request.abortRequest(this.requestId);
+        };      
     }
 
 
@@ -268,7 +283,7 @@ var uilogic = (function() {
         */
         this.togglePanel = function() {
             this.panel = !this.panel;
-        }
+        };
 
         /**
         * Inits user input storage.
@@ -332,7 +347,7 @@ var uilogic = (function() {
                     });                    
                 });
             });           
-        }
+        };
 
 
         /**
@@ -368,7 +383,7 @@ var uilogic = (function() {
         */
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
-        }
+        };
         
         // ---------- begin main ---------- //
 

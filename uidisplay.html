@@ -256,7 +256,16 @@
         <!-- progress view -->
 
         <div v-if="registration.views.progress">
+
+            <!-- loader -->
+
             <div class="loader"></div>
+
+            <!-- abort button -->
+
+            <a v-on:click="registration.abortRequest()"
+                class="w3-right" href='#'>Abort</a>
+
         </div>
 
         <!-- success view -->
