@@ -28,27 +28,27 @@
     </style>
     
 </head>
-<body>
+<body class="w3-theme-l3">
 
-<div id="menu" style="width:400px;">
+<div id="menu" style="width:450px;">
 
     <!-- navigation bar -->
 
-    <ul class="w3-navbar w3-border-bottom"> 
+    <ul class="w3-navbar w3-theme-d5"> 
 
         <!-- marker button -->
       
         <li><a  id="markers-tab-link"
-                v-bind:class="{ 'w3-theme-d3' : navigation.views.markers }"
-                class="w3-hover-theme-l3"
+                v-bind:class="{ 'w3-theme-d2' : navigation.views.markers}"
+                class="w3-padding-12 w3-hover-theme-d1"
                 href="#"
                 v-on:click="navigation.switchView({ markers: true })">Markers</a></li>
 
         <!-- add button -->
 
         <li><a  id="options-tab-link"
-                class="w3-hover-theme-l3"
-                v-bind:class="{ 'w3-theme-d3' : navigation.views.add }"
+                v-bind:class="{ 'w3-theme-d2' : navigation.views.add}"
+                class="w3-padding-12 w3-hover-theme-d1"
                 href="#"
                 v-on:click="navigation.switchView({ add: true })">Add</a></li>
     </ul>
@@ -60,18 +60,22 @@
         
         <!-- marker user interface -->
 
-        <div v-for="iface of markerIfaces">
+        <div v-for="iface of markerIfaces" 
+            v-bind:class="{ 'w3-border-bottom': !iface.panel, 'w3-card-2' : iface.panel, 'w3-margin': iface.panel }"
+            class="w3-white">
             
             <!-- header -->
 
-            <div class="w3-row w3-accordion w3-border-bottom" 
+            <div class="w3-row w3-accordion w3-padding-top w3-padding-bottom" 
                 v-on:click="iface.togglePanel()">
 
                 <!-- header tail -->
 
                 <div v-bind:class="iface.views.result ? iface.marker.styleClass : ''"
                     class="w3-col w3-right w3-padding w3-center"    
-                    style="width:40px">+
+                    style="width:40px">
+                    <span v-if="!iface.panel">&#65088;</span>
+                    <span v-if="iface.panel">&#65087;</span>
                 </div>
 
                 <!-- header main part -->
