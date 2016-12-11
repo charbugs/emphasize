@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="w3-theme-grey.css">
     <link rel="stylesheet" href="faces.css">
 	<script type="text/javascript" src="vue.js"></script>
-	<script type="text/javascript" src="uidisplay.js"></script>
+	<script type="text/javascript" src="menu-view.js"></script>
     <style type="text/css" media="screen">
     
         .loader {
@@ -39,24 +39,24 @@
         <!-- marker button -->
       
         <li><a  id="markers-tab-link"
-                v-bind:class="{ 'w3-theme-d6' : navigation.views.markers}"
+                v-bind:class="{ 'w3-theme-d6' : navigation.status.markers}"
                 class="w3-padding-12 w3-hover-theme-d6"
                 href="#"
-                v-on:click="navigation.switchView({ markers: true })">Markers</a></li>
+                v-on:click="navigation.switchStatus({ markers: true })">Markers</a></li>
 
         <!-- add button -->
 
         <li><a  id="options-tab-link"
-                v-bind:class="{ 'w3-theme-d6' : navigation.views.add}"
+                v-bind:class="{ 'w3-theme-d6' : navigation.status.add}"
                 class="w3-padding-12 w3-hover-theme-d6"
                 href="#"
-                v-on:click="navigation.switchView({ add: true })">Add</a></li>
+                v-on:click="navigation.switchStatus({ add: true })">Add</a></li>
     </ul>
 
 
     <!-- markers tab -->
 
-    <div v-if="navigation.views.markers">
+    <div v-if="navigation.status.markers">
         
         <!-- marker user interface -->
 
@@ -71,7 +71,7 @@
 
                 <!-- header tail -->
 
-                <div v-bind:class="iface.views.result ? iface.marker.styleClass : ''"
+                <div v-bind:class="iface.status.result ? iface.marker.styleClass : ''"
                     class="w3-col w3-right w3-padding w3-center"    
                     style="width:40px">
                     <span v-if="!iface.panel">&#65088;</span>
@@ -93,7 +93,7 @@
 
                 <!-- ready view -->
                 
-                <div v-if="iface.views.ready">
+                <div v-if="iface.status.ready">
 
                     <!-- description -->
 
@@ -139,14 +139,14 @@
 
                     <!-- more button -->
                 
-                    <a v-on:click="iface.switchView({ more: true })"
+                    <a v-on:click="iface.switchStatus({ more: true })"
                         class="w3-right" href='#'>More</a>
 
                 </div>
 
                 <!-- progress view -->
             
-                <div v-if="iface.views.progress">
+                <div v-if="iface.status.progress">
         
                     <!-- loader -->
 
@@ -161,7 +161,7 @@
 
                 <!-- result view -->
             
-                <div v-if="iface.views.result">
+                <div v-if="iface.status.result">
                     
                     <!-- message -->
 
@@ -179,7 +179,7 @@
 
                 <!-- error view -->
             
-                <div v-if="iface.views.error">
+                <div v-if="iface.status.error">
                     
                     <!-- message -->
 
@@ -187,7 +187,7 @@
 
                     <!-- back button -->
 
-                    <button v-on:click="iface.switchView({ ready: true })"
+                    <button v-on:click="iface.switchStatus({ ready: true })"
                         v-bind:class="iface.marker.styleClass" 
                         class="w3-btn">
                         Back
@@ -197,7 +197,7 @@
 
                 <!-- more view -->
             
-                <div v-if="iface.views.more">
+                <div v-if="iface.status.more">
                     
                     <!-- marker infos -->
                     
@@ -208,7 +208,7 @@
 
                     <!-- back button -->
 
-                    <button v-on:click="iface.switchView({ ready: true })" 
+                    <button v-on:click="iface.switchStatus({ ready: true })" 
                         v-bind:class="iface.marker.styleClass"
                         class="w3-btn">
                         Back
@@ -232,11 +232,11 @@
 
     <!-- add tab -->
 
-    <div v-if="navigation.views.add" class="w3-container w3-padding-12 w3-small w3-white">
+    <div v-if="navigation.status.add" class="w3-container w3-padding-12 w3-small w3-white">
         
         <!-- input view -->
         
-        <div v-if="registration.views.input">
+        <div v-if="registration.status.input">
             
             <!-- info text -->
 
@@ -261,7 +261,7 @@
 
         <!-- progress view -->
 
-        <div v-if="registration.views.progress">
+        <div v-if="registration.status.progress">
 
             <!-- loader -->
 
@@ -276,7 +276,7 @@
 
         <!-- success view -->
 
-        <div v-if="registration.views.success">
+        <div v-if="registration.status.success">
             
             <!-- info text -->
 
@@ -284,7 +284,7 @@
 
             <!-- back button -->
 
-            <button v-on:click="registration.switchView({ input: true })"
+            <button v-on:click="registration.switchStatus({ input: true })"
                 class="w3-btn w3-theme-d3">
                 Back</button>
         </div>
@@ -292,7 +292,7 @@
 
         <!-- error view -->
 
-        <div v-if="registration.views.error">
+        <div v-if="registration.status.error">
             
             <!-- info text -->
 
@@ -300,7 +300,7 @@
 
             <!-- back button -->
 
-            <button v-on:click="registration.switchView({ input: true })"
+            <button v-on:click="registration.switchStatus({ input: true })"
                 class="w3-btn w3-theme-d3">
                 Back</button>
         </div>

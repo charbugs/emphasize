@@ -15,14 +15,14 @@
             "markerdb.js",
             "request.js", 
             "proxy.js",
-			"uilogic.js"
+			"menu-model.js"
         ],
         "persistent": false
      },
 
     "browser_action": {
         "default_icon": "menu.png",
-        "default_popup": "uidisplay.html"
+        "default_popup": "menu-view.html"
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"

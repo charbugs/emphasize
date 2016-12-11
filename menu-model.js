@@ -1,5 +1,5 @@
 
-var uilogic = (function() {
+var menuModel = (function() {
 
     /**
     * Container for Menu instances.
@@ -31,27 +31,29 @@ var uilogic = (function() {
     *
     * Menu's navigation consists of a navigation bar and different 
     * views below that bar. Views can be switched by nav bar buttons. 
-    * The visual part is defined within uidisplay.html.
+    * The visual part is defined within menu-view.html.
     */
     function NavigationInterface() {
         
         /**
-        * Supported views
+        * Saves the current status of the interface.
+        *
+        * The statuses of the navigation interface corresponds to the available
+        * views (or tabs) withhin menu.
         */
-        this.views = {
+        this.status = {
             markers: true,
             add: false
         };
 
         /**
-        * Switches between the different views of the menu.
+        * Switches the status of the navigation interface
         * 
-        * @param {Object} views - witch views should be shown or hide?
-        *       keys are view names, values are boolean.
+        * @param {Object} status - keys are status names, values are boolean.
         */
-        this.switchView = function(views) {
-            this.views.markers = views.markers || false;
-            this.views.add = views.add || false;
+        this.switchStatus = function(status) {
+            this.status.markers = status.markers || false;
+            this.status.add = status.add || false;
         };
     }
 
@@ -59,7 +61,7 @@ var uilogic = (function() {
     /**
     * Represent the logic of the registration interface.
     *
-    * Visual part is defined in uidisplay.html.
+    * Visual part is defined in menu-view.html.
     *
     * @param {Number} tabId - id of the current browser tab.
     */
@@ -68,9 +70,10 @@ var uilogic = (function() {
         this.tabId = tabId;
     
         /**
-        * Supported views
+        * Saves the current status of the interface.
+        *
         */
-        this.views = {
+        this.status = {
             input: true,
             progress: false,
             success: false,
@@ -110,16 +113,15 @@ var uilogic = (function() {
         ];
 
         /**
-        * Switches between the different views of the interface.
+        * Switches the status of the interface.
         * 
-        * @param {Object} views - witch views should be shown or hide?
-        *       keys are view names, values are boolean.
+        * @param {Object} status - keys are status names, values are boolean.
         */
-        this.switchView = function(views) {
-            this.views.input = views.input || false;
-            this.views.success = views.success || false;
-            this.views.error = views.error || false;
-            this.views.progress = views.progress || false;
+        this.switchStatus = function(status) {
+            this.status.input = status.input || false;
+            this.status.success = status.success || false;
+            this.status.error = status.error || false;
+            this.status.progress = status.progress || false;
         };
 
 
@@ -169,17 +171,17 @@ var uilogic = (function() {
             if (!that.checkInputUrl(that.inputUrl)) {
                 that.errorMessage = 'Need a valid HTTP URL that starts with\
                     "http://" or "https://".';
-                that.switchView({ error:true });
+                that.switchStatus({ error:true });
             } 
             else {
                 
-                that.switchView({ progress:true });
+                that.switchStatus({ progress:true });
 
                 request.requestSettings(that.requestId, that.inputUrl, function(err, settings) {
 
                     if (err) {
                         that.errorMessage = err.message;
-                        that.switchView({ error:true });
+                        that.switchStatus({ error:true });
                     } 
                     else {
                         that.determineStyleClass(function(styleClass) {
@@ -190,7 +192,7 @@ var uilogic = (function() {
                             markerdb.add(settings, function(marker) {
                                 
                                 addMarkerInterface(marker);
-                                that.switchView({ success:true });
+                                that.switchStatus({ success:true });
                             });
                         });
                     }
@@ -201,8 +203,8 @@ var uilogic = (function() {
         /**
         * Aborts a request made by this registration interface.
         * 
-        * This should trigger the callback to the request 
-        * defined in registerMarker().
+        * This should trigger the callback to the request. This callback is
+        * defined within registerMarker().
         */
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
@@ -228,9 +230,9 @@ var uilogic = (function() {
         this.requestId = String(tabId) + '-' + String(marker.id);
 
         /**
-        * Supported interface views
+        * Saves the current status of the interface
         */
-        this.views = {
+        this.status = {
             ready: true,
             progress: false,
             result: false,
@@ -259,17 +261,16 @@ var uilogic = (function() {
 
 
         /**
-        * Switches between the different views of the interface.
+        * Switches the status of the interface.
         * 
-        * @param {Object} views - witch views should be shown or hide?
-        *       keys are view names, values are boolean.
+        * @param {Object} status - keys are status names, values are boolean.
         */
-        this.switchView = function(views) {
-            this.views.ready = views.ready || false;
-            this.views.progress = views.progress || false;
-            this.views.result = views.result || false;
-            this.views.error = views.error || false;    
-            this.views.more = views.more || false;    
+        this.switchStatus = function(status) {
+            this.status.ready = status.ready || false;
+            this.status.progress = status.progress || false;
+            this.status.result = status.result || false;
+            this.status.error = status.error || false;    
+            this.status.more = status.more || false;    
         };
 
 
@@ -301,7 +302,7 @@ var uilogic = (function() {
 
             var that = this;
 
-            that.switchView({ progress:true });
+            that.switchStatus({ progress:true });
 
             proxy.invoke(that.tabId, 'extract.extractTextNodes', 
                 function() {
@@ -321,7 +322,7 @@ var uilogic = (function() {
                                     err.name === 'RequestError') {
                                     
                                     that.errorMessage = err.message;
-                                    that.switchView({ error:true });    
+                                    that.switchStatus({ error:true });    
                                       
                                 } 
                                 else {
@@ -334,7 +335,7 @@ var uilogic = (function() {
                                     function() {
                                           
                                     that.resultMessage = resp.result;
-                                    that.switchView({ result:true });
+                                    that.switchStatus({ result:true });
                                     
                                 });
                             }
@@ -352,7 +353,7 @@ var uilogic = (function() {
             var that = this;
             proxy.invoke(that.tabId, 'highlight.remove', that.marker.id,
                 function() {
-                    that.switchView({ ready:true });
+                    that.switchStatus({ ready:true });
             });
         };
 
@@ -373,8 +374,8 @@ var uilogic = (function() {
         /**
         * Aborts a request made by this marker interface.
         * 
-        * This should trigger the callback to the request 
-        * defined in applyMarker().
+        * This should trigger the callback to the request. This callback is
+        * defined within applyMarker().
         */
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
@@ -429,7 +430,7 @@ var uilogic = (function() {
         var menu = selectMenu(tabId);
         if(menu) {
             for (var iface of menu.markerIfaces) {
-                iface.switchView({ ready:true });
+                iface.switchStatus({ ready:true });
                 iface.errorMessage = '';
                 iface.resultMessage = '';
             }
@@ -496,6 +497,6 @@ var uilogic = (function() {
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
-    uilogic.init();        
+    menuModel.init();        
 });
 

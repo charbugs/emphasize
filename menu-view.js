@@ -1,5 +1,5 @@
 
-var uidisplay = (function() {
+var menuView = (function() {
         
     /**
     * Informs that the menu is disabled on the current tab.
@@ -21,9 +21,9 @@ var uidisplay = (function() {
                 }
                 else {
                     
-                    bg.uilogic.getMenu(tabId, function(menu) {
+                    bg.menuModel.getMenu(tabId, function(menu) {
 
-                        var display = new Vue({
+                        var controler = new Vue({
                             el: '#menu',
                             data: {
                                 navigation: menu.navigation,
@@ -45,5 +45,5 @@ var uidisplay = (function() {
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
-    uidisplay.init();
+    menuView.init();
 });
