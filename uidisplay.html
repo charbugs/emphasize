@@ -39,16 +39,16 @@
         <!-- marker button -->
       
         <li><a  id="markers-tab-link"
-                v-bind:class="{ 'w3-theme-d2' : navigation.views.markers}"
-                class="w3-padding-12 w3-hover-theme-d1"
+                v-bind:class="{ 'w3-theme-d6' : navigation.views.markers}"
+                class="w3-padding-12 w3-hover-theme-d6"
                 href="#"
                 v-on:click="navigation.switchView({ markers: true })">Markers</a></li>
 
         <!-- add button -->
 
         <li><a  id="options-tab-link"
-                v-bind:class="{ 'w3-theme-d2' : navigation.views.add}"
-                class="w3-padding-12 w3-hover-theme-d1"
+                v-bind:class="{ 'w3-theme-d6' : navigation.views.add}"
+                class="w3-padding-12 w3-hover-theme-d6"
                 href="#"
                 v-on:click="navigation.switchView({ add: true })">Add</a></li>
     </ul>
@@ -230,9 +230,9 @@
 
     </div>
 
-    <!-- options tab -->
+    <!-- add tab -->
 
-    <div v-if="navigation.views.add" class="w3-container w3-padding-12 w3-small">
+    <div v-if="navigation.views.add" class="w3-container w3-padding-12 w3-small w3-white">
         
         <!-- input view -->
         
