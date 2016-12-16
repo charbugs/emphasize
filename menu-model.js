@@ -380,12 +380,6 @@ var menuModel = (function() {
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
         };
-        
-        // ---------- begin main ---------- //
-
-        this.initUserInputStorage();
-
-        // ---------- end main ---------- //
     }
 
     
