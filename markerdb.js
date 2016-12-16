@@ -133,18 +133,15 @@ var markerdb = (function() {
 
                 if (markers[i].id === id) {
 
-                    marker = markers.splice(i, 1);
+                    marker = markers.splice(i, 1)[0];
+
                     chrome.storage.local.set({markers: markers}, function() {
 
                         if (callback) { 
                             callback(marker);
                         }
                         markerRemoved.dispatch(marker);
-                        breakIt = true;
                     });
-                }
-                if (breakIt) {
-                    break;
                 }
             }
         });
