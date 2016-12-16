@@ -101,23 +101,23 @@
 
                     <!-- inputs -->
 
-                    <p v-for="query in iface.marker.queries" class="w3-tooltip">
+                    <p v-for="input in iface.marker.inputs" class="w3-tooltip">
 
                         <!-- text input -->                
 
-                        <label>{{ query.label }}</label>
-                        <input v-if="query.type=='text'"
+                        <label>{{ input.label }}</label>
+                        <input v-if="input.type=='text'"
                             v-on:keyup.enter="iface.applyMarker()"
                             class="w3-input w3-border"
                             type="text"
-                            v-model="iface.userInputs[query.id]">
+                            v-model="iface.userInputs[input.id]">
 
                         <!-- select input -->
 
-                        <select v-if="query.type=='select'"
+                        <select v-if="input.type=='select'"
                             class="w3-input w3-border"
-                            v-model="iface.userInputs[query.id]">
-                            <option v-for="val of query.values">
+                            v-model="iface.userInputs[input.id]">
+                            <option v-for="val of input.values">
                                 {{ val }}
                             </option>
                         </select>
@@ -126,7 +126,7 @@
         
                         <span class="w3-text w3-tag w3-animate-opacity"
                             style="position:absolute;right:0px;top:54px;width:280px">
-                            {{ query.tooltip }}
+                            {{ input.tip }}
                         </span>
                     <p>
 

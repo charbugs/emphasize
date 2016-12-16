@@ -177,7 +177,7 @@ var menuModel = (function() {
                 
                 that.switchStatus({ progress:true });
 
-                request.requestSettings(that.requestId, that.inputUrl, function(err, settings) {
+                request.requestSetup(that.requestId, that.inputUrl, function(err, setup) {
 
                     if (err) {
                         that.errorMessage = err.message;
@@ -186,10 +186,10 @@ var menuModel = (function() {
                     else {
                         that.determineStyleClass(function(styleClass) {
 
-                            settings.styleClass = styleClass;
-                            settings.url = that.inputUrl;
+                            setup.styleClass = styleClass;
+                            setup.url = that.inputUrl;
 
-                            markerdb.add(settings, function(marker) {
+                            markerdb.add(setup, function(marker) {
                                 
                                 addMarkerInterface(marker);
                                 that.switchStatus({ success:true });
@@ -311,14 +311,14 @@ var menuModel = (function() {
                     function(err, words) {
                     
                     proxy.invoke(that.tabId, 'extract.getUrl', 
-                        function(err, url) {
+                        function(err, wpUrl) {
 
-                        request.requestMarking(that.requestId, that.marker, words, url, 
+                        request.requestMarkup(that.requestId, that.marker.url, words, wpUrl, 
                             that.userInputs, 
                             function(err, resp) {
                             
                             if (err) {
-                                if (err.name === 'ResponseParserError' ||
+                                if (err.name === 'ResponseParseError' ||
                                     err.name === 'RequestError') {
                                     
                                     that.errorMessage = err.message;
@@ -331,10 +331,10 @@ var menuModel = (function() {
                             }
                             else {
                                 proxy.invoke(that.tabId, 'highlight.highlight', 
-                                    resp.mask, that.marker,
+                                    resp.markup, that.marker,
                                     function() {
                                           
-                                    that.resultMessage = resp.result;
+                                    that.resultMessage = resp.message;
                                     that.switchStatus({ result:true });
                                     
                                 });
