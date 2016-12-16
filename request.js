@@ -16,12 +16,12 @@ var request = (function() {
 	* An Error that will be thrown if the response data of a marker app
 	* does not match the communication protocol of marker and extension
 	*/
-	function ResponseParserError(message) {
+	function ResponseParseError(message) {
 		this.message = message;
 		this.stack = (new Error()).stack;
 	}
-	ResponseParserError.prototype = Object.create(Error.prototype);
-	ResponseParserError.prototype.name = 'ResponseParserError';
+	ResponseParseError.prototype = Object.create(Error.prototype);
+	ResponseParseError.prototype.name = 'ResponseParseError';
 
     /**
     * Stores requests.
@@ -31,23 +31,25 @@ var request = (function() {
     var requestStorage = {};
 
 	/**
-	* Requests a marker app to mark the tokens of the web page.
+	* Requests a marker app to analyze a list of tokens 
+    * and submit the result of this analysis.
+    * 
 	*
     * @param {String} id - id of request
 	* @param {markerdb.Marker} marker
-	* @param {Array of String} words - the web page words.
-	* @param {String} url - url of the web page.
-	* @param {Object} userQueries - user inputs for queries provided by the marker.
-	*	Keys are query ids, values are user inputs.
-	* @param {Function} callback - ({Error} err, {Object} response)
+	* @param {Array of String} tokens - tokens extracted from web page
+	* @param {String} wpUrl - url of the current web page.
+	* @param {Object} inputs - user inputs belonging to the marker.
+	*	    Keys {String} are input ids, values {String} are user inputs.
+	* @param {Function} callback - ({Error} err, {Object} parsed response)
 	*/
-	function requestMarking(id, marker, words, url, userQueries, callback) {
+	function requestMarkup(id, marker, tokens, wpUrl, inputs, callback) {
 		
 		var data = {
-			request: 'mark',
-			tokens: words,
-			url: url,
-			queries: userQueries
+			call: 'markup',
+			tokens: tokens,
+			url: wpUrl,
+			inputs: inputs
 		};
 		
 		request(id, marker.url, data, function(err, responseText) {
@@ -55,10 +57,11 @@ var request = (function() {
 				callback(err, null);
 			} else {
 				try {
-					var response = parseMarkingResponse(responseText, words.length);
+					var response = parseMarkupResponse(
+                        responseText, tokens.length);
 					callback(null, response);
 				} catch (err) {
-					if (err instanceof ResponseParserError)
+					if (err instanceof ResponseParseError)
 						callback(err, null);
 					else if (err instanceof RequestError)
 						callback(err, null);
@@ -70,27 +73,25 @@ var request = (function() {
 	}
 
 	/**
-	* Requests a marker app to submit its settings.
+	* Requests a marker app to submit its setup features.
 	*
     * @param {String} id - id of request
-	* @param {String} url - url of marker.
-	* @param {Function} callback
-	*	@param {Error}
-	*	@param {response} - response of marker
+	* @param {String} marker
+	* @param {Function} callback - ({Error} err, {Object} parsed response)
 	*/
-	function requestSettings(id, url, callback) {
+	function requestSetup(id, marker, callback) {
 
-		var data = { request: 'settings' };
+		var data = { call: 'setup' };
 
-		request(id, url, data, function(err, responseText) {
+		request(id, marker.url, data, function(err, responseText) {
 			if (err) {
 				callback(err, null);
 			} else {
 				try {
-					var response = parseSettingsResponse(responseText);
+					var response = parseSetupResponse(responseText);
 					callback(null, response);
 				} catch (err) {
-					if (err instanceof ResponseParserError)
+					if (err instanceof ResponseParseError)
 						callback(err, null);
 					else if (err instanceof RequestError)
 						callback(err, null);
@@ -111,7 +112,7 @@ var request = (function() {
     * @param {String} id - id of request
     */
     function abortRequest(id) {
-        console.log(id, requestStorage);
+
         requestStorage[id].abort();
     }
 
@@ -120,9 +121,8 @@ var request = (function() {
 	*
     * @param {String} id - id of request
 	* @param {String} url
-	* @param {Any able to stringify by JSON} data
-	* @param {Function} callback
-	* 	@param {String} - response to request
+	* @param {jsonisable} data
+	* @param {Function} callback - ({String} response to request)
 	*/
 	function request(id, url, data, callback) {
 		
@@ -148,57 +148,64 @@ var request = (function() {
 	function handleResponse(xhr, callback) {
 		if (xhr.readyState === xhr.DONE) {
 			if (xhr.status === 0) {
-				var err = new RequestError('Something went wrong while requesting marker.'); 
+                var msg = 'Something went wrong while requesting marker.';
+				var err = new RequestError(msg); 
 				callback(err, null);
 			}
 			else if (xhr.status === 200) {
 				callback(null, xhr.responseText);
 			}
 			else {
-				var err = new RequestError(
-					'Failed to receive data from marker. Server answers: ' + xhr.status);
+                var msg = 'Failed to receive data from marker. Server answers: '; 
+                msg = msg + xhr.status;
+				var err = new RequestError(msg);
 				callback(err, null);
 			}
 		}
 	}
 
 	/**
-	* Checks if the response to a marking request matches the 
-	* communication protocol of marker and extension.
+	* Parses the markup response of a marker app.
+    * 
+    * This includes checking if the structure and content of the response
+    * is valid, and perform some transformations.
 	*
-	* @param {String} responseText - response of marker
+	* @param {JSON String} responseText - response of marker
 	* @param {Number} numOfTokens - number of web page tokens
-	* @return {Object} - object valid to the communication protocol
+	* @return {Object} - parsed response
 	*/
-	function parseMarkingResponse(responseText, numOfTokens) {
+	function parseMarkupResponse(responseText, numOfTokens) {
 
-		var supported = ['mask', 'result'];
-		var needed = ['mask'];
-		var typeMap = { mask: 'Array', result: 'String'};
-		var key;
+        var markupResponseTerms = {
+            
+            force: true,
+            type: Object,
+            props: {
 
-		try {
-			var response = JSON.parse(responseText);
-		} catch (err) {
-			throw new ResponseParserError('Cannot parse marker response. Probably no valid JSON string.');
-		}
-		
-		if (!response || !isObject(response))
-			throw new ResponseParserError('Marker response must be an JSON object.');
+                markup: {
+                
+                    force: true,
+                    type: Array,
+                    each: {
+                        
+                        type: Number,
+                        test: n => Number.isInteger(n)
+                    }
+                    
+                },
+            
+                message: {
 
-		if (key = firstUnsupportedProperty(response, supported))
-			throw new ResponseParserError('Unknown property "' + key + '" in marker response.');
+                    force: false,
+                    type: String
+                }
+            }
+        }		
 
-		if (key = firstMissingProperty(response, needed))
-			throw new ResponseParserError('Missing property "' + key + '" in marker response.');
+        var response = parseResponse(
+                responseText, markupResponseTerms, 'response');
 
-		if (key = firstMistypedProperty(response, typeMap))
-			throw new ResponseParserError('Property "' + key + '" of marker response has wrong type.');
-		
-		if (!response.mask.every(n => Number.isInteger(n)))
-			throw new ResponseParserError('All items of mask must be integers.');
-		
-		var padding = numOfTokens - response.mask.length;
+		var padding = numOfTokens - response.markup.length;
 		if (padding > 0)
 			response.mask = response.mask.concat(Array(padding).fill(0));
 
@@ -206,117 +213,124 @@ var request = (function() {
 	}
 
 	/**
-	* Checks if the response to a settings request matches the 
-	* communication protocol of marker and extension.
+	* Parses the setup response of a marker app.
+    *
+    * This means checking if the structure and content of the response
+    * is valid.
 	*
 	* @param {String} responseText - response of marker
-	* @return {Object} - object valid to the communication protocol
+	* @return {Object} - parsed response
 	*/
-	function parseSettingsResponse(responseText) {
+	function parseSetupResponse(responseText) {
 
-		var supported = ['name', 'description', 'queries'];
-		var needed = ['name', 'description'];
-		var typeMap = { name: 'String', description: 'String', queries: 'Array' };
+        var setupResponseTerms = {
+    
+            force: true,
+            type: Object,
+            props: {
+        
+                name: {
+                    
+                    force: true,
+                    type: String                    
+                },
 
-		var supportedOfQuery = ['id', 'type', 'label', 'hint', 'values', 'tooltip'];
-		var neededOfQuery = ['id', 'type'];
-		var typeMapOfQuery = { id: 'String', type: 'String', label: 'String', hint: 'String', values: 'Array', tooltip: 'String'};
+                description: {
 
-		var key;
+                    force: false,
+                    type: String
+                },
+            
+                inputs: {
+
+                    force: false,
+                    type: Array,
+                    each: {
+                    
+                        type: Object,
+                        props: {
+
+                            id: {
+                    
+                                force: true,
+                                type: String
+                            },
+                        
+                            type: {
+
+                                force: true,
+                                type: String,
+                                test: s => ['text', 'select'].indexOf(s) !== -1
+                            },
+
+                            values: {
+                                
+                                force: false,
+                                type: Array,
+                                each: {
+                                
+                                    type: String
+                                }
+                            },
+
+                            label: {
+                    
+                                force: false,
+                                type: String
+                            },
+
+                            tip:  {
+        
+                                force: false,
+                                type: String
+                            }                            
+                        }
+                    }
+                }
+            }
+        }
 		
-		try {
-			var response = JSON.parse(responseText);
-		} catch (err) {
-			throw new ResponseParserError('Cannot parse marker response. Probably no valid JSON string.');
-		}
-		
-		if (!response || !isObject(response))
-			throw new ResponseParserError('Marker settings must be an JSON object.');
-
-		if (key = firstUnsupportedProperty(response, supported))
-			throw new ResponseParserError('Unknown property "' + key + '" in marker settings.');
-
-		if (key = firstMissingProperty(response, needed))
-			throw new ResponseParserError('Missing property "' + key + '" in marker settings.');
-
-		if (key = firstMistypedProperty(response, typeMap))
-			throw new ResponseParserError('Property "' + key + '" of marker settings has wrong type.');
-
-		if (response.hasOwnProperty('queries')) {
-			for (var query of response.queries) {
-				
-				if (!isObject(query))
-					throw new ResponseParserError('Items of "queries" must be JSON objects');
-
-				if (key = firstUnsupportedProperty(query, supportedOfQuery))
-					throw new ResponseParserError('Unknown property "' + key + '" in query object.');
-
-				if (key = firstMissingProperty(query, neededOfQuery))
-					throw new ResponseParserError('Missing property "' + key + '" in query object.');
-
-				if (key = firstMistypedProperty(query, typeMapOfQuery))
-					throw new ResponseParserError('Property "' + key + '" of query object has wrong type.');
-			}
-		}
-		return response;
+        return parseResponse(responseText, setupResponseTerms, 'response');
 	}
 
-	function isObject(object) {
-		if (object.constructor.name === 'Object')
-			return true;
-		else
-			return false;
-	}
+    /**
+    * Parses the response text of a marker app.
+    *
+    * @param {JSON String} responseText
+    * @param {Object} responseTerms
+    * @return {Object} - parsed response
+    */
+    function parseResponse(responseText, responseTerms) {
 
-	/**
-	* Returns the name of the first missing property 
-	* relative to a list of needed properties.
-	*
-	* @param {Object} object - object to test.
-	* @param {Array of String} needed - names of properties that should be present in object.
-	* @return {String or Boolean} - eighter the name of a missing property or false.
-	*/
-	function firstMissingProperty(object, needed) {
-		for (var key of needed) {
-			if (!object.hasOwnProperty(key))
-				return key;
-		}
-		return false;
-	}
+        var response;
 
-	/**
-	* Returns the name of the first property that has a unexpected type.
-	*
-	* @param {Object} object - object to test.
-	* @param {Object} typeMap - keys are prop names, values are types.
-	* @return {String or Boolean} - eighter the name of a wrong typed prop or false. 
-	*/
-	function firstMistypedProperty(object, typeMap) {
-		for (var key in object) {
-			if (object[key].constructor.name !== typeMap[key])
-				return key;
+        try {
+	    	response = JSON.parse(responseText);
+		} 
+        catch (err) {
+            var msg = 'Cannot parse marker response: ' + err.message;
+			throw new ResponseParseError(msg);
 		}
-		return false;
-	}
 
-	/**
-	* Returns the name of the first property that is not supported.
-	*
-	* @param {Object} object - object to test.
-	* @param {Array of String} supported - names of properties that are supported.
-	*/
-	function firstUnsupportedProperty(object, supported) {
-		for (var key in object) {
-			if (supported.indexOf(key) === -1)
-				return key; 
-		}
-		return false;
-	}
+        try {
+            parser.parse(response, responseTerms, 'response');
+        }
+        catch (err) {
+            if(err.name === 'ParseError') {
+                throw new ResponseParseError(err.message);
+            } 
+            else {
+                throw err;
+            }
+        }
+
+        return response;
+    }
 
 	/** interfaces of module */
 	return {
-		requestMarking: requestMarking,
-		requestSettings: requestSettings,
+		requestMarkup: requestMarkup,
+		requestSetup: requestSetup,
 		abortRequest: abortRequest
 	};
 }());
