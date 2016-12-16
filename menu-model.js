@@ -189,9 +189,8 @@ var menuModel = (function() {
                             setup.styleClass = styleClass;
                             setup.url = that.inputUrl;
 
-                            markerdb.add(setup, function(marker) {
+                            markerdb.add(setup, function() {
                                 
-                                addMarkerInterface(marker);
                                 that.switchStatus({ success:true });
                             });
                         });
@@ -348,9 +347,7 @@ var menuModel = (function() {
             var that = this;
             proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, 
                 function() {
-                    markerdb.remove(that.marker.id, function() {
-                        removeMarkerInterface(that.marker.id);                        
-                    });    
+                    markerdb.remove(that.marker.id);    
             });               
         };
 
@@ -369,13 +366,12 @@ var menuModel = (function() {
     /**
     * Removes a marker interface from all menus.
     *
-    * @param {Number} markerId - id of the marker whose interface
-    *       should be removed.
+    * @param {Object} marker - marker whose interfaces should be removed.
     */
-    function removeMarkerInterface(markerId) {
+    function removeMarkerInterface(marker) {
         for (var menu of menus) {
             for (var i=0; i < menu.markerIfaces.length; i++) {
-                if (markerId === menu.markerIfaces[i].marker.id) {
+                if (marker.id === menu.markerIfaces[i].marker.id) {
                     menu.markerIfaces.splice(i,1);
                 }
             }
@@ -459,11 +455,15 @@ var menuModel = (function() {
     * Inits the module.
     */
     function init() {
+
         chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
             if (info.status === 'loading') {
                 resetMenu(tabId);
             }
         });
+
+        markerdb.markerAdded.register(addMarkerInterface);
+        markerdb.markerRemoved.register(removeMarkerInterface);
     }
 
     return {
