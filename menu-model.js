@@ -259,7 +259,6 @@ var menuModel = (function() {
         */
         this.userInputs = {};
 
-
         /**
         * Switches the status of the interface.
         * 
@@ -273,26 +272,11 @@ var menuModel = (function() {
             this.status.more = status.more || false;    
         };
 
-
         /** 
         * Toggles the panel of the interface.
         */
         this.togglePanel = function() {
             this.panel = !this.panel;
-        };
-
-        /**
-        * Inits user input storage.
-        * 
-        * @changes {Object} this.userInputs - 
-        *        keys are input ids, vals are user inputs.
-        */
-        this.initUserInputStorage = function() {
-            if (this.marker.queries) {
-                for (var query of this.marker.queries) {
-                    this.userInputs[query.id] = '';
-                }
-            }
         };
 
         /**
@@ -356,7 +340,6 @@ var menuModel = (function() {
                     that.switchStatus({ ready:true });
             });
         };
-
 
         /**
         * Removes the marker from system and the marker interface from menu.
