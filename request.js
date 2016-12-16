@@ -317,7 +317,8 @@ var request = (function() {
         }
         catch (err) {
             if(err.name === 'ParseError') {
-                throw new ResponseParseError(err.message);
+                var msg = "Failed to parse response from server: " + err.message;
+                throw new ResponseParseError(msg);
             } 
             else {
                 throw err;
