@@ -23,6 +23,12 @@ var markerdb = (function() {
     }
 
     /**
+    * Events
+    */
+    var markerAdded = new event.Event();
+    var markerRemoved = new event.Event();
+    
+    /**
     * If the storage is empty init it and set some default markers.
     */
     function initStorage() {
@@ -101,8 +107,11 @@ var markerdb = (function() {
                 items.markers.push(marker);
                 chrome.storage.local.set(
                     {markers: items.markers, lastId: curId}, function() {
-                        if (callback) 
+
+                        if (callback) { 
                             callback(marker);
+                        }
+                        markerAdded.dispatch(marker);
                 });
             });
         });
@@ -120,11 +129,17 @@ var markerdb = (function() {
 
             var breakIt = false;
             var markers = items.markers;
-            for (var key in markers) {
-                if (markers[key].id === id) {
-                    markers.splice(key, 1);
+            for (var i=0; i < markers.length; i++) {
+
+                if (markers[i].id === id) {
+
+                    marker = markers.splice(i, 1);
                     chrome.storage.local.set({markers: markers}, function() {
-                        if (callback) callback();
+
+                        if (callback) { 
+                            callback(marker);
+                        }
+                        markerRemoved.dispatch(marker);
                         breakIt = true;
                     });
                 }
@@ -140,6 +155,8 @@ var markerdb = (function() {
         add: add,
         remove: remove,
         initStorage: initStorage,
+        markerAdded: markerAdded,
+        markerRemoved: markerRemoved
     };
     
 }());
