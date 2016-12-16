@@ -36,14 +36,14 @@ var request = (function() {
     * 
 	*
     * @param {String} id - id of request
-	* @param {markerdb.Marker} marker
+	* @param {String} url - request url
 	* @param {Array of String} tokens - tokens extracted from web page
 	* @param {String} wpUrl - url of the current web page.
 	* @param {Object} inputs - user inputs belonging to the marker.
 	*	    Keys {String} are input ids, values {String} are user inputs.
 	* @param {Function} callback - ({Error} err, {Object} parsed response)
 	*/
-	function requestMarkup(id, marker, tokens, wpUrl, inputs, callback) {
+	function requestMarkup(id, url, tokens, wpUrl, inputs, callback) {
 		
 		var data = {
 			call: 'markup',
@@ -52,7 +52,7 @@ var request = (function() {
 			inputs: inputs
 		};
 		
-		request(id, marker.url, data, function(err, responseText) {
+		request(id, url, data, function(err, responseText) {
 			if (err) {
 				callback(err, null);
 			} else {
@@ -76,14 +76,14 @@ var request = (function() {
 	* Requests a marker app to submit its setup features.
 	*
     * @param {String} id - id of request
-	* @param {String} marker
+	* @param {String} url - request url
 	* @param {Function} callback - ({Error} err, {Object} parsed response)
 	*/
-	function requestSetup(id, marker, callback) {
+	function requestSetup(id, url, callback) {
 
 		var data = { call: 'setup' };
 
-		request(id, marker.url, data, function(err, responseText) {
+		request(id, url, data, function(err, responseText) {
 			if (err) {
 				callback(err, null);
 			} else {
