@@ -11,9 +11,10 @@
     ],
 
     "background": {
-        "scripts": [ 
-            "markerdb.js",
+        "scripts": [
+            "event.js",
             "parser.js",
+            "markerdb.js",
             "request.js", 
             "proxy.js",
 			"menu-model.js"
