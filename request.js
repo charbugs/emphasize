@@ -53,22 +53,9 @@ var request = (function() {
 		};
 		
 		request(id, url, data, function(err, responseText) {
-			if (err) {
-				callback(err, null);
-			} else {
-				try {
-					var response = parseMarkupResponse(
-                        responseText, tokens.length);
-					callback(null, response);
-				} catch (err) {
-					if (err instanceof ResponseParseError)
-						callback(err, null);
-					else if (err instanceof RequestError)
-						callback(err, null);
-					else
-						throw err;
-				}
-			}
+
+			handleResponseText(err, responseText, 
+                parseMarkupResponse, callback);
 		});
 	}
 
@@ -84,21 +71,9 @@ var request = (function() {
 		var data = { call: 'setup' };
 
 		request(id, url, data, function(err, responseText) {
-			if (err) {
-				callback(err, null);
-			} else {
-				try {
-					var response = parseSetupResponse(responseText);
-					callback(null, response);
-				} catch (err) {
-					if (err instanceof ResponseParseError)
-						callback(err, null);
-					else if (err instanceof RequestError)
-						callback(err, null);
-					else
-						throw err;
-				}
-			}
+
+			handleResponseText(err, responseText, 
+                parseSetupResponse, callback);
 		});
 	}
 
@@ -163,6 +138,33 @@ var request = (function() {
 			}
 		}
 	}
+
+    /**
+    * Handels the response text of marker app.
+    *
+    * @param {Error} err
+    * @param {String} responseText
+    * @param {Function} parser
+    * @param {Function} callback
+    */
+    function handleResponseText(err, responseText, parser, callback) {
+
+        if (err) {
+			callback(err, null);
+		} else {
+			try {
+				var response = parser(responseText);
+				callback(null, response);
+			} catch (err) {
+				if (err instanceof ResponseParseError)
+					callback(err, null);
+				else if (err instanceof RequestError)
+					callback(err, null);
+				else
+					throw err;
+			}
+		}
+    }
 
 	/**
 	* Parses the markup response of a marker app.
