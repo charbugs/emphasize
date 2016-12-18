@@ -344,11 +344,7 @@ var menuModel = (function() {
         * Removes the marker from system and the marker interface from menu.
         */
         this.removeMarker = function() {
-            var that = this;
-            proxy.invoke(that.tabId, 'highlight.remove', that.marker.id, 
-                function() {
-                    markerdb.remove(that.marker.id);    
-            });               
+            markerdb.remove(this.marker.id);
         };
 
         /**
@@ -365,14 +361,25 @@ var menuModel = (function() {
     
     /**
     * Removes a marker interface from all menus.
+    * 
+    * That also requires to remove the highlighting made by this marker
+    * in all tabs.
     *
-    * @param {Object} marker - marker whose interfaces should be removed.
+    * @param {Object} remMarker - marker whose interfaces should be removed.
     */
-    function removeMarkerInterface(marker) {
-        for (var menu of menus) {
-            for (var i=0; i < menu.markerIfaces.length; i++) {
-                if (marker.id === menu.markerIfaces[i].marker.id) {
-                    menu.markerIfaces.splice(i,1);
+    function removeMarkerInterface(remMarker) {
+        // watch out for let: async function in loop!!
+        for (let menu of menus) {
+
+            for (let i=0; i < menu.markerIfaces.length; i++) {
+
+                var id = menu.markerIfaces[i].marker.id;
+                var tabId = menu.markerIfaces[i].tabId;
+
+                if (id === remMarker.id) {
+                    proxy.invoke(tabId, 'highlight.remove', id, function() {
+                        menu.markerIfaces.splice(i,1);                  
+                    });
                 }
             }
         }
@@ -468,7 +475,7 @@ var menuModel = (function() {
 
     return {
         getMenu : getMenu,
-        init: init        
+        init: init
     };
 
 }());
