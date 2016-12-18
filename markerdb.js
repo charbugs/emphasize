@@ -2,6 +2,16 @@
 var markerdb = (function() {
 
     /**
+	* An Error that will be thrown if something went wrong while changing database.
+	*/
+	function DatabaseError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	DatabaseError.prototype = Object.create(Error.prototype);
+	DatabaseError.prototype.name = 'DatabaseError';
+
+    /**
     * Represents a Marker.
     * 
     * @param {Number} id - unique id
@@ -88,32 +98,39 @@ var markerdb = (function() {
         });
     }
 
+    function urlExists(url, markers) {
+        existing = markers.map(m => m.url);
+        return (existing.indexOf(url) === -1) ? false : true;
+    }
+
     /**
     * Add a new marker to the storage.
     * 
     * @param {object} settings - properties of the new marker.
-    * @param {Function} callback
-    *    @param {Marker} - added marker
+    * @param {Function} callback - (err, added marker)
     */
     function add(settings, callback) {
 
-        chrome.storage.local.get('lastId', function(items) {
+        chrome.storage.local.get(null, function(items) {
 
-            var curId = ++items.lastId;
-            var marker = new Marker(curId, settings);
+            if (urlExists(settings.url, items.markers)) {
+                var msg = 'A marker with this URL already exists.';
+                callback(new DatabaseError(msg), null);
+            }
+            else {
 
-            chrome.storage.local.get('markers', function(items) {
-
+                var marker = new Marker(++items.lastId, settings);    
                 items.markers.push(marker);
-                chrome.storage.local.set(
-                    {markers: items.markers, lastId: curId}, function() {
+                updated = {markers: items.markers, lastId: items.lastId};
 
-                        if (callback) { 
-                            callback(marker);
-                        }
-                        markerAdded.dispatch(marker);
+                chrome.storage.local.set(updated, function() {
+
+                    if (callback) { 
+                        callback(null, marker);
+                    }
+                    markerAdded.dispatch(marker);
                 });
-            });
+            }
         });
     }
 

@@ -189,9 +189,15 @@ var menuModel = (function() {
                             setup.styleClass = styleClass;
                             setup.url = that.inputUrl;
 
-                            markerdb.add(setup, function() {
+                            markerdb.add(setup, function(err, marker) {
                                 
-                                that.switchStatus({ success:true });
+                                if (err) {
+                                    that.errorMessage = err.message;
+                                    that.switchStatus({ error:true });
+                                }
+                                else {
+                                    that.switchStatus({ success:true });
+                                }
                             });
                         });
                     }
