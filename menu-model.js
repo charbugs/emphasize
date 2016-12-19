@@ -97,22 +97,6 @@ var menuModel = (function() {
         this.inputUrl;
 
         /**
-        * Supported style classes for markers
-        */
-        this.styleClasses = [
-            'vink-face-1',
-            'vink-face-2',
-            'vink-face-3',
-            'vink-face-4',
-            'vink-face-5',
-            'vink-face-6',
-            'vink-face-7',
-            'vink-face-8',
-            'vink-face-9',
-            'vink-face-10'
-        ];
-
-        /**
         * Switches the status of the interface.
         * 
         * @param {Object} status - keys are status names, values are boolean.
@@ -123,86 +107,28 @@ var menuModel = (function() {
             this.status.error = status.error || false;
             this.status.progress = status.progress || false;
         };
-
-
-        /**
-        * Checks if a url is valid in terms of the system.
-        */
-        this.checkInputUrl = function(url) {
-            return url.search(/^(http:\/\/|https:\/\/)/) === -1 ? false : true;
-        };
-
-
-        /**
-        * Returns an style class name.
-        *
-        * @param {Function} callback - ({String} styleClass)
-        */
-        this.determineStyleClass = function(callback) {
-
-            var that = this;
-            markerdb.get(null, function(markers) {
-
-                var exist = markers.map(marker => marker.styleClass);
-                var nonExist = that.styleClasses.filter(c => exist.indexOf(c) === -1);
-                var rand = Math.random();
-
-                if (nonExist.length === 0) {
-                    i = Math.floor(rand * that.styleClasses.length);
-                    callback(that.styleClasses[i]);
-                }
-                else  {
-                    i = Math.floor(rand * nonExist.length);
-                    callback(nonExist[i]);
-                }
-            });
-        };
-
     
         /**
         * Registers a new marker to the system based on 
-        * an url given by user input. The new marker will be
-        * added to the menu on success.
+        * an url given by user input.
+        *
+        * The marker is added to the menu on success. This is done
+        * by addMarkerInterface() that listens for the markerAdded event
+        * of markerdb
         */
         this.registerMarker = function() {
-
             var that = this;
-
-            if (!that.checkInputUrl(that.inputUrl)) {
-                that.errorMessage = 'Need a valid HTTP URL that starts with\
-                    "http://" or "https://".';
-                that.switchStatus({ error:true });
-            } 
-            else {
-                
-                that.switchStatus({ progress:true });
-
-                request.requestSetup(that.requestId, that.inputUrl, function(err, setup) {
-
+            that.switchStatus({ progress : true });
+            markerdb.register(that.requestId, that.inputUrl, 
+                function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
-                        that.switchStatus({ error:true });
-                    } 
-                    else {
-                        that.determineStyleClass(function(styleClass) {
-
-                            setup.styleClass = styleClass;
-                            setup.url = that.inputUrl;
-
-                            markerdb.add(setup, function(err, marker) {
-                                
-                                if (err) {
-                                    that.errorMessage = err.message;
-                                    that.switchStatus({ error:true });
-                                }
-                                else {
-                                    that.switchStatus({ success:true });
-                                }
-                            });
-                        });
+                        that.switchStatus({ error: true });
+                    } else {
+                        that.switchStatus({ success: true });
                     }
-                });                
-            }
+                }
+            );
         };
 
         /**
