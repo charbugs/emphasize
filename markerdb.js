@@ -2,6 +2,28 @@
 var markerdb = (function() {
 
     /**
+    * Events
+    */
+    var markerAdded = new event.Event();
+    var markerRemoved = new event.Event();
+    
+    /**
+    * Supported style classes for markers
+    */
+    var styleClasses = [
+        'vink-face-1',
+        'vink-face-2',
+        'vink-face-3',
+        'vink-face-4',
+        'vink-face-5',
+        'vink-face-6',
+        'vink-face-7',
+        'vink-face-8',
+        'vink-face-9',
+        'vink-face-10'
+    ];
+
+    /**
 	* An Error that will be thrown if something went wrong while changing database.
 	*/
 	function DatabaseError(message) {
@@ -32,12 +54,6 @@ var markerdb = (function() {
         this.styleClass = settings.styleClass;
     }
 
-    /**
-    * Events
-    */
-    var markerAdded = new event.Event();
-    var markerRemoved = new event.Event();
-    
     /**
     * If the storage is empty init it and set some default markers.
     */
@@ -97,43 +113,103 @@ var markerdb = (function() {
         });
     }
 
+    /**
+    * Registers a new marker to the database.
+    *
+    * Fires markerAdded on success.
+    * 
+    * @param {String} requestId - Id for the http request.
+    * @param {String} url - Url of marker to register.
+    * @param {Function} [callback] - fn(err, new marker).
+    */
+    function register(requestId, url, callback) {
+    
+        chrome.storage.local.get(null, function(items) {
+
+            var markers = items.markers;
+            
+            if(!checkUrl(url)) {
+                var msg = 'Need a valid HTTP URL';
+                if (callback)
+                    callback(new DatabaseError(msg), null);
+                return;
+            }
+
+            if(urlExists(url, markers)) {
+                var msg = 'A marker of this URL already exists.';
+                if (callback)
+                    callback(new DatabaseError(msg), null);
+                return;
+            }
+
+            request.requestSetup(requestId, url, function(err, setup) {
+        
+                if (err) {
+                    if (callback)
+                        callback(err, null);
+                    return;
+                }
+
+                setup.url = url;
+                setup.styleClass = determineStyleClass(markers);
+                var newMarker = new Marker(++items.lastId, setup);    
+                markers.push(newMarker);
+                updated = {markers: markers, lastId: items.lastId};
+
+                chrome.storage.local.set(updated, function() {
+
+                    if (callback) 
+                        callback(null, newMarker);
+
+                    markerAdded.dispatch(newMarker);
+                });
+                               
+            });
+        });
+    }
+
+    /**
+    * Checks if a url is valid in terms of the database.
+    *
+    * @param {String} url
+    * @return {Boolean} - True if valid.
+    */
+    function checkUrl (url) {
+        return url.search(/^(http:\/\/|https:\/\/)/) === -1 ? false : true;
+    }
+
+    /**
+    * Checks if a marker with the given url already exists in database.
+    *
+    * @param {String} url
+    * @param {Array of Marker} markers - Existing markers.
+    * @return {Boolean} - True if exists.
+    */
     function urlExists(url, markers) {
         existing = markers.map(m => m.url);
         return (existing.indexOf(url) === -1) ? false : true;
     }
 
     /**
-    * Add a new marker to the storage.
+    * Returns a class attribute that determines the face of the marker.
     *
-    * Throws an error if a marker with the given url already exists.
-    * Fires markerAdded on success.
-    * 
-    * @param {object} settings - Properties of the new marker.
-    * @param {Function} [callback] - fn(err, added marker).
+    * @param {Array of Markers} markers - Existing markers.
+    * @return {String} - class attribute
     */
-    function add(settings, callback) {
+    function determineStyleClass(markers) {
 
-        chrome.storage.local.get(null, function(items) {
+        var exist = markers.map(marker => marker.styleClass);
+        var nonExist = styleClasses.filter(c => exist.indexOf(c) === -1);
+        var rand = Math.random();
 
-            if (urlExists(settings.url, items.markers)) {
-                var msg = 'A marker with this URL already exists.';
-                callback(new DatabaseError(msg), null);
-            }
-            else {
-
-                var marker = new Marker(++items.lastId, settings);    
-                items.markers.push(marker);
-                updated = {markers: items.markers, lastId: items.lastId};
-
-                chrome.storage.local.set(updated, function() {
-
-                    if (callback) { 
-                        callback(null, marker);
-                    }
-                    markerAdded.dispatch(marker);
-                });
-            }
-        });
+        if (nonExist.length === 0) {
+            i = Math.floor(rand * styleClasses.length);
+            return styleClasses[i];
+        }
+        else  {
+            i = Math.floor(rand * nonExist.length);
+            return nonExist[i];
+        }
     }
 
     /**
@@ -203,7 +279,7 @@ var markerdb = (function() {
     */
     return {
         get: get,
-        add: add,
+        register: register,
         remove: remove,
         removeByUrl: removeByUrl,
         initStorage: initStorage,
