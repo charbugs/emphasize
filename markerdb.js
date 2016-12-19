@@ -142,7 +142,7 @@ var markerdb = (function() {
     * Fires markerRemoved on success.
     * 
     * @param {Number} id - Id of the marker to remove.
-    * @param {Function} [callback] - fn(removed marker).   
+    * @param {Function} [callback] - fn(err, removed marker).   
     */
     function remove(id, callback) {
         
@@ -157,7 +157,7 @@ var markerdb = (function() {
                     chrome.storage.local.set({markers: markers}, function() {
 
                         if (callback) { 
-                            callback(marker);
+                            callback(null, marker);
                         }
 
                         markerRemoved.dispatch(marker);
@@ -173,7 +173,7 @@ var markerdb = (function() {
     * Fires markerRemoved on success.
     * 
     * @param {String} url - Url of the marker to remove.
-    * @param {Function} [callback] - fn(removed marker).   
+    * @param {Function} [callback] - fn(err, removed marker).   
     */
     function removeByUrl(url, callback) {
         
@@ -188,7 +188,7 @@ var markerdb = (function() {
                     chrome.storage.local.set({markers: markers}, function() {
 
                         if (callback) { 
-                            callback(marker);
+                            callback(null, marker);
                         }
 
                         markerRemoved.dispatch(marker);
