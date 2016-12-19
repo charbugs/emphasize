@@ -48,16 +48,14 @@ var external = (function() {
     }
 
     function addMarker(url, callback) {
-        markerdb.register(url, function(err, marker) {
-            if (callback)
-                callback(err, marker);
+        markerdb.register('', url, function(err, marker) {
+            callback({err: err, marker: marker})
         });
     }
     
     function removeMarker(url, callback) {
         markerdb.removeByUrl(url, function(err, marker) {
-            if (callback)
-                callback(err, marker);                
+            callback({ err: err, marker: marker });
         });
     }    
     
