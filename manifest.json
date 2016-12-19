@@ -15,6 +15,7 @@
             "event.js",
             "parser.js",
             "markerdb.js",
+            "external.js",
             "request.js", 
             "proxy.js",
 			"menu-model.js"
@@ -27,5 +28,9 @@
         "default_popup": "menu-view.html"
     },
 
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+    "externally_connectable": {
+        "matches": ["http://localhost:8080/*"]
+    }   
 }
