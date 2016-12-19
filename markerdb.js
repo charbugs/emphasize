@@ -79,8 +79,7 @@ var markerdb = (function() {
     * Returns one or all marker(s) from storage.
     * 
     * @param {Number | null} id - id of the marker to return (null if all)
-    * @param {Function} - callback
-    *     @param {Marker | Array of Marker} - requested marker(s)
+    * @param {Function} callback - fn({Marker} marker | {Array of Marker} markers).
     */
     function get(id, callback) {
 
@@ -105,9 +104,12 @@ var markerdb = (function() {
 
     /**
     * Add a new marker to the storage.
+    *
+    * Throws an error if a marker with the given url already exists.
+    * Fires markerAdded on success.
     * 
-    * @param {object} settings - properties of the new marker.
-    * @param {Function} callback - (err, added marker)
+    * @param {object} settings - Properties of the new marker.
+    * @param {Function} [callback] - fn(err, added marker).
     */
     function add(settings, callback) {
 
@@ -136,27 +138,28 @@ var markerdb = (function() {
 
     /**
     * Remove a marker from storage.
+    *
+    * Fires markerRemoved on success.
     * 
-    * @param {Number} id - the id of the marker to remove
-    * @param {Function} callback - without params   
+    * @param {Number} id - Id of the marker to remove.
+    * @param {Function} [callback] - fn(removed marker).   
     */
     function remove(id, callback) {
         
         chrome.storage.local.get('markers', function(items) {
 
-            var breakIt = false;
             var markers = items.markers;
             for (var i=0; i < markers.length; i++) {
 
                 if (markers[i].id === id) {
 
-                    marker = markers.splice(i, 1)[0];
-
+                    let marker = markers.splice(i, 1)[0];
                     chrome.storage.local.set({markers: markers}, function() {
 
                         if (callback) { 
                             callback(marker);
                         }
+
                         markerRemoved.dispatch(marker);
                     });
                 }
@@ -164,10 +167,45 @@ var markerdb = (function() {
         });
     }
 
+    /**
+    * Remove a marker from storage.
+    *
+    * Fires markerRemoved on success.
+    * 
+    * @param {String} url - Url of the marker to remove.
+    * @param {Function} [callback] - fn(removed marker).   
+    */
+    function removeByUrl(url, callback) {
+        
+        chrome.storage.local.get('markers', function(items) {
+
+            var markers = items.markers;
+            for (var i=0; i < markers.length; i++) {
+
+                if (markers[i].url === url) {
+
+                    let marker = markers.splice(i, 1)[0];
+                    chrome.storage.local.set({markers: markers}, function() {
+
+                        if (callback) { 
+                            callback(marker);
+                        }
+
+                        markerRemoved.dispatch(marker);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+    * public 
+    */
     return {
         get: get,
         add: add,
         remove: remove,
+        removeByUrl: removeByUrl,
         initStorage: initStorage,
         markerAdded: markerAdded,
         markerRemoved: markerRemoved
