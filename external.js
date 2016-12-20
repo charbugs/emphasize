@@ -8,11 +8,15 @@ var external = (function() {
         }
 
         if (message.command === 'addMarker') {
-            addMarker(message.url, callback);
+            addMarker(message.requestId, message.url, callback);
         }
 
         if (message.command === 'removeMarker') {
             removeMarker(message.url, callback);
+        }
+
+        if (message.command === 'abortRequest') {
+            abortRequest(message.requestId, callback);
         }
 
         // Return true here is important, see:
@@ -47,8 +51,8 @@ var external = (function() {
         });
     }
 
-    function addMarker(url, callback) {
-        markerdb.register('', url, function(err, marker) {
+    function addMarker(requestId, url, callback) {
+        markerdb.register(requestId, url, function(err, marker) {
             callback({err: err, marker: marker})
         });
     }
@@ -58,7 +62,11 @@ var external = (function() {
             callback({ err: err, marker: marker });
         });
     }    
-    
+   
+    function abortRequest(requestId) {
+        request.abortRequest(requestId);
+    }
+ 
     function init() {
         chrome.runtime.onMessageExternal.addListener(handleMessage);
         chrome.runtime.onConnectExternal.addListener(handleConnect);
