@@ -1,5 +1,5 @@
 
-var menuModel = (function() {
+var menumodels = (function() {
 
     /**
     * Container for Menu instances.
@@ -9,32 +9,32 @@ var menuModel = (function() {
     /**
     * Represents a system menu for a specific tab.
     *
-    * It consists of serveral user interfaces. These interfaces
-    * holds data and methods for user interaction. The visual part
-    * of the menu are defined withhin uidisplay.html.
+    * It consists of serveral ui models. These models hold
+    * data and methods for user interaction. The view parts
+    * of the menu are defined withhin menuview.html.
     *
     * @param {Number} tabId - id of the tab the menu belongs to.
-    * @param {NavigationInterface} navigation
-    * @param {RegistrationInterface} registration
-    * @param {Array of MarkerInterface} - markerIfaces 
+    * @param {TabNavigationModel} tabNavigationModel
+    * @param {RegistrationModel} registrationModel
+    * @param {Array of MarkerModel} - markerModels
     */
-    function Menu(tabId, navigation, registration, markerIfaces) {
+    function MenuModel(
+        tabId,
+        tabNavigationModel,
+        registrationModel,
+        markerModels) {
 
         this.tabId = tabId;
-        this.navigation = navigation;
-        this.registration = registration;
-        this.markerIfaces = markerIfaces;
+        this.tabNavigationModel = tabNavigationModel;
+        this.registrationModel = registrationModel;
+        this.markerModels = markerModels;
     }
 
     /**
-    * Respresents the logic of the menu's navigation interface. 
-    *
-    * Menu's navigation consists of a navigation bar and different 
-    * views below that bar. Views can be switched by nav bar buttons. 
-    * The visual part is defined within menu-view.html.
+    * Model of the menu's global tab navigation.
     */
-    function NavigationInterface() {
-        
+    function TabNavigationModel() {
+
         /**
         * Saves the current status of the interface.
         *
@@ -48,7 +48,7 @@ var menuModel = (function() {
 
         /**
         * Switches the status of the navigation interface
-        * 
+        *
         * @param {Object} status - keys are status names, values are boolean.
         */
         this.switchStatus = function(status) {
@@ -57,21 +57,18 @@ var menuModel = (function() {
         };
     }
 
-    
+
     /**
-    * Represent the logic of the registration interface.
-    *
-    * Visual part is defined in menu-view.html.
+    * Model of the registration user interface.
     *
     * @param {Number} tabId - id of the current browser tab.
     */
-    function RegistrationInterface(tabId) {
+    function RegistrationModel(tabId) {
 
         this.tabId = tabId;
-    
+
         /**
         * Saves the current status of the interface.
-        *
         */
         this.status = {
             input: true,
@@ -85,7 +82,7 @@ var menuModel = (function() {
         */
         this.requestId = String(tabId) + '-' + 'registration';
 
-        /** 
+        /**
         * Messages
         */
         this.successMessage = "Marker successfully added.";
@@ -98,7 +95,7 @@ var menuModel = (function() {
 
         /**
         * Switches the status of the interface.
-        * 
+        *
         * @param {Object} status - keys are status names, values are boolean.
         */
         this.switchStatus = function(status) {
@@ -107,9 +104,9 @@ var menuModel = (function() {
             this.status.error = status.error || false;
             this.status.progress = status.progress || false;
         };
-    
+
         /**
-        * Registers a new marker to the system based on 
+        * Registers a new marker to the system based on
         * an url given by user input.
         *
         * The marker is added to the menu on success. This is done
@@ -119,7 +116,7 @@ var menuModel = (function() {
         this.registerMarker = function() {
             var that = this;
             that.switchStatus({ progress : true });
-            markerdb.register(that.requestId, that.inputUrl, 
+            markerdb.register(that.requestId, that.inputUrl,
                 function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
@@ -133,24 +130,23 @@ var menuModel = (function() {
 
         /**
         * Aborts a request made by this registration interface.
-        * 
+        *
         * This should trigger the callback to the request. This callback is
         * defined within registerMarker().
         */
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
-        };      
+        };
     }
 
 
     /**
-    * Represents the data and methods of a user interface for a marker.
-    * The visual part of the interface is defined in the menu's html file.
-    * 
+    * Model of a user interface to control a marker.
+    *
     * @param {markerdb.Marker} marker
     * @param {Number} tabId - id of the current browser tab.
     */
-    function MarkerInterface(marker, tabId) {
+    function MarkerModel(marker, tabId) {
 
         this.marker = marker;
         this.tabId = tabId;
@@ -184,7 +180,7 @@ var menuModel = (function() {
 
         /**
         * Holds user inputs.
-        * 
+        *
         * Keys are input ids, values are text.
         * This object will be sent to the marker app.
         */
@@ -192,18 +188,18 @@ var menuModel = (function() {
 
         /**
         * Switches the status of the interface.
-        * 
+        *
         * @param {Object} status - keys are status names, values are boolean.
         */
         this.switchStatus = function(status) {
             this.status.ready = status.ready || false;
             this.status.progress = status.progress || false;
             this.status.result = status.result || false;
-            this.status.error = status.error || false;    
-            this.status.more = status.more || false;    
+            this.status.error = status.error || false;
+            this.status.more = status.more || false;
         };
 
-        /** 
+        /**
         * Toggles the panel of the interface.
         */
         this.togglePanel = function() {
@@ -219,45 +215,45 @@ var menuModel = (function() {
 
             that.switchStatus({ progress:true });
 
-            proxy.invoke(that.tabId, 'extract.extractTextNodes', 
+            proxy.invoke(that.tabId, 'extract.extractTextNodes',
                 function() {
-                
-                proxy.invoke(that.tabId, 'extract.getWords', 
+
+                proxy.invoke(that.tabId, 'extract.getWords',
                     function(err, words) {
-                    
-                    proxy.invoke(that.tabId, 'extract.getUrl', 
+
+                    proxy.invoke(that.tabId, 'extract.getUrl',
                         function(err, wpUrl) {
 
-                        request.requestMarkup(that.requestId, that.marker.url, words, wpUrl, 
-                            that.userInputs, 
+                        request.requestMarkup(that.requestId, that.marker.url, words, wpUrl,
+                            that.userInputs,
                             function(err, resp) {
-                            
+
                             if (err) {
                                 if (err.name === 'ResponseParseError' ||
                                     err.name === 'RequestError') {
-                                    
+
                                     that.errorMessage = err.message;
-                                    that.switchStatus({ error:true });    
-                                      
-                                } 
+                                    that.switchStatus({ error:true });
+
+                                }
                                 else {
                                     throw err;
                                 }
                             }
                             else {
-                                proxy.invoke(that.tabId, 'highlight.highlight', 
+                                proxy.invoke(that.tabId, 'highlight.highlight',
                                     resp.markup, that.marker,
                                     function() {
-                                          
+
                                     that.resultMessage = resp.message;
                                     that.switchStatus({ result:true });
-                                    
+
                                 });
                             }
                         });
-                    });                    
+                    });
                 });
-            });           
+            });
         };
 
 
@@ -281,7 +277,7 @@ var menuModel = (function() {
 
         /**
         * Aborts a request made by this marker interface.
-        * 
+        *
         * This should trigger the callback to the request. This callback is
         * defined within applyMarker().
         */
@@ -290,27 +286,26 @@ var menuModel = (function() {
         };
     }
 
-    
     /**
-    * Removes a marker interface from all menus.
-    * 
+    * Removes a marker user interface from all menus.
+    *
     * That also requires to remove the highlighting made by this marker
     * in all tabs.
     *
     * @param {Object} remMarker - marker whose interfaces should be removed.
     */
-    function removeMarkerInterface(remMarker) {
+    function removeMarkerFromMenus(remMarker) {
         // watch out for let: async function in loop!!
         for (let menu of menus) {
 
-            for (let i=0; i < menu.markerIfaces.length; i++) {
+            for (let i=0; i < menu.markerModels.length; i++) {
 
-                var id = menu.markerIfaces[i].marker.id;
-                var tabId = menu.markerIfaces[i].tabId;
+                var id = menu.markerModels[i].marker.id;
+                var tabId = menu.markerModels[i].tabId;
 
                 if (id === remMarker.id) {
                     proxy.invoke(tabId, 'highlight.remove', id, function() {
-                        menu.markerIfaces.splice(i,1);                  
+                        menu.markerModels.splice(i,1);
                     });
                 }
             }
@@ -319,29 +314,28 @@ var menuModel = (function() {
 
     /**
     * Adds a marker interface to all menus.
-    * 
+    *
     * @param {markerdb.Marker} marker.
     */
-    function addMarkerInterface(marker) {
+    function addMarkerToMenus(marker) {
         for (var menu of menus) {
-            menu.markerIfaces.push(
-                new MarkerInterface(marker, menu.tabId)
+            menu.markerModels.push(
+                new MarkerModel(marker, menu.tabId)
             );
-        }    
+        }
     }
 
-    
-    /** 
+    /**
     * Resets a menu to initial state.
     *
     * This should be done if the user loads or reloads a webpage on a tab.
     *
     * @param {Number} tabId - id of tab the menu belongs to
-    */ 
+    */
     function resetMenu(tabId) {
-        var menu = selectMenu(tabId);
+        var menu = selectExistingMenu(tabId);
         if(menu) {
-            for (var iface of menu.markerIfaces) {
+            for (var iface of menu.markerModels) {
                 iface.switchStatus({ ready:true });
                 iface.errorMessage = '';
                 iface.resultMessage = '';
@@ -350,16 +344,17 @@ var menuModel = (function() {
     }
 
     /**
-    * Returns the menu of a specific tab.
+    * Returns the menu of a specific tab if extists.
     * Undefine if no menu extists for that tab.
     *
-    * @param {Menu|undefined}
+    * @param {Number} tabId
+    * @return {Menu|undefined}
     */
-    function selectMenu(tabId) {
+    function selectExistingMenu(tabId) {
         return menus.filter(m => m.tabId == tabId)[0];
     }
 
-    /** 
+    /**
     * Returns the menu belonging to a specific tab.
     * Creates that menu if not already extists.
     *
@@ -367,8 +362,8 @@ var menuModel = (function() {
     * @param {Function} callback - (interfaces)
     */
     function getMenu(tabId, callback) {
-       
-        var menu = selectMenu(tabId);
+
+        var menu = selectExistingMenu(tabId);
 
         if (menu) {
             callback(menu);
@@ -376,17 +371,17 @@ var menuModel = (function() {
         else {
 
             markerdb.get(null, function(markers) {
-                        
-                menu = new Menu(
+
+                menu = new MenuModel(
                     tabId,
-                    new NavigationInterface(),
-                    new RegistrationInterface(tabId),
-                    markers.map(m => new MarkerInterface(m, tabId))
+                    new TabNavigationModel(),
+                    new RegistrationModel(tabId),
+                    markers.map(m => new MarkerModel(m, tabId))
                 );
 
                 menus.push(menu);
                 callback(menu);
-            });            
+            });
         }
     }
 
@@ -401,8 +396,8 @@ var menuModel = (function() {
             }
         });
 
-        markerdb.markerAdded.register(addMarkerInterface);
-        markerdb.markerRemoved.register(removeMarkerInterface);
+        markerdb.markerAdded.register(addMarkerToMenus);
+        markerdb.markerRemoved.register(removeMarkerFromMenus);
     }
 
     return {
@@ -413,6 +408,5 @@ var menuModel = (function() {
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
-    menuModel.init();        
+    menumodels.init();
 });
-
