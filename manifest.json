@@ -16,21 +16,21 @@
             "parser.js",
             "markerdb.js",
             "external.js",
-            "request.js", 
+            "request.js",
             "proxy.js",
-			"menu-model.js"
+			"menumodels.js"
         ],
         "persistent": false
      },
 
     "browser_action": {
         "default_icon": "menu.png",
-        "default_popup": "menu-view.html"
+        "default_popup": "menuviews.html"
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
     "externally_connectable": {
         "matches": ["http://localhost:8080/*"]
-    }   
+    }
 }
