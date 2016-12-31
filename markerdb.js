@@ -6,7 +6,7 @@ var markerdb = (function() {
     */
     var markerAdded = new event.Event();
     var markerRemoved = new event.Event();
-    
+
     /**
     * Supported style classes for markers
     */
@@ -19,8 +19,7 @@ var markerdb = (function() {
         'vink-face-6',
         'vink-face-7',
         'vink-face-8',
-        'vink-face-9',
-        'vink-face-10'
+        'vink-face-9'
     ];
 
     /**
@@ -35,7 +34,7 @@ var markerdb = (function() {
 
     /**
     * Represents a Marker.
-    * 
+    *
     * @param {Number} id - unique id
     * @param {Object} settings
     *   @prop {String} url
@@ -93,7 +92,7 @@ var markerdb = (function() {
 
     /**
     * Returns one or all marker(s) from storage.
-    * 
+    *
     * @param {Number | null} id - id of the marker to return (null if all)
     * @param {Function} callback - fn({Marker} marker | {Array of Marker} markers).
     */
@@ -104,7 +103,7 @@ var markerdb = (function() {
                 callback(items.markers);
             else {
                 for (var key in items.markers) {
-                    if (items.markers[key].id === id) {                        
+                    if (items.markers[key].id === id) {
                         callback(items.markers[key]);
                         break;
                     }
@@ -117,17 +116,17 @@ var markerdb = (function() {
     * Registers a new marker to the database.
     *
     * Fires markerAdded on success.
-    * 
+    *
     * @param {String} requestId - Id for the http request.
     * @param {String} url - Url of marker to register.
     * @param {Function} [callback] - fn(err, new marker).
     */
     function register(requestId, url, callback) {
-    
+
         chrome.storage.local.get(null, function(items) {
 
             var markers = items.markers;
-            
+
             if(!checkUrl(url)) {
                 var msg = 'Need a valid HTTP URL';
                 if (callback)
@@ -143,7 +142,7 @@ var markerdb = (function() {
             }
 
             request.requestSetup(requestId, url, function(err, setup) {
-        
+
                 if (err) {
                     if (callback)
                         callback(err, null);
@@ -152,18 +151,18 @@ var markerdb = (function() {
 
                 setup.url = url;
                 setup.styleClass = determineStyleClass(markers);
-                var newMarker = new Marker(++items.lastId, setup);    
+                var newMarker = new Marker(++items.lastId, setup);
                 markers.push(newMarker);
                 updated = {markers: markers, lastId: items.lastId};
 
                 chrome.storage.local.set(updated, function() {
 
-                    if (callback) 
+                    if (callback)
                         callback(null, newMarker);
 
                     markerAdded.dispatch(newMarker);
                 });
-                               
+
             });
         });
     }
@@ -216,12 +215,12 @@ var markerdb = (function() {
     * Remove a marker from storage.
     *
     * Fires markerRemoved on success.
-    * 
+    *
     * @param {Number} id - Id of the marker to remove.
-    * @param {Function} [callback] - fn(err, removed marker).   
+    * @param {Function} [callback] - fn(err, removed marker).
     */
     function remove(id, callback) {
-        
+
         chrome.storage.local.get('markers', function(items) {
 
             var markers = items.markers;
@@ -232,7 +231,7 @@ var markerdb = (function() {
                     let marker = markers.splice(i, 1)[0];
                     chrome.storage.local.set({markers: markers}, function() {
 
-                        if (callback) { 
+                        if (callback) {
                             callback(null, marker);
                         }
 
@@ -247,12 +246,12 @@ var markerdb = (function() {
     * Remove a marker from storage.
     *
     * Fires markerRemoved on success.
-    * 
+    *
     * @param {String} url - Url of the marker to remove.
-    * @param {Function} [callback] - fn(err, removed marker).   
+    * @param {Function} [callback] - fn(err, removed marker).
     */
     function removeByUrl(url, callback) {
-        
+
         chrome.storage.local.get('markers', function(items) {
 
             var markers = items.markers;
@@ -263,7 +262,7 @@ var markerdb = (function() {
                     let marker = markers.splice(i, 1)[0];
                     chrome.storage.local.set({markers: markers}, function() {
 
-                        if (callback) { 
+                        if (callback) {
                             callback(null, marker);
                         }
 
@@ -275,7 +274,7 @@ var markerdb = (function() {
     }
 
     /**
-    * public 
+    * public
     */
     return {
         get: get,
@@ -286,19 +285,9 @@ var markerdb = (function() {
         markerAdded: markerAdded,
         markerRemoved: markerRemoved
     };
-    
+
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
     markerdb.initStorage();
 });
-
-
-
-
-
-
-
-
-
-
