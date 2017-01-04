@@ -7,6 +7,48 @@ var menumodels = (function() {
     var menus = [];
 
     /**
+    *
+    * Returns a function that can be used to switch the 'states' property of
+    * an object. This 'states' property must be a object with keys refering to
+    * state names and values of boolean type. The returned function should be
+    * made a method of the object in question, for instance:
+    *
+    * o = {};
+    * o.states = { 'foo': true, 'bar': false };
+    * o.switchState = createStateSwitch.call(o);
+    * o.switchState('bar');
+    *
+    * At a time only one state can be true. Switching a state to true makes all
+    * others states false.
+    *
+    * @return {Function} - ({String} state), switches a state to true.
+    */
+    function createStateSwitch(states, trueState) {
+
+        function setStatesFalse() {
+            for (var key in that.states) {
+                that.states[key] = false;
+            }
+        }
+
+        function setStateTrue(state) {
+            if (that.states.hasOwnProperty(state)) {
+                that.states[state] = true;
+            } else {
+                throw 'unknown state: ' + state;
+            }
+        }
+
+        function switchState(state) {
+            setStatesFalse();
+            setStateTrue(state);
+        }
+
+        var that = this;
+        return switchState;
+    }
+
+    /**
     * Represents a system menu for a specific tab.
     *
     * It consists of serveral ui models. These models hold
@@ -56,7 +98,6 @@ var menumodels = (function() {
             this.status.add = status.add || false;
         };
     }
-
 
     /**
     * Model of the registration user interface.
@@ -402,7 +443,8 @@ var menumodels = (function() {
 
     return {
         getMenu : getMenu,
-        init: init
+        init: init,
+        createStateSwitch, createStateSwitch
     };
 
 }());
