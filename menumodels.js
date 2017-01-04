@@ -78,25 +78,14 @@ var menumodels = (function() {
     function TabNavigationModel() {
 
         /**
-        * Saves the current status of the interface.
-        *
-        * The statuses of the navigation interface corresponds to the available
-        * views (or tabs) withhin menu.
+        * States that correspond to the available views (or tabs) withhin menu.
         */
-        this.status = {
+        this.states = {
             markers: true,
             add: false
         };
 
-        /**
-        * Switches the status of the navigation interface
-        *
-        * @param {Object} status - keys are status names, values are boolean.
-        */
-        this.switchStatus = function(status) {
-            this.status.markers = status.markers || false;
-            this.status.add = status.add || false;
-        };
+        this.switchState = createStateSwitch.call(this);
     }
 
     /**
@@ -109,14 +98,16 @@ var menumodels = (function() {
         this.tabId = tabId;
 
         /**
-        * Saves the current status of the interface.
+        * States that correspond to the available views of registration ui
         */
-        this.status = {
+        this.states = {
             input: true,
             progress: false,
             success: false,
             error: false
         };
+
+        this.switchState = createStateSwitch.call(this);
 
         /**
         * Id for http requests
@@ -135,18 +126,6 @@ var menumodels = (function() {
         this.inputUrl;
 
         /**
-        * Switches the status of the interface.
-        *
-        * @param {Object} status - keys are status names, values are boolean.
-        */
-        this.switchStatus = function(status) {
-            this.status.input = status.input || false;
-            this.status.success = status.success || false;
-            this.status.error = status.error || false;
-            this.status.progress = status.progress || false;
-        };
-
-        /**
         * Registers a new marker to the system based on
         * an url given by user input.
         *
@@ -156,14 +135,14 @@ var menumodels = (function() {
         */
         this.registerMarker = function() {
             var that = this;
-            that.switchStatus({ progress : true });
+            that.switchState('progress');
             markerdb.register(that.requestId, that.inputUrl,
                 function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
-                        that.switchStatus({ error: true });
+                        that.switchState('error');
                     } else {
-                        that.switchStatus({ success: true });
+                        that.switchState('success');
                     }
                 }
             );
@@ -200,13 +179,15 @@ var menumodels = (function() {
         /**
         * Saves the current status of the interface
         */
-        this.status = {
+        this.states = {
             ready: true,
             progress: false,
             result: false,
             error: false,
             more: false
         };
+
+        this.switchState = createStateSwitch.call(this);
 
         /**
         * Panel flag
@@ -228,19 +209,6 @@ var menumodels = (function() {
         this.userInputs = {};
 
         /**
-        * Switches the status of the interface.
-        *
-        * @param {Object} status - keys are status names, values are boolean.
-        */
-        this.switchStatus = function(status) {
-            this.status.ready = status.ready || false;
-            this.status.progress = status.progress || false;
-            this.status.result = status.result || false;
-            this.status.error = status.error || false;
-            this.status.more = status.more || false;
-        };
-
-        /**
         * Toggles the panel of the interface.
         */
         this.togglePanel = function() {
@@ -254,7 +222,7 @@ var menumodels = (function() {
 
             var that = this;
 
-            that.switchStatus({ progress:true });
+            that.switchState('progress');
 
             proxy.invoke(that.tabId, 'extract.extractTextNodes',
                 function() {
@@ -274,7 +242,7 @@ var menumodels = (function() {
                                     err.name === 'RequestError') {
 
                                     that.errorMessage = err.message;
-                                    that.switchStatus({ error:true });
+                                    that.switchState('error');
 
                                 }
                                 else {
@@ -287,7 +255,7 @@ var menumodels = (function() {
                                     function() {
 
                                     that.resultMessage = resp.message;
-                                    that.switchStatus({ result:true });
+                                    that.switchState('result');
 
                                 });
                             }
@@ -297,7 +265,6 @@ var menumodels = (function() {
             });
         };
 
-
         /**
         * Removes the highlighting made by the marker.
         */
@@ -305,7 +272,7 @@ var menumodels = (function() {
             var that = this;
             proxy.invoke(that.tabId, 'highlight.remove', that.marker.id,
                 function() {
-                    that.switchStatus({ ready:true });
+                    that.switchState('ready');
             });
         };
 

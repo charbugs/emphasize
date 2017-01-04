@@ -39,13 +39,13 @@
         <!-- marker button -->
 
         <li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				v-on:click="tabNavigationModel.switchStatus({ markers: true })"
+				v-on:click="tabNavigationModel.switchState('markers')"
                 href="#"><b>Markers</b></a></li>
 
         <!-- add button -->
 
         <li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				v-on:click="tabNavigationModel.switchStatus({ add: true })"
+				v-on:click="tabNavigationModel.switchState('add')"
                 href="#"><b>Add</b></a></li>
 
 		<!-- website button -->
@@ -57,7 +57,7 @@
 
     <!-- markers tab -->
 
-    <div v-if="tabNavigationModel.status.markers">
+    <div v-if="tabNavigationModel.states.markers">
 
         <!-- marker user interface -->
 
@@ -72,7 +72,7 @@
 				<!-- active display -->
 
 				<div class="w3-right w3-col w3-padding-12" style="width:7px"
-					v-bind:class="model.status.result ? model.marker.styleClass : ''">
+					v-bind:class="model.states.result ? model.marker.styleClass : ''">
 					&nbsp;
 				</div>
 
@@ -91,7 +91,7 @@
 
                 <!-- ready view -->
 
-                <div v-if="model.status.ready">
+                <div v-if="model.states.ready">
 
                     <!-- description -->
 
@@ -137,14 +137,14 @@
 
                     <!-- more button -->
 
-                    <a v-on:click="model.switchStatus({ more: true })"
+                    <a v-on:click="model.switchState('more')"
                         class="w3-right" href='#'>More</a>
 
                 </div>
 
                 <!-- progress view -->
 
-                <div v-if="model.status.progress">
+                <div v-if="model.states.progress">
 
                     <!-- loader -->
 
@@ -159,7 +159,7 @@
 
                 <!-- result view -->
 
-                <div v-if="model.status.result">
+                <div v-if="model.states.result">
 
                     <!-- message -->
 
@@ -177,7 +177,7 @@
 
                 <!-- error view -->
 
-                <div v-if="model.status.error">
+                <div v-if="model.states.error">
 
                     <!-- message -->
 
@@ -185,7 +185,7 @@
 
                     <!-- back button -->
 
-                    <button v-on:click="model.switchStatus({ ready: true })"
+                    <button v-on:click="model.switchState('ready')"
                         v-bind:class="model.marker.styleClass"
                         class="w3-btn">
                         Back
@@ -195,7 +195,7 @@
 
                 <!-- more view -->
 
-                <div v-if="model.status.more">
+                <div v-if="model.states.more">
 
                     <!-- marker infos -->
 
@@ -206,7 +206,7 @@
 
                     <!-- back button -->
 
-                    <button v-on:click="model.switchStatus({ ready: true })"
+                    <button v-on:click="model.switchState('ready')"
                         v-bind:class="model.marker.styleClass"
                         class="w3-btn">
                         Back
@@ -230,12 +230,12 @@
 
     <!-- add tab -->
 
-    <div v-if="tabNavigationModel.status.add"
+    <div v-if="tabNavigationModel.states.add"
 		class="w3-container w3-padding-12 w3-light-grey">
 
         <!-- input view -->
 
-        <div v-if="registrationModel.status.input">
+        <div v-if="registrationModel.states.input">
 
             <!-- info text -->
 
@@ -260,7 +260,7 @@
 
         <!-- progress view -->
 
-        <div v-if="registrationModel.status.progress">
+        <div v-if="registrationModel.states.progress">
 
             <!-- loader -->
 
@@ -275,7 +275,7 @@
 
         <!-- success view -->
 
-        <div v-if="registrationModel.status.success">
+        <div v-if="registrationModel.states.success">
 
             <!-- info text -->
 
@@ -283,7 +283,7 @@
 
             <!-- back button -->
 
-            <button v-on:click="registrationModel.switchStatus({ input: true })"
+            <button v-on:click="registrationModel.switchState('input')"
                 class="w3-btn w3-theme-d3">
                 Back</button>
         </div>
@@ -291,7 +291,7 @@
 
         <!-- error view -->
 
-        <div v-if="registrationModel.status.error">
+        <div v-if="registrationModel.states.error">
 
             <!-- info text -->
 
@@ -299,7 +299,7 @@
 
             <!-- back button -->
 
-            <button v-on:click="registrationModel.switchStatus({ input: true })"
+            <button v-on:click="registrationModel.switchState('input')"
                 class="w3-btn w3-theme-d3">
                 Back</button>
         </div>
