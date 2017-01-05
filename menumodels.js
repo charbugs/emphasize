@@ -7,45 +7,34 @@ var menumodels = (function() {
     var menus = [];
 
     /**
+    * Unbound method that switches the 'states' property of the caller object
+    * to a given state.
     *
-    * Returns a function that can be used to switch the 'states' property of
-    * an object. This 'states' property must be a object with keys refering to
-    * state names and values of boolean type. The returned function should be
-    * made a method of the object in question, for instance:
+    * The 'states' property must be a object with keys refering to
+    * state names and values of boolean type.
     *
     * o = {};
     * o.states = { 'foo': true, 'bar': false };
-    * o.switchState = createStateSwitch.call(o);
+    * o.switchState = switchState.bind(o);
     * o.switchState('bar');
     *
     * At a time only one state can be true. Switching a state to true makes all
     * others states false.
     *
-    * @return {Function} - ({String} state), switches a state to true.
+    * @param {String} state - State that is switch to.
     */
-    function createStateSwitch(states, trueState) {
+    function switchState(state) {
 
-        function setStatesFalse() {
-            for (var key in that.states) {
-                that.states[key] = false;
-            }
+        for (var key in this.states) {
+            this.states[key] = false;
         }
 
-        function setStateTrue(state) {
-            if (that.states.hasOwnProperty(state)) {
-                that.states[state] = true;
-            } else {
-                throw 'unknown state: ' + state;
-            }
+        if (this.states.hasOwnProperty(state)) {
+            this.states[state] = true;
         }
-
-        function switchState(state) {
-            setStatesFalse();
-            setStateTrue(state);
+        else {
+            throw 'unknown state: ' + state;
         }
-
-        var that = this;
-        return switchState;
     }
 
     /**
@@ -85,7 +74,10 @@ var menumodels = (function() {
             add: false
         };
 
-        this.switchState = createStateSwitch.call(this);
+        /*
+        * Method to switch the states.
+        */
+        this.switchState = switchState.bind(this);
     }
 
     /**
@@ -107,7 +99,10 @@ var menumodels = (function() {
             error: false
         };
 
-        this.switchState = createStateSwitch.call(this);
+        /*
+        * Method to switch the states.
+        */
+        this.switchState = switchState.bind(this);
 
         /**
         * Id for http requests
@@ -187,7 +182,10 @@ var menumodels = (function() {
             more: false
         };
 
-        this.switchState = createStateSwitch.call(this);
+        /*
+        * Method to switch the states.
+        */
+        this.switchState = switchState.bind(this);
 
         /**
         * Panel flag
@@ -410,8 +408,7 @@ var menumodels = (function() {
 
     return {
         getMenu : getMenu,
-        init: init,
-        createStateSwitch, createStateSwitch
+        init: init
     };
 
 }());
