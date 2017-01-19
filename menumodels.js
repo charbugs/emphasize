@@ -342,7 +342,7 @@ var menumodels = (function() {
         var menu = selectExistingMenu(tabId);
         if(menu) {
             for (var iface of menu.markerModels) {
-                iface.switchStatus({ ready:true });
+                iface.switchState('ready');
                 iface.errorMessage = '';
                 iface.resultMessage = '';
             }
