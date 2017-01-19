@@ -25,15 +25,15 @@ var request = (function() {
 
     /**
     * Stores requests.
-    * 
-    * Keys are request ids {String}, values are requests {XMLHttpRequest} 
+    *
+    * Keys are request ids {String}, values are requests {XMLHttpRequest}
     */
     var requestStorage = {};
 
 	/**
-	* Requests a marker app to analyze a list of tokens 
+	* Requests a marker app to analyze a list of tokens
     * and submit the result of this analysis.
-    * 
+    *
 	*
     * @param {String} id - id of request
 	* @param {String} url - request url
@@ -44,17 +44,17 @@ var request = (function() {
 	* @param {Function} callback - ({Error} err, {Object} parsed response)
 	*/
 	function requestMarkup(id, url, tokens, wpUrl, inputs, callback) {
-		
+
 		var data = {
 			call: 'markup',
 			tokens: tokens,
 			url: wpUrl,
 			inputs: inputs
 		};
-		
+
 		request(id, url, data, function(err, responseText) {
 
-			handleResponseText(err, responseText, 
+			handleResponseText(err, responseText,
                 parseMarkupResponse, callback);
 		});
 	}
@@ -72,14 +72,14 @@ var request = (function() {
 
 		request(id, url, data, function(err, responseText) {
 
-			handleResponseText(err, responseText, 
+			handleResponseText(err, responseText,
                 parseSetupResponse, callback);
 		});
 	}
 
     /**
     * Aborts a request.
-    * 
+    *
     * This triggers the response handler for this request.
     * (However the documentation says it does not fire readystatechange:
     * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort)
@@ -91,7 +91,7 @@ var request = (function() {
         requestStorage[id].abort();
     }
 
-	/** 
+	/**
 	* Performs a http request.
 	*
     * @param {String} id - id of request
@@ -100,17 +100,40 @@ var request = (function() {
 	* @param {Function} callback - ({String} response to request)
 	*/
 	function request(id, url, data, callback) {
-		
-		var xhr = new XMLHttpRequest();
-    
-        requestStorage[id] = xhr;
 
+		resolveRedirects(url, function(endpointUrl) {
+
+			var xhr = new XMLHttpRequest();
+	        requestStorage[id] = xhr;
+			xhr.onreadystatechange = function() {
+				handleResponse(xhr, callback);
+			};
+			xhr.open('POST', endpointUrl, true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(JSON.stringify(data));
+		});
+	}
+
+	/**
+	* Get the endpoint url after resolving all redirects.
+	*
+	* XMLHttpRequest actually follows the redirects by its own. But doing this
+	* with a POST request will end in a GET request, at least on
+	* Chromium 53.0.2785.89 Built on 8.5.
+	* So we resolve the redirects with a HEAD request.
+	*
+	* param {String} url - starting point url
+	* param {Function} callback - (endpoint url)
+	*/
+	function resolveRedirects(url, callback) {
+		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
-			handleResponse(xhr, callback);
-		};
-		xhr.open('POST', url, true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(JSON.stringify(data));
+			if (xhr.readyState === xhr.DONE) {
+				callback(xhr.responseURL);
+			}
+		}
+		xhr.open('HEAD', url, true);
+		xhr.send();
 	}
 
 	/**
@@ -118,20 +141,20 @@ var request = (function() {
 	*
 	* @param {XMLHttpRequest} xhr
 	* @param {Function} callback
-	* 	@param {String} - response to request 
+	* 	@param {String} - response to request
 	*/
 	function handleResponse(xhr, callback) {
 		if (xhr.readyState === xhr.DONE) {
 			if (xhr.status === 0) {
                 var msg = 'Something went wrong while requesting marker.';
-				var err = new RequestError(msg); 
+				var err = new RequestError(msg);
 				callback(err, null);
 			}
 			else if (xhr.status === 200) {
 				callback(null, xhr.responseText);
 			}
 			else {
-                var msg = 'Failed to receive data from marker. Server answers: '; 
+                var msg = 'Failed to receive data from marker. Server answers: ';
                 msg = msg + xhr.status;
 				var err = new RequestError(msg);
 				callback(err, null);
@@ -168,7 +191,7 @@ var request = (function() {
 
 	/**
 	* Parses the markup response of a marker app.
-    * 
+    *
     * This includes checking if the structure and content of the response
     * is valid, and perform some transformations.
 	*
@@ -179,30 +202,30 @@ var request = (function() {
 	function parseMarkupResponse(responseText, numOfTokens) {
 
         var markupResponseTerms = {
-            
+
             force: true,
             type: Object,
             props: {
 
                 markup: {
-                
+
                     force: true,
                     type: Array,
                     each: {
-                        
+
                         type: Number,
                         test: n => Number.isInteger(n)
                     }
-                    
+
                 },
-            
+
                 message: {
 
                     force: false,
                     type: String
                 }
             }
-        }		
+        }
 
         var response = parseResponse(
                 responseText, markupResponseTerms, 'response');
@@ -226,15 +249,15 @@ var request = (function() {
 	function parseSetupResponse(responseText) {
 
         var setupResponseTerms = {
-    
+
             force: true,
             type: Object,
             props: {
-        
+
                 name: {
-                    
+
                     force: true,
-                    type: String                    
+                    type: String
                 },
 
                 description: {
@@ -242,22 +265,22 @@ var request = (function() {
                     force: false,
                     type: String
                 },
-            
+
                 inputs: {
 
                     force: false,
                     type: Array,
                     each: {
-                    
+
                         type: Object,
                         props: {
 
                             id: {
-                    
+
                                 force: true,
                                 type: String
                             },
-                        
+
                             type: {
 
                                 force: true,
@@ -266,32 +289,32 @@ var request = (function() {
                             },
 
                             values: {
-                                
+
                                 force: false,
                                 type: Array,
                                 each: {
-                                
+
                                     type: String
                                 }
                             },
 
                             label: {
-                    
+
                                 force: false,
                                 type: String
                             },
 
                             tip:  {
-        
+
                                 force: false,
                                 type: String
-                            }                            
+                            }
                         }
                     }
                 }
             }
         }
-		
+
         return parseResponse(responseText, setupResponseTerms, 'response');
 	}
 
@@ -308,7 +331,7 @@ var request = (function() {
 
         try {
 	    	response = JSON.parse(responseText);
-		} 
+		}
         catch (err) {
             var msg = 'Cannot parse marker response: ' + err.message;
 			throw new ResponseParseError(msg);
@@ -321,7 +344,7 @@ var request = (function() {
             if(err.name === 'ParseError') {
                 var msg = "Failed to parse response from server: " + err.message;
                 throw new ResponseParseError(msg);
-            } 
+            }
             else {
                 throw err;
             }
