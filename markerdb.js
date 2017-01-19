@@ -127,6 +127,8 @@ var markerdb = (function() {
 
             var markers = items.markers;
 
+            url = normalizeUrl(url);
+
             if(!checkUrl(url)) {
                 var msg = 'Need a valid HTTP URL';
                 if (callback)
@@ -168,6 +170,16 @@ var markerdb = (function() {
     }
 
     /**
+    * Normalizes an URL by removing the trailing slash (if exists).
+    *
+    * param {String} url
+    * param {String} - normalized url
+    */
+    function normalizeUrl(url) {
+        return url.replace(/\/*$/, '');
+    }
+
+    /**
     * Checks if a url is valid in terms of the database.
     *
     * @param {String} url
@@ -179,6 +191,7 @@ var markerdb = (function() {
 
     /**
     * Checks if a marker with the given url already exists in database.
+    *
     *
     * @param {String} url
     * @param {Array of Marker} markers - Existing markers.
