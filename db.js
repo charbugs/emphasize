@@ -54,39 +54,44 @@ var db = (function() {
     }
 
     /**
-    * If the storage is empty init it and set some default markers.
+    * If the storage is empty init it.
     */
     function initStorage() {
-
         chrome.storage.local.get(null, function(items) {
             if (Object.keys(items).length == 0) {
                 chrome.storage.local.set({
                     lastId: 0,
                     markers: []
                 });
-
-                var settings1 = {
-                    name: 'Upper Case',
-                    url: 'http://mauser.pythonanywhere.com/upper-case/',
-                    description: 'Highlights all upper case words.',
-                };
-                var settings2 = {
-                    name: 'Proper Names',
-                    url: 'http://mauser.pythonanywhere.com/proper-names/',
-                    description: 'Highlights all proper names.'
-                };
-                var settings3 = {
-                    name: 'Local Test',
-                    url: 'http://localhost/test/',
-                    description: 'Test runs on localhost.'
-                };
-
-                /*add(settings1, function() {
-                    add(settings2, function() {
-                        add(settings3);
-                    });
-                });*/
             }
+        });
+    }
+
+    /**
+    * Set some default markers.
+    */
+    function setDefaultMarkers() {
+
+        var settings1 = {
+            name: 'Upper Case',
+            url: 'http://mauser.pythonanywhere.com/upper-case/',
+            description: 'Highlights all upper case words.',
+        };
+        var settings2 = {
+            name: 'Proper Names',
+            url: 'http://mauser.pythonanywhere.com/proper-names/',
+            description: 'Highlights all proper names.'
+        };
+        var settings3 = {
+            name: 'Local Test',
+            url: 'http://localhost/test/',
+            description: 'Test runs on localhost.'
+        };
+
+        add(settings1, function() {
+            add(settings2, function() {
+                add(settings3);
+            });
         });
     }
 
@@ -96,7 +101,7 @@ var db = (function() {
     * @param {Number | null} id - id of the marker to return (null if all)
     * @param {Function} callback - fn({Marker} marker | {Array of Marker} markers).
     */
-    function get(id, callback) {
+    function getMarker(id, callback) {
 
         chrome.storage.local.get('markers', function(items) {
             if (id === null)
@@ -121,7 +126,7 @@ var db = (function() {
     * @param {String} url - Url of marker to register.
     * @param {Function} [callback] - fn(err, new marker).
     */
-    function register(requestId, url, callback) {
+    function registerMarker(requestId, url, callback) {
 
         chrome.storage.local.get(null, function(items) {
 
@@ -232,7 +237,7 @@ var db = (function() {
     * @param {Number} id - Id of the marker to remove.
     * @param {Function} [callback] - fn(err, removed marker).
     */
-    function remove(id, callback) {
+    function removeMarker(id, callback) {
 
         chrome.storage.local.get('markers', function(items) {
 
@@ -263,7 +268,7 @@ var db = (function() {
     * @param {String} url - Url of the marker to remove.
     * @param {Function} [callback] - fn(err, removed marker).
     */
-    function removeByUrl(url, callback) {
+    function removeMarkerByUrl(url, callback) {
 
         chrome.storage.local.get('markers', function(items) {
 
@@ -290,10 +295,10 @@ var db = (function() {
     * public
     */
     return {
-        get: get,
-        register: register,
-        remove: remove,
-        removeByUrl: removeByUrl,
+        getMarker: getMarker,
+        registerMarker: registerMarker,
+        removeMarker: removeMarker,
+        removeMarkerByUrl: removeMarkerByUrl,
         initStorage: initStorage,
         markerAdded: markerAdded,
         markerRemoved: markerRemoved

@@ -131,7 +131,7 @@ var menumodels = (function() {
         this.registerMarker = function() {
             var that = this;
             that.switchState('progress');
-            db.register(that.requestId, that.inputUrl,
+            db.registerMarker(that.requestId, that.inputUrl,
                 function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
@@ -278,7 +278,7 @@ var menumodels = (function() {
         * Removes the marker from system and the marker interface from menu.
         */
         this.removeMarker = function() {
-            db.remove(this.marker.id);
+            db.removeMarker(this.marker.id);
         };
 
         /**
@@ -376,7 +376,7 @@ var menumodels = (function() {
         }
         else {
 
-            db.get(null, function(markers) {
+            db.getMarker(null, function(markers) {
 
                 menu = new MenuModel(
                     tabId,

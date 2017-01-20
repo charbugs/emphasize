@@ -46,19 +46,19 @@ var external = (function() {
     }
 
     function getMarkers(callback) {
-        db.get(null, function(markers) {
+        db.getMarker(null, function(markers) {
             callback(markers);
         });
     }
 
     function addMarker(requestId, url, callback) {
-        db.register(requestId, url, function(err, marker) {
+        db.registerMarker(requestId, url, function(err, marker) {
             callback({err: err, marker: marker})
         });
     }
 
     function removeMarker(url, callback) {
-        db.removeByUrl(url, function(err, marker) {
+        db.removeMarkerByUrl(url, function(err, marker) {
             callback({ err: err, marker: marker });
         });
     }
