@@ -1,4 +1,4 @@
-/** 
+/**
 * @module proxy
 */
 var proxy = (function(){
@@ -6,10 +6,9 @@ var proxy = (function(){
 	/* content scripts to inject in web page in given order */
 	const scripts = [
 		'faces.css',
-		'statuslog.js',
-		'tokenize.js', 
+		'tokenize.js',
 		'extract.js',
-		'highlight.js', 
+		'highlight.js',
 		'counterproxy.js'
 	];
 
@@ -25,13 +24,13 @@ var proxy = (function(){
 	*		This can be done by connectWebPage().
 	*
 	* First param {Number} is the tab id.
-	* Second param {String} is the name of the function to invoke. 
+	* Second param {String} is the name of the function to invoke.
 	* (Must be given with full module path, as in "module.fn".)
 	* Last param {Function} is a callback: ({Any} err, {Any} data)
-	* All other params {jsonisable} will be passed to the target function. 
-	*/ 
+	* All other params {jsonisable} will be passed to the target function.
+	*/
 	function invoke() {
-		
+
 		console.log(arguments);
 
 		var args = Array.prototype.slice.call(arguments);
@@ -88,7 +87,7 @@ var proxy = (function(){
 
             if (isBlockedUrl(tabs[0].url)) {
                 callback(null);
-            } 
+            }
             else {
 			    var tabId = tabs[0].id;
 			    var message = {command: 'isAlive'};
