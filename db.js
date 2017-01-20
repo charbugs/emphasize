@@ -61,7 +61,15 @@ var db = (function() {
             if (Object.keys(items).length == 0) {
                 chrome.storage.local.set({
                     lastId: 0,
-                    markers: []
+                    markers: [],
+                    currentMenuSize: 2,
+                    menuSizes: [
+                        { width: '200px', class: 'w3-tiny'},    // 0
+                        { width: '300px', class: 'w3-small'},   // 1
+                        { width: '400px', class: ''},           // 2
+                        { width: '500px', class: 'w3-large'},   // 3
+                        { width: '600px', class: 'w3-xlarge'},  // 4
+                    ]
                 });
             }
         });
@@ -292,6 +300,59 @@ var db = (function() {
     }
 
     /**
+    * Return the current menu size.
+    *
+    * Size looks like this: { width: '500px', class: 'w3-large' }
+    *
+    * @param {Function} callback - ({Object} size)
+    */
+    function getMenuSize(callback) {
+        var keys = ['menuSizes', 'currentMenuSize']
+        chrome.storage.local.get(keys, function(items) {
+            callback(items.menuSizes[items.currentMenuSize]);
+        });
+    }
+
+    /**
+    * Increases the stored menu size and returns the new size.
+    * If the current size level is max, then don't increase and
+    * return current size.
+    *
+    * @param {Function} callback - ({Object} size)
+    */
+    function increaseMenuSize(callback) {
+        keys = ['menuSizes', 'currentMenuSize']
+        chrome.storage.local.get(keys, function(items) {
+            if (items.currentMenuSize < items.menuSizes.length - 1) {
+                ++items.currentMenuSize;
+            }
+            chrome.storage.local.set(items, function() {
+                callback(items.menuSizes[items.currentMenuSize]);
+            });
+        });
+    }
+
+    /**
+    * Decreases the stored menu size and returns the new size.
+    * If the current size level is min, then don't decrease and
+    * return current size.
+    *
+    * @param {Function} callback - ({Object} size)
+    */
+    function decreaseMenuSize(callback) {
+        keys = ['menuSizes', 'currentMenuSize']
+        chrome.storage.local.get(keys, function(items) {
+            if (items.currentMenuSize > 0) {
+                --items.currentMenuSize;
+            }
+            chrome.storage.local.set(items, function() {
+                callback(items.menuSizes[items.currentMenuSize]);
+            });
+        });
+    }
+
+
+    /**
     * public
     */
     return {
@@ -301,7 +362,10 @@ var db = (function() {
         removeMarkerByUrl: removeMarkerByUrl,
         initStorage: initStorage,
         markerAdded: markerAdded,
-        markerRemoved: markerRemoved
+        markerRemoved: markerRemoved,
+        getMenuSize: getMenuSize,
+        increaseMenuSize: increaseMenuSize,
+        decreaseMenuSize: decreaseMenuSize
     };
 
 }());
