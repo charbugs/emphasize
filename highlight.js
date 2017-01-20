@@ -1,5 +1,5 @@
-/** 
-* @module highlight 
+/**
+* @module highlight
 */
 var highlight = (function() {
 
@@ -9,13 +9,13 @@ var highlight = (function() {
     // Class name stub that identifies elements belonging to a specific marker.
     // Will be filled with a marker id, i.e. "vink-marker-34"
     const MARKER_ID_STUB = 'vink-marker-';
-    
-    /** 
+
+    /**
     * Highlights text passages of the web page according to the instructions
     * of the numerical response mask of the marker app.
     *
     * @param {Array of Number} mask - numerical response mask of the marker app
-    * @param {markerdb.Marker} marker 
+    * @param {db.Marker} marker 
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
     function highlight(mask, marker, callback) {
@@ -30,24 +30,24 @@ var highlight = (function() {
 
             var replaceNodes = [];
             for (var groupFeats of getGroupFeatures(nodeFeats.textNode, nodeFeats.submask)) {
-                
-                var leftSpace =  
-                    groupFeats.firstGroup && 
-                    isSpanningType(groupFeats.type) && 
+
+                var leftSpace =
+                    groupFeats.firstGroup &&
+                    isSpanningType(groupFeats.type) &&
                     groupFeats.type === nodeFeats.prevLastType &&
                     nodeFeats.prevSameBlock;
 
                 var rightSpace =
                     groupFeats.lastGroup &&
-                    isSpanningType(groupFeats.type) && 
+                    isSpanningType(groupFeats.type) &&
                     groupFeats.type === nodeFeats.nextFirstType &&
                     nodeFeats.nextSameBlock;
 
                 replaceNodes = replaceNodes.concat(highlightTokens(
-                    groupFeats.tokens, 
-                    groupFeats.type ? marker.styleClass : null, 
-                    leftSpace, 
-                    rightSpace, 
+                    groupFeats.tokens,
+                    groupFeats.type ? marker.styleClass : null,
+                    leftSpace,
+                    rightSpace,
                     marker.id
                 ));
             }
@@ -62,11 +62,11 @@ var highlight = (function() {
 
     /**
     * Return submasks. Each submask belongs to a certain text node.
-    * 
+    *
     * @param {Array of extract.TextNode} textNodes - text nodes of web page
     * @param {Array of Number} mask - numerical response mask of the marker app
     * @return {Array of Array of Number}
-    */ 
+    */
     function getSubmasks(textNodes, mask) {
 
         var offset = 0;
@@ -90,7 +90,7 @@ var highlight = (function() {
     *     @prob {Boolean} nextSameBlock - is the next text node in the same block element?
     *     @prob {extract.TextNode} textNode - the current text node
     *     @prob {Array of Number} submask - sub mask that belongs to the current text node
-    *     @prob {Number} index - position of the current text node in the text nodes list 
+    *     @prob {Number} index - position of the current text node in the text nodes list
     */
     function* getTextNodeFeatures(textNodes, submasks) {
 
@@ -117,7 +117,7 @@ var highlight = (function() {
     * Yields the processing features of each token group.
     * A token group is a series of tokens that will be highlighted spanning.
     * The number groups of the sub mask determines what tokens should be grouped together.
-    * 
+    *
     * @param {extract.TextNode} textNode - a single text node
     * @param {Array of Number} submask - the sub mask belonging to the text node
     * @yield {Object}
@@ -127,25 +127,25 @@ var highlight = (function() {
     *     @prob {Boolean} lastGroup - is current group the last group?
     */
     function* getGroupFeatures(textNode, submask) {
-        
+
         for (var start=0, end=1; end<=submask.length; end++) {
-            if (!isSpanningType(submask[start]) || submask[end] !== submask[start]) {         
+            if (!isSpanningType(submask[start]) || submask[end] !== submask[start]) {
                 yield {
                     tokens      : textNode.tokens.slice(start, end),
                     type        : submask[start],
                     firstGroup  : start === 0,
-                    lastGroup   : end === submask.length 
+                    lastGroup   : end === submask.length
                 };
-                start = end;    
+                start = end;
             }
-        }        
+        }
     }
 
     /**
-    * Returns true if highligthing type is a spanning type, 
+    * Returns true if highligthing type is a spanning type,
     * i.e. neighbouring tokens of this type will highlight together
-    * as in "Franky was [not in school] today." Whereas neighbouring 
-    * tokens of a non spanning type will higlighted separat as in 
+    * as in "Franky was [not in school] today." Whereas neighbouring
+    * tokens of a non spanning type will higlighted separat as in
     * "Franky was [not] [in] [school] today.".
     *
     * @param {Number} type
@@ -192,7 +192,7 @@ var highlight = (function() {
 
         var nodes = [];
         var string = tokens.join('');
-        
+
         if (!leftSpace && string.search(/^\s+/) > -1)
             string = string.replace(/^\s*/, function(match) {
                 nodes.push(document.createTextNode(match));
@@ -200,7 +200,7 @@ var highlight = (function() {
             });
 
         var textNode = document.createTextNode(string);
-        
+
         if (styleClass) {
             var element = document.createElement('SPAN');
             element.classList.add(GLOBAL_CLASS_NAME);

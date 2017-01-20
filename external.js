@@ -1,6 +1,6 @@
 
 var external = (function() {
-    
+
     function handleMessage(message, sender, callback) {
 
         if (message.command === 'getMarkers') {
@@ -25,13 +25,13 @@ var external = (function() {
     }
 
     function handleConnect(port) {
-        
+
         if (port.name === 'onMarkerAdded') {
-            registerPortToEvent(port, markerdb.markerAdded);            
+            registerPortToEvent(port, db.markerAdded);
         }
 
         if (port.name === 'onMarkerRemoved') {
-            registerPortToEvent(port, markerdb.markerRemoved);            
+            registerPortToEvent(port, db.markerRemoved);
         }
     }
 
@@ -46,27 +46,27 @@ var external = (function() {
     }
 
     function getMarkers(callback) {
-        markerdb.get(null, function(markers) {
-            callback(markers);    
+        db.get(null, function(markers) {
+            callback(markers);
         });
     }
 
     function addMarker(requestId, url, callback) {
-        markerdb.register(requestId, url, function(err, marker) {
+        db.register(requestId, url, function(err, marker) {
             callback({err: err, marker: marker})
         });
     }
-    
+
     function removeMarker(url, callback) {
-        markerdb.removeByUrl(url, function(err, marker) {
+        db.removeByUrl(url, function(err, marker) {
             callback({ err: err, marker: marker });
         });
-    }    
-   
+    }
+
     function abortRequest(requestId) {
         request.abortRequest(requestId);
     }
- 
+
     function init() {
         chrome.runtime.onMessageExternal.addListener(handleMessage);
         chrome.runtime.onConnectExternal.addListener(handleConnect);

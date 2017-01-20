@@ -126,12 +126,12 @@ var menumodels = (function() {
         *
         * The marker is added to the menu on success. This is done
         * by addMarkerInterface() that listens for the markerAdded event
-        * of markerdb
+        * of db
         */
         this.registerMarker = function() {
             var that = this;
             that.switchState('progress');
-            markerdb.register(that.requestId, that.inputUrl,
+            db.register(that.requestId, that.inputUrl,
                 function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
@@ -158,7 +158,7 @@ var menumodels = (function() {
     /**
     * Model of a user interface to control a marker.
     *
-    * @param {markerdb.Marker} marker
+    * @param {db.Marker} marker
     * @param {Number} tabId - id of the current browser tab.
     */
     function MarkerModel(marker, tabId) {
@@ -278,7 +278,7 @@ var menumodels = (function() {
         * Removes the marker from system and the marker interface from menu.
         */
         this.removeMarker = function() {
-            markerdb.remove(this.marker.id);
+            db.remove(this.marker.id);
         };
 
         /**
@@ -321,7 +321,7 @@ var menumodels = (function() {
     /**
     * Adds a marker interface to all menus.
     *
-    * @param {markerdb.Marker} marker.
+    * @param {db.Marker} marker.
     */
     function addMarkerToMenus(marker) {
         for (var menu of menus) {
@@ -376,7 +376,7 @@ var menumodels = (function() {
         }
         else {
 
-            markerdb.get(null, function(markers) {
+            db.get(null, function(markers) {
 
                 menu = new MenuModel(
                     tabId,
@@ -402,8 +402,8 @@ var menumodels = (function() {
             }
         });
 
-        markerdb.markerAdded.register(addMarkerToMenus);
-        markerdb.markerRemoved.register(removeMarkerFromMenus);
+        db.markerAdded.register(addMarkerToMenus);
+        db.markerRemoved.register(removeMarkerFromMenus);
     }
 
     return {

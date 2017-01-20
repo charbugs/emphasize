@@ -1,5 +1,5 @@
-/** @module markerdb */
-var markerdb = (function() {
+/** @module db */
+var db = (function() {
 
     /**
     * Events
@@ -302,5 +302,5 @@ var markerdb = (function() {
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
-    markerdb.initStorage();
+    db.initStorage();
 });
