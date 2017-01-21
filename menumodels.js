@@ -45,20 +45,49 @@ var menumodels = (function() {
     * of the menu are defined withhin menuview.html.
     *
     * @param {Number} tabId - id of the tab the menu belongs to.
+    * @param {MenuSizeModel} menuSizeModel
     * @param {TabNavigationModel} tabNavigationModel
     * @param {RegistrationModel} registrationModel
-    * @param {Array of MarkerModel} - markerModels
+    * @param {Array of MarkerModel} markerModels
     */
     function MenuModel(
         tabId,
+        menuSizeModel,
         tabNavigationModel,
         registrationModel,
         markerModels) {
 
         this.tabId = tabId;
+        this.menuSizeModel = menuSizeModel;
         this.tabNavigationModel = tabNavigationModel;
         this.registrationModel = registrationModel;
         this.markerModels = markerModels;
+    }
+
+    /**
+    * Model for the menu size.
+    *
+    * @param {String} class - Menu size class
+    */
+    function MenuSizeModel(class_) {
+
+        this.increase = function() {
+            db.increaseMenuSize();
+        }
+
+        this.decrease = function() {
+            db.decreaseMenuSize();
+        }
+
+        this.setNewSize = function() {
+            db.getMenuSize(function(class_) {
+                that.class = class_;
+            });
+        }
+
+        var that = this;
+        that.class = class_;
+        db.menuSizeChanged.register(that.setNewSize);
     }
 
     /**
@@ -365,30 +394,37 @@ var menumodels = (function() {
     * Creates that menu if not already extists.
     *
     * @param {Number} tabId
-    * @param {Function} callback - (interfaces)
+    * @param {Function} callback - ({MenuModel} menu)
     */
     function getMenu(tabId, callback) {
-
         var menu = selectExistingMenu(tabId);
-
         if (menu) {
             callback(menu);
+        } else {
+            createMenu(tabId, callback);
         }
-        else {
+    }
 
-            db.getMarker(null, function(markers) {
-
-                menu = new MenuModel(
+    /**
+    * Creates and returns a new menu instance.
+    *
+    * @param {Number} tabId
+    * @param {Function} callback - ({MenuModel} menu)
+    */
+    function createMenu(tabId, callback) {
+        db.getMarker(null, function(markers) {
+            db.getMenuSize(function(class_) {
+                var menu = new MenuModel(
                     tabId,
+                    new MenuSizeModel(class_),
                     new TabNavigationModel(),
                     new RegistrationModel(tabId),
                     markers.map(m => new MarkerModel(m, tabId))
                 );
-
                 menus.push(menu);
                 callback(menu);
             });
-        }
+        });
     }
 
     /**

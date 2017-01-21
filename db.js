@@ -6,6 +6,7 @@ var db = (function() {
     */
     var markerAdded = new event.Event();
     var markerRemoved = new event.Event();
+    var menuSizeChanged = new event.Event();
 
     /**
     * Supported style classes for markers
@@ -63,12 +64,12 @@ var db = (function() {
                     lastId: 0,
                     markers: [],
                     currentMenuSize: 2,
-                    menuSizes: [
-                        { width: '200px', class: 'w3-tiny'},    // 0
-                        { width: '300px', class: 'w3-small'},   // 1
-                        { width: '400px', class: ''},           // 2
-                        { width: '500px', class: 'w3-large'},   // 3
-                        { width: '600px', class: 'w3-xlarge'},  // 4
+                    menuSizeClasses: [
+                        'vink-menu-size-xsmall',   // 0
+                        'vink-menu-size-small',    // 1
+                        'vink-menu-size-medium',   // 2
+                        'vink-menu-size-large',    // 3
+                        'vink-menu-size-xlarge'    // 4
                     ]
                 });
             }
@@ -300,57 +301,49 @@ var db = (function() {
     }
 
     /**
-    * Return the current menu size.
+    * Return the current menu size class.
     *
-    * Size looks like this: { width: '500px', class: 'w3-large' }
-    *
-    * @param {Function} callback - ({Object} size)
+    * @param {Function} callback - ({String} class)
     */
     function getMenuSize(callback) {
-        var keys = ['menuSizes', 'currentMenuSize']
+        var keys = ['menuSizeClasses', 'currentMenuSize']
         chrome.storage.local.get(keys, function(items) {
-            callback(items.menuSizes[items.currentMenuSize]);
+            callback(items.menuSizeClasses[items.currentMenuSize]);
         });
     }
 
     /**
-    * Increases the stored menu size and returns the new size.
+    * Increases the stored menu size and fires menuSizeChanged.
     * If the current size level is max, then don't increase and
-    * return current size.
-    *
-    * @param {Function} callback - ({Object} size)
+    * don't fire.
     */
-    function increaseMenuSize(callback) {
-        keys = ['menuSizes', 'currentMenuSize']
+    function increaseMenuSize() {
+        keys = ['menuSizeClasses', 'currentMenuSize']
         chrome.storage.local.get(keys, function(items) {
-            if (items.currentMenuSize < items.menuSizes.length - 1) {
+            if (items.currentMenuSize < items.menuSizeClasses.length - 1) {
                 ++items.currentMenuSize;
+                chrome.storage.local.set(items, function() {
+                    menuSizeChanged.dispatch()
+                });
             }
-            chrome.storage.local.set(items, function() {
-                callback(items.menuSizes[items.currentMenuSize]);
-            });
         });
     }
 
     /**
-    * Decreases the stored menu size and returns the new size.
+    * Decreases the stored menu size and fires menuSizeChanged.
     * If the current size level is min, then don't decrease and
-    * return current size.
-    *
-    * @param {Function} callback - ({Object} size)
+    * don't fire.
     */
-    function decreaseMenuSize(callback) {
-        keys = ['menuSizes', 'currentMenuSize']
-        chrome.storage.local.get(keys, function(items) {
+    function decreaseMenuSize() {
+        chrome.storage.local.get('currentMenuSize', function(items) {
             if (items.currentMenuSize > 0) {
                 --items.currentMenuSize;
+                chrome.storage.local.set(items, function() {
+                    menuSizeChanged.dispatch()
+                });
             }
-            chrome.storage.local.set(items, function() {
-                callback(items.menuSizes[items.currentMenuSize]);
-            });
         });
     }
-
 
     /**
     * public
@@ -365,7 +358,8 @@ var db = (function() {
         markerRemoved: markerRemoved,
         getMenuSize: getMenuSize,
         increaseMenuSize: increaseMenuSize,
-        decreaseMenuSize: decreaseMenuSize
+        decreaseMenuSize: decreaseMenuSize,
+        menuSizeChanged: menuSizeChanged
     };
 
 }());
