@@ -48,10 +48,18 @@
 				v-on:click="tabNavigationModel.switchState('add')"
                 href="#"><b>Add</b></a></li>
 
-		<!-- website button -->
+		<!-- A- button -->
 
 		<li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				href="#"><b>Website</b></a></li>
+				v-on:click="sizeModel.decrease()"
+				href="#">A-</a></li>
+
+		<!-- A+ button -->
+
+		<li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
+				v-on:click="sizeModel.increase()"
+				href="#">A+</a></li>
+
     </ul>
 
 
