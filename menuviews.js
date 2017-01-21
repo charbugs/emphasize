@@ -25,7 +25,7 @@ var menuviews = (function() {
                         var controler = new Vue({
                             el: '#menu',
                             data: {
-                                menuSizeModel: menu.menuSizeModel,
+                                sizeModel: menu.sizeModel,
                                 tabNavigationModel: menu.tabNavigationModel,
                                 registrationModel: menu.registrationModel,
                                 markerModels: menu.markerModels

@@ -38,38 +38,77 @@ var menumodels = (function() {
     }
 
     /**
-    * Represents a system menu for a specific tab.
+    * Represents a menu that belongs to a specific tab.
+    * It consists of serveral component models.
     *
-    * It consists of serveral ui models. These models hold
-    * data and methods for user interaction. The view parts
-    * of the menu are defined withhin menuview.html.
-    *
-    * @param {Number} tabId - id of the tab the menu belongs to.
-    * @param {MenuSizeModel} menuSizeModel
-    * @param {TabNavigationModel} tabNavigationModel
-    * @param {RegistrationModel} registrationModel
-    * @param {Array of MarkerModel} markerModels
+    * @param {Number} tabId - ID of the tab the menu belongs to.
+    * @param {String} sizeClass - CSS class that determines menu format.
+    * @param {Array of db.Marker} markers
     */
-    function MenuModel(
-        tabId,
-        menuSizeModel,
-        tabNavigationModel,
-        registrationModel,
-        markerModels) {
+    function MenuModel(tabId, sizeClass, markers) {
 
+        /**
+        * Adds a new marker model to the menu.
+        *
+        * @param {db.Marker} marker.
+        */
+        this.addMarkerToMenu = function(marker) {
+            this.markerModels.push(new MarkerModel(marker, this.tabId));
+        };
+
+        /**
+        * Removes a marker user interface from the menu. That also requires to
+        * remove the highlighting made by this marker.
+        *
+        * @param {Object} remMarker - marker whose interfaces should be removed.
+        */
+        this.removeMarkerFromMenu = function(remMarker) {
+            for (let i=0; i<this.markerModels.length; i++) {
+                if (this.markerModels[i].marker.id === remMarker.id) {
+                    proxy.invoke(this.tabId, 'highlight.remove', remMarker.id,
+                    function() {
+                        that.markerModels.splice(i, 1);
+                    });
+                }
+            }
+        };
+
+        /**
+        * Resets the menu to initial state.
+        */
+        this.resetMenu = function(tabId) {
+            for (var iface of this.markerModels) {
+                iface.switchState('ready');
+                iface.errorMessage = '';
+                iface.resultMessage = '';
+            }
+        };
+
+        var that = this;
         this.tabId = tabId;
-        this.menuSizeModel = menuSizeModel;
-        this.tabNavigationModel = tabNavigationModel;
-        this.registrationModel = registrationModel;
-        this.markerModels = markerModels;
+
+        // component models of menu
+        this.sizeModel = new MenuSizeModel(sizeClass);
+        this.tabNavigationModel = new TabNavigationModel();
+        this.registrationModel = new RegistrationModel(tabId);
+        this.markerModels = markers.map(m => new MarkerModel(m, tabId))
+
+        // register for events
+        db.markerAdded.register(this.addMarkerToMenu.bind(this));
+        db.markerRemoved.register(this.removeMarkerFromMenu.bind(this));
+        chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+            if (info.status === 'loading' && tabId === that.tabId) {
+                that.resetMenu();
+            }
+        });
     }
 
     /**
     * Model for the menu size.
     *
-    * @param {String} class - Menu size class
+    * @param {String} sizeClass - Menu size class
     */
-    function MenuSizeModel(class_) {
+    function MenuSizeModel(sizeClass) {
 
         this.increase = function() {
             db.increaseMenuSize();
@@ -80,14 +119,14 @@ var menumodels = (function() {
         }
 
         this.setNewSize = function() {
-            db.getMenuSize(function(class_) {
-                that.class = class_;
+            db.getMenuSize(function(sizeClass) {
+                that.sizeClass = sizeClass;
             });
         }
 
         var that = this;
-        that.class = class_;
-        db.menuSizeChanged.register(that.setNewSize);
+        this.sizeClass = sizeClass;
+        db.menuSizeChanged.register(this.setNewSize);
     }
 
     /**
@@ -322,74 +361,6 @@ var menumodels = (function() {
     }
 
     /**
-    * Removes a marker user interface from all menus.
-    *
-    * That also requires to remove the highlighting made by this marker
-    * in all tabs.
-    *
-    * @param {Object} remMarker - marker whose interfaces should be removed.
-    */
-    function removeMarkerFromMenus(remMarker) {
-        // watch out for let: async function in loop!!
-        for (let menu of menus) {
-
-            for (let i=0; i < menu.markerModels.length; i++) {
-
-                var id = menu.markerModels[i].marker.id;
-                var tabId = menu.markerModels[i].tabId;
-
-                if (id === remMarker.id) {
-                    proxy.invoke(tabId, 'highlight.remove', id, function() {
-                        menu.markerModels.splice(i,1);
-                    });
-                }
-            }
-        }
-    }
-
-    /**
-    * Adds a marker interface to all menus.
-    *
-    * @param {db.Marker} marker.
-    */
-    function addMarkerToMenus(marker) {
-        for (var menu of menus) {
-            menu.markerModels.push(
-                new MarkerModel(marker, menu.tabId)
-            );
-        }
-    }
-
-    /**
-    * Resets a menu to initial state.
-    *
-    * This should be done if the user loads or reloads a webpage on a tab.
-    *
-    * @param {Number} tabId - id of tab the menu belongs to
-    */
-    function resetMenu(tabId) {
-        var menu = selectExistingMenu(tabId);
-        if(menu) {
-            for (var iface of menu.markerModels) {
-                iface.switchState('ready');
-                iface.errorMessage = '';
-                iface.resultMessage = '';
-            }
-        }
-    }
-
-    /**
-    * Returns the menu of a specific tab if extists.
-    * Undefine if no menu extists for that tab.
-    *
-    * @param {Number} tabId
-    * @return {Menu|undefined}
-    */
-    function selectExistingMenu(tabId) {
-        return menus.filter(m => m.tabId == tabId)[0];
-    }
-
-    /**
     * Returns the menu belonging to a specific tab.
     * Creates that menu if not already extists.
     *
@@ -406,6 +377,17 @@ var menumodels = (function() {
     }
 
     /**
+    * Returns the menu of a specific tab if extists.
+    * Undefine if no menu extists for that tab.
+    *
+    * @param {Number} tabId
+    * @return {Menu|undefined}
+    */
+    function selectExistingMenu(tabId) {
+        return menus.filter(m => m.tabId == tabId)[0];
+    }
+
+    /**
     * Creates and returns a new menu instance.
     *
     * @param {Number} tabId
@@ -413,42 +395,16 @@ var menumodels = (function() {
     */
     function createMenu(tabId, callback) {
         db.getMarker(null, function(markers) {
-            db.getMenuSize(function(class_) {
-                var menu = new MenuModel(
-                    tabId,
-                    new MenuSizeModel(class_),
-                    new TabNavigationModel(),
-                    new RegistrationModel(tabId),
-                    markers.map(m => new MarkerModel(m, tabId))
-                );
+            db.getMenuSize(function(sizeClass) {
+                var menu = new MenuModel(tabId, sizeClass, markers);
                 menus.push(menu);
                 callback(menu);
             });
         });
     }
 
-    /**
-    * Inits the module.
-    */
-    function init() {
-
-        chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-            if (info.status === 'loading') {
-                resetMenu(tabId);
-            }
-        });
-
-        db.markerAdded.register(addMarkerToMenus);
-        db.markerRemoved.register(removeMarkerFromMenus);
-    }
-
     return {
-        getMenu : getMenu,
-        init: init
+        getMenu : getMenu
     };
 
 }());
-
-document.addEventListener('DOMContentLoaded', function() {
-    menumodels.init();
-});
