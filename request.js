@@ -1,6 +1,8 @@
 /** @module request */
 var request = (function() {
 
+	'use strict';
+
 	/**
 	* An Error that will be thrown if somthing went wrong while
 	* trying to get the response data from the marker app.

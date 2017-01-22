@@ -3,6 +3,8 @@
 */
 var proxy = (function(){
 
+	'use strict';
+
 	/* content scripts to inject in web page in given order */
 	const scripts = [
 		'faces.css',

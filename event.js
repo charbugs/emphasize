@@ -1,6 +1,8 @@
 
 var event = (function(){
 
+    'use strict';
+
     function Event() {
 
         this.listeners = [];

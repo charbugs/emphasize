@@ -1,6 +1,8 @@
 
 var menuviews = (function() {
 
+    'use strict';
+
     /**
     * Informs that the menu is disabled on the current tab.
     */

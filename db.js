@@ -1,6 +1,8 @@
 /** @module db */
 var db = (function() {
 
+    'use strict';
+
     /**
     * Events
     */
@@ -169,7 +171,7 @@ var db = (function() {
                 setup.styleClass = determineStyleClass(markers);
                 var newMarker = new Marker(++items.lastId, setup);
                 markers.push(newMarker);
-                updated = {markers: markers, lastId: items.lastId};
+                var updated = {markers: markers, lastId: items.lastId};
 
                 chrome.storage.local.set(updated, function() {
 
@@ -212,7 +214,7 @@ var db = (function() {
     * @return {Boolean} - True if exists.
     */
     function urlExists(url, markers) {
-        existing = markers.map(m => m.url);
+        var existing = markers.map(m => m.url);
         return (existing.indexOf(url) === -1) ? false : true;
     }
 
@@ -229,11 +231,11 @@ var db = (function() {
         var rand = Math.random();
 
         if (nonExist.length === 0) {
-            i = Math.floor(rand * styleClasses.length);
+            var i = Math.floor(rand * styleClasses.length);
             return styleClasses[i];
         }
         else  {
-            i = Math.floor(rand * nonExist.length);
+            var i = Math.floor(rand * nonExist.length);
             return nonExist[i];
         }
     }
@@ -318,7 +320,7 @@ var db = (function() {
     * don't fire.
     */
     function increaseMenuSize() {
-        keys = ['menuSizeClasses', 'currentMenuSize']
+        var keys = ['menuSizeClasses', 'currentMenuSize']
         chrome.storage.local.get(keys, function(items) {
             if (items.currentMenuSize < items.menuSizeClasses.length - 1) {
                 ++items.currentMenuSize;

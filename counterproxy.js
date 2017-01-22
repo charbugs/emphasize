@@ -1,7 +1,9 @@
-/** 
+/**
 * @module counterproxy
 */
 var counterproxy = (function() {
+
+	'use strict';
 
 	/**
 	* Create a passiv message channel for communication
@@ -23,7 +25,7 @@ var counterproxy = (function() {
 	* Invokes a function.
 	* Is used by the proxy of the extension context to gain access to
 	* the scripts of the web page context.
-	* 
+	*
 	* @param {String} path - path to function, i.e. 'module.fn'
 	* @param {Array} args - arguments to pass to function
 	* @param {Function} callback - ({Object} resp)
@@ -32,7 +34,7 @@ var counterproxy = (function() {
 
 		var object;
 		var target = window;
-		
+
 		for (var name of path.split('.')) {
 			if (target) {
 				object = target;
@@ -49,13 +51,13 @@ var counterproxy = (function() {
 		}
 	}
 
-	/** 
-	* Serves as a generic callback function.  
+	/**
+	* Serves as a generic callback function.
 	* Checks return values and send them back to the proxy.
-	* 
+	*
 	* @param {Function} callback - ({Object} resp)
 	* @param {jsonisable} err
-	* @param {jsonisable} data 
+	* @param {jsonisable} data
 	*/
 	function callBackProxy(callback, err, data) {
 		if (err) {

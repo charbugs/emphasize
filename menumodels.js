@@ -1,6 +1,8 @@
 
 var menumodels = (function() {
 
+    'use strict';
+
     /**
     * Container for Menu instances.
     */

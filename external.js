@@ -1,6 +1,8 @@
 
 var external = (function() {
 
+    'use strict';
+
     function handleMessage(message, sender, callback) {
 
         if (message.command === 'getMarkers') {

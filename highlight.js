@@ -3,6 +3,8 @@
 */
 var highlight = (function() {
 
+    'use strict';
+
     // Class name that identifies elements added by vink
     const GLOBAL_CLASS_NAME = 'vink-element';
 
@@ -15,7 +17,7 @@ var highlight = (function() {
     * of the numerical response mask of the marker app.
     *
     * @param {Array of Number} mask - numerical response mask of the marker app
-    * @param {db.Marker} marker 
+    * @param {db.Marker} marker
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
     function highlight(mask, marker, callback) {
@@ -231,7 +233,7 @@ var highlight = (function() {
     function replaceNodeWithMultiples(oldNode, newNodes) {
 
         var parentNode = oldNode.parentNode;
-        for (newNode of newNodes)
+        for (var newNode of newNodes)
             parentNode.insertBefore(newNode, oldNode)
         parentNode.removeChild(oldNode);
         parentNode.normalize();
@@ -246,6 +248,8 @@ var highlight = (function() {
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
     function remove(markerId, callback) {
+
+        var elem;
 
         if (markerId)
             var selector = '.' + GLOBAL_CLASS_NAME + '.' + MARKER_ID_STUB + markerId;

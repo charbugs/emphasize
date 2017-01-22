@@ -1,6 +1,8 @@
 /** @module extract */
 var extract = (function() {
 
+    'use strict';
+
     /**
     * Stores the extracted text nodes of the web page.
     * This variable contains DOM Nodes and they can not be transfered to the
@@ -23,26 +25,26 @@ var extract = (function() {
     }
 
     /**
-    * Extract the relevant text nodes form the web page 
+    * Extract the relevant text nodes form the web page
     * and save it to the module-global variable 'textNodes'.
     *
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)
     */
     function extractTextNodes(callback) {
 
-        var textRoot = document.body; 
+        var textRoot = document.body;
         textNodes = [];
 
         var walker = document.createTreeWalker(
             textRoot,
             NodeFilter.SHOW_TEXT,
-            { acceptNode: function (node) { 
+            { acceptNode: function (node) {
                 return node.data.trim().length > 0 &&
                     node.parentElement.nodeName != 'SCRIPT' &&
                     node.parentElement.nodeName != 'NOSCRIPT' &&
-                    node.parentElement.nodeName != 'STYLE'; 
+                    node.parentElement.nodeName != 'STYLE';
         }});
-        
+
         while(walker.nextNode()) {
             var tokens = tokenize.split(walker.currentNode.data);
             textNodes.push(new TextNode(walker.currentNode, tokens))
@@ -70,7 +72,7 @@ var extract = (function() {
     */
     function getWords(callback) {
         var words = [];
-        for (node of textNodes) {
+        for (var node of textNodes) {
             words = words.concat(node.tokens.map(tok => tok.trim()));
         }
         if (callback) {
