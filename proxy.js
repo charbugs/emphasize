@@ -33,8 +33,6 @@ var proxy = (function(){
 	*/
 	function invoke() {
 
-		console.log(arguments);
-
 		var args = Array.prototype.slice.call(arguments);
 		var tabId = args.shift()
 		var path = args.shift();
