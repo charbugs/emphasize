@@ -1,5 +1,5 @@
 
-var menumodels = (function() {
+var models = (function() {
 
     'use strict';
 

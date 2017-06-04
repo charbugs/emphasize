@@ -18,14 +18,14 @@
             "background/external.js",
             "background/request.js",
             "background/proxy.js",
-			"background/menumodels.js"
+			"background/models.js"
         ],
         "persistent": false
      },
 
     "browser_action": {
         "default_icon": "popup/menu.png",
-        "default_popup": "popup/menuviews.html"
+        "default_popup": "popup/views.html"
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",

@@ -1,5 +1,5 @@
 
-var menuviews = (function() {
+var controller = (function() {
 
     'use strict';
 
@@ -22,7 +22,7 @@ var menuviews = (function() {
                 }
                 else {
 
-                    bg.menumodels.getMenu(tabId, function(menu) {
+                    bg.models.getMenu(tabId, function(menu) {
 
                         var controler = new Vue({
                             el: '#menu',
@@ -47,5 +47,5 @@ var menuviews = (function() {
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
-    menuviews.init();
+    controller.init();
 });
