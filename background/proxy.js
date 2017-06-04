@@ -7,11 +7,11 @@ var proxy = (function(){
 
 	/* content scripts to inject in web page in given order */
 	const scripts = [
-		'faces.css',
-		'tokenize.js',
-		'extract.js',
-		'highlight.js',
-		'counterproxy.js'
+		'common/faces.css',
+		'content/tokenize.js',
+		'content/extract.js',
+		'content/highlight.js',
+		'content/counterproxy.js'
 	];
 
     /* urls the extension will/should not work on */
