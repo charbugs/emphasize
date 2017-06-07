@@ -3,211 +3,104 @@ var models = (function() {
 
     'use strict';
 
-    /**
-    * Container for Menu instances.
-    */
-    var menus = [];
-
-    /**
-    * Unbound method that switches the 'states' property of the caller object
-    * to a given state.
-    *
-    * The 'states' property must be a object with keys refering to
-    * state names and values of boolean type.
-    *
-    * o = {};
-    * o.states = { 'foo': true, 'bar': false };
-    * o.switchState = switchState.bind(o);
-    * o.switchState('bar');
-    *
-    * At a time only one state can be true. Switching a state to true makes all
-    * others states false.
-    *
-    * @param {String} state - State that is switch to.
-    */
-    function switchState(state) {
-
-        for (var key in this.states) {
-            this.states[key] = false;
+    function switchView(view) {
+        for (var key in this.views) {
+            this.views[key] = false;
         }
 
-        if (this.states.hasOwnProperty(state)) {
-            this.states[state] = true;
+        if (this.views.hasOwnProperty(view)) {
+            this.views[view] = true;
         }
         else {
-            throw 'unknown state: ' + state;
+            throw new Error('unknown view: ' + view);
         }
     }
 
-    /**
-    * Represents a menu that belongs to a specific tab.
-    * It consists of serveral component models.
-    *
-    * @param {Number} tabId - ID of the tab the menu belongs to.
-    * @param {String} sizeClass - CSS class that determines menu format.
-    * @param {Array of db.Marker} markers
-    */
-    function MenuModel(tabId, sizeClass, markers) {
+    function Menu(tabId, markers) {
 
         /**
         * Adds a new marker model to the menu.
         *
         * @param {db.Marker} marker.
         */
-        this.addMarkerToMenu = function(marker) {
-            this.markerModels.push(new MarkerModel(marker, this.tabId));
+        this.addMarkerUi = function(marker) {
+            // add new view.
+            this.views[marker.id] = false;
+            this.markerUis.push(new MarkerUi(this.tabId, marker));
         };
 
         /**
-        * Removes a marker user interface from the menu. That also requires to
+        * Removes a marker ui from the menus marker list. That also requires to
         * remove the highlighting made by this marker.
         *
         * @param {Object} remMarker - marker whose interfaces should be removed.
         */
-        this.removeMarkerFromMenu = function(remMarker) {
-            for (let i=0; i<this.markerModels.length; i++) {
-                if (this.markerModels[i].marker.id === remMarker.id) {
+        this.removeMarkerUi = function(remMarker) {
+            var that = this;
+            for (let i=0; i<this.markerUis.length; i++) {
+                if (this.markerUis[i].marker.id === remMarker.id) {
                     proxy.invoke(this.tabId, 'highlight.remove', remMarker.id,
                     function() {
-                        that.markerModels.splice(i, 1);
+                        that.markerUis.splice(i, 1);
+                        that.switchView('list');
                     });
                 }
             }
         };
 
         /**
-        * Resets the menu to initial state.
+        * Resets all markers of the menu. That is removing of all highlightings
+        * made to the web page.
         */
-        this.resetMenu = function(tabId) {
-            for (var iface of this.markerModels) {
-                iface.switchState('ready');
-                iface.errorMessage = '';
-                iface.resultMessage = '';
-            }
+        this.resetAllMarkers = function() {
+            this.markerUis.map(mui => mui.resetMarker());
         };
 
-        var that = this;
-        this.tabId = tabId;
-
-        // component models of menu
-        this.sizeModel = new MenuSizeModel(sizeClass);
-        this.tabNavigationModel = new TabNavigationModel();
-        this.registrationModel = new RegistrationModel(tabId);
-        this.markerModels = markers.map(m => new MarkerModel(m, tabId))
-
-        // register for events
-        db.markerAdded.register(this.addMarkerToMenu.bind(this));
-        db.markerRemoved.register(this.removeMarkerFromMenu.bind(this));
-        chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-            if (info.status === 'loading' && tabId === that.tabId) {
-                that.resetMenu();
-            }
-        });
-    }
-
-    /**
-    * Model for the menu size.
-    *
-    * @param {String} sizeClass - Menu size class
-    */
-    function MenuSizeModel(sizeClass) {
-
-        this.increase = function() {
-            db.increaseMenuSize();
-        }
-
-        this.decrease = function() {
-            db.decreaseMenuSize();
-        }
-
-        this.setNewSize = function() {
-            db.getMenuSize(function(sizeClass) {
-                that.sizeClass = sizeClass;
-            });
-        }
-
-        var that = this;
-        this.sizeClass = sizeClass;
-        db.menuSizeChanged.register(this.setNewSize);
-    }
-
-    /**
-    * Model of the menu's global tab navigation.
-    */
-    function TabNavigationModel() {
-
-        /**
-        * States that correspond to the available views (or tabs) withhin menu.
-        */
-        this.states = {
-            markers: true,
-            add: false
-        };
-
-        /*
-        * Method to switch the states.
-        */
-        this.switchState = switchState.bind(this);
-    }
-
-    /**
-    * Model of the registration user interface.
-    *
-    * @param {Number} tabId - id of the current browser tab.
-    */
-    function RegistrationModel(tabId) {
+        ///////////////////// Init ////////////////////////
 
         this.tabId = tabId;
+        this.markers = markers;
 
-        /**
-        * States that correspond to the available views of registration ui
-        */
-        this.states = {
-            input: true,
-            progress: false,
-            success: false,
-            error: false
+        // supported views
+        this.views = {
+            list: true,
+            register: false,
+            repository: false
         };
+        this.markers.map(m => this.views[m.id] = false);
+        this.switchView = switchView.bind(this);
 
-        /*
-        * Method to switch the states.
-        */
-        this.switchState = switchState.bind(this);
+        // Componts of the menu
+        this.markerUis = markers.map(m => new MarkerUi(this.tabId, m));
+        this.listUi = new ListUi(this.markerUis);
+        this.registerUi = new RegisterUi(tabId);
+    }
 
-        /**
-        * Id for http requests
-        */
-        this.requestId = String(tabId) + '-' + 'registration';
+    function ListUi(markerUis) {
 
-        /**
-        * Messages
-        */
-        this.successMessage = "Marker successfully added.";
-        this.errorMessage;
+        this.markerUis = markerUis;
+    }
 
-        /**
-        * Stores user input
-        */
-        this.inputUrl;
+    function RegisterUi(tabId) {
 
         /**
         * Registers a new marker to the system based on
         * an url given by user input.
         *
-        * The marker is added to the menu on success. This is done
-        * by addMarkerInterface() that listens for the markerAdded event
-        * of db
+        * This triggers the markerAdded event in the marker database.
+        * The menu container will catch this event and add the marker
+        * to all menus.
         */
         this.registerMarker = function() {
             var that = this;
-            that.switchState('progress');
+            that.switchView('progress');
             db.registerMarker(that.requestId, that.inputUrl,
                 function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
-                        that.switchState('error');
+                        that.switchView('error');
                     } else {
-                        that.switchState('success');
+                        that.switchView('success');
                     }
                 }
             );
@@ -216,72 +109,37 @@ var models = (function() {
         /**
         * Aborts a request made by this registration interface.
         *
-        * This should trigger the callback to the request. This callback is
-        * defined within registerMarker().
+        * This should trigger the callback to the request within
+        * this.registerMarker() and lead to error view.
         */
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
         };
+
+        /////////////////////// Init //////////////////////
+
+        this.tabId = tabId;
+        this.views = {
+            input: true,
+            progress: false,
+            success: false,
+            error: false
+        };
+
+        this.switchView = switchView.bind(this);
+
+        //Id for http requests
+        this.requestId = String(tabId) + '-' + 'registration';
+
+        // Messages
+        this.successMessage = "Marker successfully added.";
+        this.errorMessage;
+
+        // Stores user input
+        this.inputUrl;
     }
 
-
-    /**
-    * Model of a user interface to control a marker.
-    *
-    * @param {db.Marker} marker
-    * @param {Number} tabId - id of the current browser tab.
-    */
-    function MarkerModel(marker, tabId) {
-
-        this.marker = marker;
-        this.tabId = tabId;
-
-        /**
-        * Id for http requests
-        */
-        this.requestId = String(tabId) + '-' + String(marker.id);
-
-        /**
-        * Saves the current status of the interface
-        */
-        this.states = {
-            ready: true,
-            progress: false,
-            result: false,
-            error: false,
-            more: false
-        };
-
-        /*
-        * Method to switch the states.
-        */
-        this.switchState = switchState.bind(this);
-
-        /**
-        * Panel flag
-        */
-        this.panel = false;
-
-        /**
-        * Messages
-        */
-        this.errorMessage;
-        this.resultMessage;
-
-        /**
-        * Holds user inputs.
-        *
-        * Keys are input ids, values are text.
-        * This object will be sent to the marker app.
-        */
-        this.userInputs = {};
-
-        /**
-        * Toggles the panel of the interface.
-        */
-        this.togglePanel = function() {
-            this.panel = !this.panel;
-        };
+    function MarkerUi(tabId, marker) {
 
         /**
         * Applies the marker to the current web page.
@@ -290,28 +148,27 @@ var models = (function() {
 
             var that = this;
 
-            that.switchState('progress');
+            that.switchView('progress');
 
             proxy.invoke(that.tabId, 'extract.extractTextNodes',
-                function() {
+            function() {
 
                 proxy.invoke(that.tabId, 'extract.getWords',
-                    function(err, words) {
+                function(err, words) {
 
                     proxy.invoke(that.tabId, 'extract.getUrl',
-                        function(err, wpUrl) {
+                    function(err, wpUrl) {
 
-                        request.requestMarkup(that.requestId, that.marker.url, words, wpUrl,
-                            that.userInputs,
-                            function(err, resp) {
+                        request.requestMarkup(that.requestId, that.marker.url,
+                        words, wpUrl, that.userInputs,
+                        function(err, resp) {
 
                             if (err) {
                                 if (err.name === 'ResponseParseError' ||
                                     err.name === 'RequestError') {
 
                                     that.errorMessage = err.message;
-                                    that.switchState('error');
-
+                                    that.switchView('error');
                                 }
                                 else {
                                     throw err;
@@ -319,11 +176,12 @@ var models = (function() {
                             }
                             else {
                                 proxy.invoke(that.tabId, 'highlight.highlight',
-                                    resp.markup, that.marker,
-                                    function() {
+                                resp.markup, that.marker,
+                                function() {
 
                                     that.resultMessage = resp.message;
-                                    that.switchState('result');
+                                    that.active = true;
+                                    that.switchView('result');
 
                                 });
                             }
@@ -340,73 +198,174 @@ var models = (function() {
             var that = this;
             proxy.invoke(that.tabId, 'highlight.remove', that.marker.id,
                 function() {
-                    that.switchState('ready');
+                    that.active = false;
+                    that.switchView('ready');
             });
         };
 
         /**
-        * Removes the marker from system and the marker interface from menu.
+        * Removes the marker from system.
+        *
+        * This triggers the markerRemoved event in the marker database.
+        * The menu container catches this event and removes the marker
+        * from all menus.
         */
-        this.removeMarker = function() {
+        this.removeMarkerFromSystem = function() {
             db.removeMarker(this.marker.id);
         };
 
         /**
         * Aborts a request made by this marker interface.
         *
-        * This should trigger the callback to the request. This callback is
-        * defined within applyMarker().
+        * This should trigger the callback to the request
+        * withhin this.applyMarker() and lead to error view.
         */
         this.abortRequest = function() {
             request.abortRequest(this.requestId);
         };
+
+        //////////////////// Init /////////////////////////
+
+        this.tabId = tabId;
+        this.marker = marker;
+
+        // Views for different processing steps.
+        this.views = {
+            ready: true,
+            progress: false,
+            result: false,
+            error: false,
+            more: false
+        };
+
+        this.switchView = switchView.bind(this);
+
+        //Indicates wether the marker is holding highlightings
+        //in the web page right now.
+        this.active = false;
+
+
+        // Id for http requests
+        this.requestId = String(tabId) + '-' + String(marker.id);
+
+
+        //Holds user inputs.
+        //Keys are input ids, values are text.
+        //This object will be sent to the marker app.
+        this.userInputs = {};
+
+        // Messages
+        this.errorMessage;
+        this.resultMessage;
     }
 
-    /**
-    * Returns the menu belonging to a specific tab.
-    * Creates that menu if not already extists.
-    *
-    * @param {Number} tabId
-    * @param {Function} callback - ({MenuModel} menu)
-    */
-    function getMenu(tabId, callback) {
-        var menu = selectExistingMenu(tabId);
-        if (menu) {
-            callback(menu);
-        } else {
-            createMenu(tabId, callback);
-        }
-    }
 
     /**
-    * Returns the menu of a specific tab if extists.
-    * Undefine if no menu extists for that tab.
-    *
-    * @param {Number} tabId
-    * @return {Menu|undefined}
+    * Creates, stores and supplies Menu instances.
     */
-    function selectExistingMenu(tabId) {
-        return menus.filter(m => m.tabId == tabId)[0];
-    }
+    function MenuContainer() {
 
-    /**
-    * Creates and returns a new menu instance.
-    *
-    * @param {Number} tabId
-    * @param {Function} callback - ({MenuModel} menu)
-    */
-    function createMenu(tabId, callback) {
-        db.getMarker(null, function(markers) {
-            db.getMenuSize(function(sizeClass) {
-                var menu = new MenuModel(tabId, sizeClass, markers);
-                menus.push(menu);
+        /**
+        * Returns the menu belonging to a specific tab.
+        * Creates that menu if not already extists.
+        *
+        * @param {Number} tabId
+        * @param {Function} callback - ({MenuModel} menu)
+        */
+        this.get = function(tabId, callback) {
+            var menu = this.select(tabId);
+            if (menu) {
+                callback(menu);
+            } else {
+                this.create(tabId, callback);
+            }
+        };
+
+        /**
+        * Returns the menu of a specific tab if extists.
+        * Undefined if no menu extists for that tab.
+        *
+        * @param {Number} tabId
+        * @return {Menu|undefined}
+        */
+        this.select = function(tabId) {
+            for (var menu of this.menus) {
+                if (tabId === menu.tabId){
+                    return menu;
+                }
+            }
+        };
+
+        /**
+        * Creates and returns a new menu instance.
+        *
+        * @param {Number} tabId
+        * @param {Function} callback - ({Menu} menu)
+        */
+        this.create = function(tabId, callback) {
+            var that = this;
+            // Markers are fetched here to avoid having a callback in the
+            // Menu constructor.
+            db.getMarker(null, function(markers) {
+                var menu = new Menu(tabId, markers);
+                that.menus.push(menu);
                 callback(menu);
             });
+        };
+
+        /**
+        * Kicks the menu of a certain tab out of the container.
+        *
+        * @param {Number} tabId
+        */
+        this.destroy = function(tabId) {
+            for (var i=0; i < this.menus.length; i++) {
+                if (this.menus[i].tabId === tabId) {
+                    this.menus.splice(i,1);
+                    return;
+                }
+            }
+        };
+        /**
+        * If the user removes a marker on the menu of a certain tab
+        * the menus of all tabs must remove the marker.
+        *
+        * @param {Object} remMarker
+        */
+        this.removeMarkerUiFormAllMenus = function(remMarker) {
+            this.menus.map(menu => menu.removeMarkerUi(remMarker));
+        };
+
+        /**
+        * If the user adds a marker on the menu of a certain tab
+        * the menus of all tabs must add the marker.
+        *
+        * @param {Object} marker
+        */
+        this.addMarkerUiToAllMenus = function (marker) {
+            this.menus.map(menu => menu.addMarkerUi(marker));
+        };
+
+        ///////////////////// Init /////////////////////////
+
+        var that = this;
+
+        // Stores Menu instances
+        this.menus = [];
+
+        // Register for events
+        db.markerRemoved.register(this.removeMarkerUiFormAllMenus.bind(this));
+        db.markerAdded.register(this.addMarkerUiToAllMenus.bind(this));
+        chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+            if (info.status === 'loading') {
+                that.destroy(tabId);
+            }
         });
+
     }
 
     return {
-        getMenu : getMenu
+        menuContainer: new MenuContainer()
     };
 
 }());

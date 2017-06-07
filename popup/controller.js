@@ -22,15 +22,16 @@ var controller = (function() {
                 }
                 else {
 
-                    bg.models.getMenu(tabId, function(menu) {
+                    bg.models.menuContainer.get(tabId, function(menu) {
 
-                        var controler = new Vue({
+                        new Vue({
                             el: '#menu',
                             data: {
-                                sizeModel: menu.sizeModel,
-                                tabNavigationModel: menu.tabNavigationModel,
-                                registrationModel: menu.registrationModel,
-                                markerModels: menu.markerModels
+                                menu: menu,
+                                listUi: menu.listUi,
+                                registerUi: menu.registerUi,
+                                markerUis: menu.markerUis,
+                                version: chrome.runtime.getManifest().version
                             }
 	                    });
                     });

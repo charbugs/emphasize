@@ -79,34 +79,6 @@ var db = (function() {
     }
 
     /**
-    * Set some default markers.
-    */
-    function setDefaultMarkers() {
-
-        var settings1 = {
-            name: 'Upper Case',
-            url: 'http://mauser.pythonanywhere.com/upper-case/',
-            description: 'Highlights all upper case words.',
-        };
-        var settings2 = {
-            name: 'Proper Names',
-            url: 'http://mauser.pythonanywhere.com/proper-names/',
-            description: 'Highlights all proper names.'
-        };
-        var settings3 = {
-            name: 'Local Test',
-            url: 'http://localhost/test/',
-            description: 'Test runs on localhost.'
-        };
-
-        add(settings1, function() {
-            add(settings2, function() {
-                add(settings3);
-            });
-        });
-    }
-
-    /**
     * Returns one or all marker(s) from storage.
     *
     * @param {Number | null} id - id of the marker to return (null if all)
@@ -143,14 +115,14 @@ var db = (function() {
 
             var markers = items.markers;
 
-            url = normalizeUrl(url);
-
-            if(!checkUrl(url)) {
+            if(url === undefined || !checkUrl(url)) {
                 var msg = 'Need a valid HTTP URL';
                 if (callback)
                     callback(new DatabaseError(msg), null);
                 return;
             }
+
+            url = normalizeUrl(url);
 
             if(urlExists(url, markers)) {
                 var msg = 'A marker of this URL already exists.';
@@ -188,8 +160,8 @@ var db = (function() {
     /**
     * Normalizes an URL by removing the trailing slash (if exists).
     *
-    * param {String} url
-    * param {String} - normalized url
+    * @param {String} url
+    * @return {String} - normalized url
     */
     function normalizeUrl(url) {
         return url.replace(/\/*$/, '');

@@ -82,8 +82,9 @@ var request = (function() {
     /**
     * Aborts a request.
     *
-    * This triggers the response handler for this request.
-    * (However the documentation says it does not fire readystatechange:
+    * This triggers the response handler for this request and obviously
+	* sets xhr.status to 0.
+    * (Although the documentation says it does not fire readystatechange:
     * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort)
     *
     * @param {String} id - id of request

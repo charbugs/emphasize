@@ -5,317 +5,413 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<link rel="stylesheet" href="w3.css">
-    <link rel="stylesheet" href="w3-theme-grey.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="views.css">
     <link rel="stylesheet" href="../common/faces.css">
 
 	<script type="text/javascript" src="vue.js"></script>
 	<script type="text/javascript" src="controller.js"></script>
 
     <style type="text/css" media="screen">
-
-        .loader {
-            border: 12px solid #ececec; /* ww3-theme-l4 */
-            border-top: 12px solid #7e7e7e; /* w3-theme-d3 */
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 2s linear infinite;
-            margin: auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+		.w3-bottombar-light-grey{border-bottom:4px solid #eee!important}
+    	.w3-bottombar-grey{border-bottom:4px solid #2196F3!important}
     </style>
 
 </head>
-<body class="w3-theme-d5">
+<body>
+
+<!--
+
+View hierarchy:
+_______________
+
+Menu
+   |_ List
+   |_ Repository
+   |_ Register
+		|_ Input
+		|_ Progress
+	    |_ Success
+		|_ Error
+	|_ Marker-1
+		|_ Ready
+		|_ Progress
+		|_ Result
+		|_ Error
+		|_ More
+	|_ Marker-2 ...
+
+-->
+
+<div id="menu">
+
+
+	<!-- list -->
+
+	<template v-if="menu.views.list">
+
+		<!-- navigation -->
+
+		<div class="w3-bar w3-border-bottom w3-light-grey" >
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
+				Markers</a>
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
+				v-on:click="menu.switchView('register')">
+				Add</a>
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
+				v-on:click="menu.switchView('repository')">
+				Repository</a>
+			<a href="#"
+				class="w3-button w3-hover-none w3-right"
+				v-on:click="menu.resetAllMarkers()">
+				<i class="fa fa-trash-o"></i></a>
+		</div>
+
+		<!-- marker list -->
+
+		<ul class="w3-ul">
+  			<li v-for="markerUi in markerUis"
+				class="w3-hover-light-grey w3-padding-16"
+				v-on:click="menu.switchView(markerUi.marker.id)">
+
+				<span style="font-family: Roboto-Medium"
+					class="w3-small">{{markerUi.marker.name}}</span><br>
+
+				<span class="w3-small">
+					{{markerUi.marker.url}}</span>
+
+				<span v-if="markerUi.active"
+					class="w3-tag w3-small w3-right w3-round"
+					v-bind:class="markerUi.marker.styleClass"
+					style="font-family:Roboto-Regular">active</span>
+			</li>
+		</ul>
+	</template>
+
+	<!-- registration -->
+
+	<template v-if="menu.views.register">
+
+		<!-- navigation -->
+
+		<div class="w3-bar w3-border-bottom w3-light-grey" >
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
+				v-on:click="menu.switchView('list')">
+				Markers</a>
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
+				Add</a>
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
+				v-on:click="menu.switchView('repository')">
+				Repository</a>
+			<a href="#"
+				class="w3-button w3-hover-none w3-right"
+				v-on:click="menu.resetAllMarkers()">
+				<i class="fa fa-trash-o"></i></a>
+		</div>
+
+		<!-- input -->
+
+		<div v-if="registerUi.views.input"
+			class="w3-container w3-padding-16 w3-small">
 
-<div id="menu" v-bind:class="sizeModel.sizeClass">
+			<!-- info text -->
 
-    <!-- navigation bar -->
+			<div class="w3-panel w3-border w3-white w3-leftbar w3-border-grey">
+				<p>Add a marker to the system by entering the marker's address.
+					This should be a valid HTTP URL.</p>
+			</div>
 
-    <ul class="w3-navbar w3-theme-d6 w3-border-bottom">
-
-        <!-- marker button -->
-
-        <li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				v-on:click="tabNavigationModel.switchState('markers')"
-                href="#"><b>Markers</b></a></li>
-
-        <!-- add button -->
-
-        <li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				v-on:click="tabNavigationModel.switchState('add')"
-                href="#"><b>Add</b></a></li>
-
-		<!-- A- button -->
-
-		<li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				v-on:click="sizeModel.decrease()"
-				href="#">A-</a></li>
-
-		<!-- A+ button -->
-
-		<li><a  class="w3-padding-12 w3-hover-theme-d4 w3-border-right"
-				v-on:click="sizeModel.increase()"
-				href="#">A+</a></li>
-
-    </ul>
-
-
-    <!-- markers tab -->
-
-    <div v-if="tabNavigationModel.states.markers">
-
-        <!-- marker user interface -->
-
-        <div v-for="model of markerModels"
-            v-bind:class="{ 'w3-border-bottom': !model.panel }">
-
-            <!-- header -->
-
-            <div class="w3-row w3-hover-theme-d4"
-                v-on:click="model.togglePanel()">
-
-				<!-- active display -->
-
-				<div class="w3-right w3-col w3-padding-12" style="width:7px"
-					v-bind:class="model.states.result ? model.marker.styleClass : ''">
-					&nbsp;
-				</div>
-
-				<!-- marker title -->
-
-				<div class="w3-rest w3-padding-12 w3-container">
-					{{ model.marker.name }}
-				</div>
-
-            </div>
-
-            <!-- panel -->
-
-            <div v-if="model.panel"
-                class="w3-container w3-padding-12 w3-light-grey">
-
-                <!-- ready view -->
-
-                <div v-if="model.states.ready">
-
-                    <!-- description -->
-
-                    <p>{{ model.marker.description }}</p>
-
-                    <!-- inputs -->
-
-                    <p v-for="input in model.marker.inputs" class="w3-tooltip">
-
-                        <!-- text input -->
-
-                        <label>{{ input.label || input.id }}</label>
-                        <input v-if="input.type=='text'"
-                            v-on:keyup.enter="model.applyMarker()"
-                            class="w3-input w3-border"
-                            type="text"
-                            v-model="model.userInputs[input.id]">
-
-                        <!-- select input -->
-
-                        <select v-if="input.type=='select'"
-                            class="w3-input w3-border"
-                            v-model="model.userInputs[input.id]">
-                            <option v-for="val of input.values">
-                                {{ val }}
-                            </option>
-                        </select>
-
-                        <!-- tooltip -->
-
-                        <span class="w3-text w3-tag w3-animate-opacity"
-                            style="position:absolute;right:0px;top:54px;width:280px">
-                            {{ input.tip }}
-                        </span>
-                    <p>
-
-                    <!-- apply button -->
-
-                    <button v-on:click="model.applyMarker()"
-                        v-bind:class="model.marker.styleClass"
-                        class="w3-btn">
-                        Apply</button>
-
-                    <!-- more button -->
-
-                    <a v-on:click="model.switchState('more')"
-                        class="w3-right" href='#'>More</a>
-
-                </div>
-
-                <!-- progress view -->
-
-                <div v-if="model.states.progress">
-
-                    <!-- loader -->
-
-                    <div class="loader"></div>
-
-                    <!-- abort button -->
-
-                    <a v-on:click="model.abortRequest()"
-                        class="w3-right" href='#'>Abort</a>
-
-                </div>
-
-                <!-- result view -->
-
-                <div v-if="model.states.result">
-
-                    <!-- message -->
-
-                    <p>{{ model.resultMessage }}</p>
-
-                    <!-- clear button -->
-
-                    <button v-on:click="model.resetMarker()"
-                        v-bind:class="model.marker.styleClass"
-                        class="w3-btn">
-                        Clear
-                    </button>
-
-                </div>
-
-                <!-- error view -->
-
-                <div v-if="model.states.error">
-
-                    <!-- message -->
-
-                    <p>{{ model.errorMessage }}</p>
-
-                    <!-- back button -->
-
-                    <button v-on:click="model.switchState('ready')"
-                        v-bind:class="model.marker.styleClass"
-                        class="w3-btn">
-                        Back
-                    </button>
-
-                </div>
-
-                <!-- more view -->
-
-                <div v-if="model.states.more">
-
-                    <!-- marker infos -->
-
-                    <p>
-                    <b>URL:</b><br>
-                    {{ model.marker.url }}
-                    </p>
-
-                    <!-- back button -->
-
-                    <button v-on:click="model.switchState('ready')"
-                        v-bind:class="model.marker.styleClass"
-                        class="w3-btn">
-                        Back
-                    </button>
-
-                    <!-- remove button -->
-
-                    <button v-on:click="model.removeMarker()"
-                        v-bind:class="model.marker.styleClass"
-                        class="w3-btn">
-                        Remove
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- add tab -->
-
-    <div v-if="tabNavigationModel.states.add"
-		class="w3-container w3-padding-12 w3-light-grey">
-
-        <!-- input view -->
-
-        <div v-if="registrationModel.states.input">
-
-            <!-- info text -->
-
-            <p>Add a marker by entering the marker's URL.</p>
-
-            <!-- url input -->
+			<!-- url input -->
 
             <p>
                 <label>URL</label>
-                <input v-model="registrationModel.inputUrl"
-                v-on:keyup.enter="registrationModel.registerMarker()"
+                <input v-model="registerUi.inputUrl"
+                v-on:keyup.enter="registerUi.registerMarker()"
                 class="w3-input w3-border"
                 type="text">
             </p>
 
-            <!-- add button -->
+			<!-- add button -->
 
-            <button v-on:click="registrationModel.registerMarker()"
-                class="w3-btn w3-theme-d3">
+            <button v-on:click="registerUi.registerMarker()"
+                class="w3-btn w3-blue">
                 Add</button>
-        </div>
 
-        <!-- progress view -->
+		</div>
 
-        <div v-if="registrationModel.states.progress">
+		<!-- progress -->
 
-            <!-- loader -->
+		<div v-if="registerUi.views.progress"
+			class="w3-container w3-small w3-padding-16">
 
-            <div class="loader"></div>
+			<!-- info -->
 
-            <!-- abort button -->
+			<span>Requesting {{registerUi.inputUrl}} ...</span>
 
-            <a v-on:click="registrationModel.abortRequest()"
-                class="w3-right" href='#'>Abort</a>
+			<!-- spinner -->
 
-        </div>
+			<p class="w3-center w3-padding-16">
+				<i class="fa fa-circle-o-notch fa-spin"
+					style="font-size:24px"></i>
+			</p>
 
-        <!-- success view -->
+			<!-- abort button -->
 
-        <div v-if="registrationModel.states.success">
+			<a v-on:click="registerUi.abortRequest()"
+				class="w3-right" href='#'>Abort</a>
 
-            <!-- info text -->
+		</div>
 
-            <p>{{ registrationModel.successMessage }}</p>
+		<!-- success view -->
 
-            <!-- back button -->
-
-            <button v-on:click="registrationModel.switchState('input')"
-                class="w3-btn w3-theme-d3">
-                Back</button>
-        </div>
-
-
-        <!-- error view -->
-
-        <div v-if="registrationModel.states.error">
+        <div v-if="registerUi.views.success"
+			class="w3-container w3-small w3-padding-16">
 
             <!-- info text -->
 
-            <p>{{ registrationModel.errorMessage }}</p>
+			<div class="w3-panel w3-border w3-white w3-leftbar w3-border-grey">
+				<p>{{registerUi.successMessage}}</p>
+			</div>
 
             <!-- back button -->
 
-            <button v-on:click="registrationModel.switchState('input')"
-                class="w3-btn w3-theme-d3">
+            <button v-on:click="registerUi.switchView('input')"
+                class="w3-btn w3-light-grey">
                 Back</button>
         </div>
 
-    </div>
+		<!-- error -->
+
+		<div v-if="registerUi.views.error"
+			class="w3-container w3-small w3-padding-16">
+
+			<!-- message -->
+
+			<div class="w3-panel w3-border w3-white w3-leftbar w3-border-grey">
+				<p class="w3-text-red">{{registerUi.errorMessage}}</p>
+			</div>
+
+			<!-- back button -->
+
+			<button v-on:click="registerUi.switchView('input')"
+				class="w3-btn w3-light-grey">
+				Back
+			</button>
+
+		</div>
+
+	</template>
+
+	<!-- repository -->
+
+	<template v-if="menu.views.repository">
+		<!-- navigation -->
+		<div class="w3-bar w3-border-bottom w3-light-grey" >
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
+				v-on:click="menu.switchView('list')">
+				Markers</a>
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
+				v-on:click="menu.switchView('register')">
+				Add</a>
+	  		<a href="#"
+				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
+				Repository</a>
+			<a href="#"
+				class="w3-button w3-hover-none w3-right"
+				v-on:click="menu.resetAllMarkers()">
+				<i class="fa fa-trash-o"></i></a>
+		</div>
+		<div class="w3-container">
+			repository
+		</div>
+	</template>
+
+	<!-- markers -->
+
+	<template v-for="markerUi of markerUis"
+		v-if="menu.views[markerUi.marker.id]">
+
+		<!-- header -->
+
+		<div class="w3-bar w3-border-bottom w3-light-grey">
+			<a href="#" class="w3-button w3-hover-none w3-large"
+				v-on:click="menu.switchView('list')">
+				<i class="fa fa-chevron-left"></i></a>
+			<span style="font-family:Roboto-Regular">
+					{{markerUi.marker.name}}</span>
+			<span v-on:click="markerUi.switchView('more')"
+				class="w3-right w3-button w3-hover-none">
+				<i class="fa fa-wrench"></i></span>
+		</div>
+
+		<!-- ready -->
+
+		<div v-if="markerUi.views.ready"
+			class="w3-container w3-padding-16 w3-margin w3-small">
+
+			<!-- description -->
+
+			<div class="w3-border-bottom w3-border-top">
+				<p class="">{{markerUi.marker.description}}</p>
+			</div>
+			<br>
+
+			<!-- inputs -->
+
+			<p v-for="input in markerUi.marker.inputs" class="w3-tooltip">
+
+				<!-- text input -->
+
+				<label>{{ input.label || input.id }}</label>
+
+				<input v-if="input.type=='text'"
+					v-on:keyup.enter="markerUi.applyMarker()"
+					class="w3-input w3-border"
+					type="text"
+					v-model="markerUi.userInputs[input.id]">
+
+				<!-- select input -->
+
+				<select v-if="input.type=='select'"
+					class="w3-input w3-border"
+					v-model="markerUi.userInputs[input.id]">
+					<option v-for="val of input.values">
+						{{ val }}
+					</option>
+				</select>
+
+				<!-- tooltip -->
+
+				<span class="w3-text w3-tag w3-animate-opacity"
+					style="position:absolute;right:0px;top:54px;width:280px">
+					{{ input.tip }}
+				</span>
+			<p>
+
+			<!-- apply button -->
+
+			<button v-on:click="markerUi.applyMarker()"
+				v-bind:class="markerUi.marker.styleClass"
+				class="w3-btn">
+				Apply</button>
+
+		</div>
+
+		<!-- progress -->
+
+		<div v-if="markerUi.views.progress"
+			class="w3-container w3-small w3-padding-16">
+
+			<!-- info -->
+
+			<span>Requesting {{markerUi.marker.url}} ...</span>
+
+			<!-- spinner -->
+
+			<p class="w3-center w3-padding-16">
+				<i class="fa fa-circle-o-notch fa-spin"
+					style="font-size:24px"></i>
+			</p>
+
+			<!-- abort button -->
+
+			<a v-on:click="markerUi.abortRequest()"
+				class="w3-right" href='#'>Abort</a>
+
+		</div>
+
+		<!-- result -->
+
+		<div v-if="markerUi.views.result"
+			class="w3-container w3-small w3-padding-16">
+
+			<!-- message -->
+
+			<div class="w3-border-bottom w3-border-top w3-margin">
+				<p v-if="markerUi.resultMessage">
+					{{markerUi.resultMessage}}</p>
+				<p v-else>
+					Marker successfully applied (without a result message).
+			</div>
+			<br>
+
+			<!-- clear button -->
+
+			<button v-on:click="markerUi.resetMarker()"
+				v-bind:class="markerUi.marker.styleClass"
+				class="w3-btn">
+				Clear
+			</button>
+
+		</div>
+
+		<!-- error -->
+
+		<div v-if="markerUi.views.error"
+			class="w3-container w3-small w3-padding-16">
+
+			<!-- message -->
+
+			<div class="w3-border-bottom w3-border-top w3-margin">
+				<p class="w3-text-red">{{markerUi.errorMessage}}</p>
+			</div>
+			<br>
+
+			<!-- back button -->
+
+			<button v-on:click="markerUi.switchView('ready')"
+				class="w3-btn w3-light-grey">
+				Back
+			</button>
+
+		</div>
+
+		<!-- more -->
+
+		<div v-if="markerUi.views.more"
+			class="w3-container w3-small w3-padding-16">
+
+			<!-- info -->
+
+			<!--iv class="w3-panel w3-border w3-white w3-leftbar w3-border-grey"-->
+			<div class="w3-border-bottom w3-border-top w3-margin">
+				<p>
+					<span>URL:</span><br>
+					<span>{{markerUi.marker.url}}</span>
+				</p>
+			</div>
+			<br>
+
+			<!-- back button -->
+
+			<button v-on:click="markerUi.switchView(markerUi.active ? 'result': 'ready')"
+				class="w3-btn w3-light-grey">Back</button>
+
+			<!-- remove marker from system -->
+
+			<a v-on:click="markerUi.removeMarkerFromSystem()"
+				class="w3-right" href='#'>Remove Marker</a>
+
+		</div>
+
+	</template>
+
+	<!-- Footer -->
+
+	<div class="w3-bar w3-border-top w3-light-grey">
+  		<a href="#" class="w3-button w3-hover-none w3-padding-right-0" style="font-family: Roboto-Bold">Emphasize.io</a>
+		<span class="w3-small">Version {{version}}</span>
+		<a href="#" class="w3-button w3-hover-none w3-right w3-large"><i class="fa fa-github"></i></a>
+		<a href="#" class="w3-button w3-hover-none w3-right w3-large"><i class="fa fa-home"></i></a>
+	</div>
 
 </div>
 
