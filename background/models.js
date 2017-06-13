@@ -3,6 +3,10 @@ var models = (function() {
 
     'use strict';
 
+    /**
+    * Each user interface model can have serveral views. This class
+    * implements methods to add, remove, request and switch this views.
+    */
     function Views() {
 
         this.get = function(viewName) {
@@ -43,6 +47,13 @@ var models = (function() {
         this.views = {};
     }
 
+    /**
+    * Menu is the top ui model. It contains the sub ui models and implements
+    * some methods that affect serveral of this models.
+    *
+    * @param {Number} tabId
+    * @param {Array of Object} markers
+    */
     function Menu(tabId, markers) {
 
         /**
@@ -100,11 +111,21 @@ var models = (function() {
         this.registerUi = new RegisterUi(tabId);
     }
 
+    /**
+    * Represents the marker list.
+    *
+    * @param {Array of Object} markers
+    */
     function ListUi(markerUis) {
 
         this.markerUis = markerUis;
     }
 
+    /**
+    * Represents the register interface where new markers can be added.
+    *
+    * @param {Number} tabId
+    */
     function RegisterUi(tabId) {
 
         /**
@@ -160,6 +181,12 @@ var models = (function() {
         this.inputUrl;
     }
 
+    /**
+    * Represents the interface of a certain marker.
+    *
+    * @param {Number} tabId
+    * @param {Array of Object} markers
+    */
     function MarkerUi(tabId, marker) {
 
         /**
