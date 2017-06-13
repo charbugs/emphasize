@@ -1,19 +1,46 @@
-
+/* These are the user interface models */
 var models = (function() {
 
     'use strict';
 
-    function switchView(view) {
-        for (var key in this.views) {
-            this.views[key] = false;
+    function Views() {
+
+        this.get = function(viewName) {
+            if (this.views.hasOwnProperty(viewName)) {
+                return this.views[viewName];
+            } else {
+                throw new Error('no such view to return');
+            }
         }
 
-        if (this.views.hasOwnProperty(view)) {
-            this.views[view] = true;
+        this.add = function(viewName) {
+            if (this.views.hasOwnProperty(viewName)) {
+                throw new Error('view already extists');
+            } else {
+                this.views[viewName] = false;
+            }
         }
-        else {
-            throw new Error('unknown view: ' + view);
+
+        this.remove = function(viewName) {
+            if (this.views.hasOwnProperty(viewName)) {
+                delete this.views[viewName];
+            } else {
+                throw new Error('no such view to remove');
+            }
         }
+
+        this.switch = function(viewName) {
+            if (this.views.hasOwnProperty(viewName)) {
+                for (var key in this.views) {
+                    this.views[key] = false;
+                }
+                this.views[viewName] = true;
+            } else {
+                throw new Error('no such view to switch to');
+            }
+        }
+
+        this.views = {};
     }
 
     function Menu(tabId, markers) {
@@ -24,8 +51,7 @@ var models = (function() {
         * @param {db.Marker} marker.
         */
         this.addMarkerUi = function(marker) {
-            // add new view.
-            this.views[marker.id] = false;
+            this.views.add(marker.id);
             this.markerUis.push(new MarkerUi(this.tabId, marker));
         };
 
@@ -42,7 +68,8 @@ var models = (function() {
                     proxy.invoke(this.tabId, 'highlight.remove', remMarker.id,
                     function() {
                         that.markerUis.splice(i, 1);
-                        that.switchView('list');
+                        that.views.remove(remMarker.id);
+                        that.views.switch('list');
                     });
                 }
             }
@@ -61,14 +88,11 @@ var models = (function() {
         this.tabId = tabId;
         this.markers = markers;
 
-        // supported views
-        this.views = {
-            list: true,
-            register: false,
-            repository: false
-        };
-        this.markers.map(m => this.views[m.id] = false);
-        this.switchView = switchView.bind(this);
+        // define supported views
+        this.views = new Views();
+        ['list', 'register', 'repository'].map(v => this.views.add(v));
+        this.markers.map(m => this.views.add(m.id));
+        this.views.switch('list');
 
         // Componts of the menu
         this.markerUis = markers.map(m => new MarkerUi(this.tabId, m));
@@ -93,14 +117,14 @@ var models = (function() {
         */
         this.registerMarker = function() {
             var that = this;
-            that.switchView('progress');
+            that.views.switch('progress');
             db.registerMarker(that.requestId, that.inputUrl,
                 function(err, marker) {
                     if (err) {
                         that.errorMessage = err.message;
-                        that.switchView('error');
+                        that.views.switch('error');
                     } else {
-                        that.switchView('success');
+                        that.views.switch('success');
                     }
                 }
             );
@@ -119,16 +143,13 @@ var models = (function() {
         /////////////////////// Init //////////////////////
 
         this.tabId = tabId;
-        this.views = {
-            input: true,
-            progress: false,
-            success: false,
-            error: false
-        };
 
-        this.switchView = switchView.bind(this);
+        // define supported views
+        this.views = new Views();
+        ['input', 'progress', 'success', 'error'].map(v => this.views.add(v));
+        this.views.switch('input');
 
-        //Id for http requests
+        // Id for http requests
         this.requestId = String(tabId) + '-' + 'registration';
 
         // Messages
@@ -148,7 +169,7 @@ var models = (function() {
 
             var that = this;
 
-            that.switchView('progress');
+            that.views.switch('progress');
 
             proxy.invoke(that.tabId, 'extract.extractTextNodes',
             function() {
@@ -168,7 +189,7 @@ var models = (function() {
                                     err.name === 'RequestError') {
 
                                     that.errorMessage = err.message;
-                                    that.switchView('error');
+                                    that.views.switch('error');
                                 }
                                 else {
                                     throw err;
@@ -181,7 +202,7 @@ var models = (function() {
 
                                     that.resultMessage = resp.message;
                                     that.active = true;
-                                    that.switchView('result');
+                                    that.views.switch('result');
 
                                 });
                             }
@@ -199,7 +220,7 @@ var models = (function() {
             proxy.invoke(that.tabId, 'highlight.remove', that.marker.id,
                 function() {
                     that.active = false;
-                    that.switchView('ready');
+                    that.views.switch('ready');
             });
         };
 
@@ -230,24 +251,17 @@ var models = (function() {
         this.marker = marker;
 
         // Views for different processing steps.
-        this.views = {
-            ready: true,
-            progress: false,
-            result: false,
-            error: false,
-            more: false
-        };
-
-        this.switchView = switchView.bind(this);
+        this.views = new Views();
+        ['ready', 'progress', 'result', 'error', 'more']
+            .map(v => this.views.add(v));
+        this.views.switch('ready');
 
         //Indicates wether the marker is holding highlightings
         //in the web page right now.
         this.active = false;
 
-
         // Id for http requests
         this.requestId = String(tabId) + '-' + String(marker.id);
-
 
         //Holds user inputs.
         //Keys are input ids, values are text.

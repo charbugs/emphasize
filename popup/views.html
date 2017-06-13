@@ -48,7 +48,7 @@ Menu
 
 	<!-- list -->
 
-	<template v-if="menu.views.list">
+	<template v-if="menu.views.get('list')">
 
 		<!-- navigation -->
 
@@ -58,11 +58,11 @@ Menu
 				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.switchView('register')">
+				v-on:click="menu.views.switch('register')">
 				Add</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.switchView('repository')">
+				v-on:click="menu.views.switch('repository')">
 				Repository</a>
 			<a href="#"
 				class="w3-button w3-hover-none w3-right"
@@ -75,7 +75,7 @@ Menu
 		<ul class="w3-ul">
   			<li v-for="markerUi in markerUis"
 				class="w3-hover-light-grey w3-padding-16"
-				v-on:click="menu.switchView(markerUi.marker.id)">
+				v-on:click="menu.views.switch(markerUi.marker.id)">
 
 				<span style="font-family: Roboto-Medium"
 					class="w3-small">{{markerUi.marker.name}}
@@ -98,21 +98,21 @@ Menu
 
 	<!-- registration -->
 
-	<template v-if="menu.views.register">
+	<template v-if="menu.views.get('register')">
 
 		<!-- navigation -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.switchView('list')">
+				v-on:click="menu.views.switch('list')">
 				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
 				Add</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.switchView('repository')">
+				v-on:click="menu.views.switch('repository')">
 				Repository</a>
 			<a href="#"
 				class="w3-button w3-hover-none w3-right"
@@ -122,7 +122,7 @@ Menu
 
 		<!-- input -->
 
-		<div v-if="registerUi.views.input"
+		<div v-if="registerUi.views.get('input')"
 			class="w3-container w3-padding-16 w3-margin w3-small">
 
 			<!-- info text -->
@@ -153,7 +153,7 @@ Menu
 
 		<!-- progress -->
 
-		<div v-if="registerUi.views.progress"
+		<div v-if="registerUi.views.get('progress')"
 			class="w3-container w3-small w3-padding-16 w3-margin">
 
 			<!-- info -->
@@ -176,7 +176,7 @@ Menu
 
 		<!-- success view -->
 
-        <div v-if="registerUi.views.success"
+        <div v-if="registerUi.views.get('success')"
 			class="w3-container w3-small w3-padding-16 w3-margin">
 
             <!-- info text -->
@@ -188,14 +188,14 @@ Menu
 
             <!-- back button -->
 
-            <button v-on:click="registerUi.switchView('input')"
+            <button v-on:click="registerUi.views.switch('input')"
                 class="w3-btn w3-blue">
                 Back</button>
         </div>
 
 		<!-- error -->
 
-		<div v-if="registerUi.views.error"
+		<div v-if="registerUi.views.get('error')"
 			class="w3-container w3-small w3-padding-16 w3-margin">
 
 			<!-- message -->
@@ -207,7 +207,7 @@ Menu
 
 			<!-- back button -->
 
-			<button v-on:click="registerUi.switchView('input')"
+			<button v-on:click="registerUi.views.switch('input')"
 				class="w3-btn w3-blue">
 				Back
 			</button>
@@ -218,16 +218,16 @@ Menu
 
 	<!-- repository -->
 
-	<template v-if="menu.views.repository">
+	<template v-if="menu.views.get('repository')">
 		<!-- navigation -->
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.switchView('list')">
+				v-on:click="menu.views.switch('list')">
 				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.switchView('register')">
+				v-on:click="menu.views.switch('register')">
 				Add</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
@@ -246,24 +246,24 @@ Menu
 	<!-- markers -->
 
 	<template v-for="markerUi of markerUis"
-		v-if="menu.views[markerUi.marker.id]">
+		v-if="menu.views.get(markerUi.marker.id)">
 
 		<!-- header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey">
 			<a href="#" class="w3-button w3-hover-none w3-large"
-				v-on:click="menu.switchView('list')">
+				v-on:click="menu.views.switch('list')">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
 					{{markerUi.marker.name}}</span>
-			<span v-on:click="markerUi.switchView('more')"
+			<span v-on:click="markerUi.views.switch('more')"
 				class="w3-right w3-button w3-hover-none">
 				<i class="fa fa-wrench"></i></span>
 		</div>
 
 		<!-- ready -->
 
-		<div v-if="markerUi.views.ready"
+		<div v-if="markerUi.views.get('ready')"
 			class="w3-container w3-padding-16 w3-margin-top w3-margin-right w3-margin-left w3-small">
 
 			<!-- description -->
@@ -309,7 +309,7 @@ Menu
 
 		<!-- progress -->
 
-		<div v-if="markerUi.views.progress"
+		<div v-if="markerUi.views.get('progress')"
 			class="w3-container w3-margin w3-small">
 
 			<!-- info -->
@@ -332,7 +332,7 @@ Menu
 
 		<!-- result -->
 
-		<div v-if="markerUi.views.result"
+		<div v-if="markerUi.views.get('result')"
 			class="w3-container w3-padding-16 w3-margin w3-small">
 
 			<!-- message -->
@@ -357,7 +357,7 @@ Menu
 
 		<!-- error -->
 
-		<div v-if="markerUi.views.error"
+		<div v-if="markerUi.views.get('error')"
 			class="w3-container w3-padding-16 w3-margin w3-small">
 
 			<!-- message -->
@@ -369,7 +369,7 @@ Menu
 
 			<!-- back button -->
 
-			<button v-on:click="markerUi.switchView('ready')"
+			<button v-on:click="markerUi.views.switch('ready')"
 				class="w3-btn w3-blue">
 				Back
 			</button>
@@ -378,7 +378,7 @@ Menu
 
 		<!-- more -->
 
-		<div v-if="markerUi.views.more"
+		<div v-if="markerUi.views.get('more')"
 			class="w3-container w3-padding-16 w3-margin w3-small">
 
 			<!-- info -->
@@ -394,7 +394,7 @@ Menu
 
 			<!-- back button -->
 
-			<button v-on:click="markerUi.switchView(markerUi.active ? 'result': 'ready')"
+			<button v-on:click="markerUi.views.switch(markerUi.active ? 'result': 'ready')"
 				class="w3-btn w3-blue">Back</button>
 
 			<!-- remove marker from system -->
