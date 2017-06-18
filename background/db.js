@@ -8,21 +8,20 @@ var db = (function() {
     */
     var markerAdded = new event.Event();
     var markerRemoved = new event.Event();
-    var menuSizeChanged = new event.Event();
 
     /**
     * Supported style classes for markers
     */
     var styleClasses = [
-        'vink-face-1',
-        'vink-face-2',
-        'vink-face-3',
-        'vink-face-4',
-        'vink-face-5',
-        'vink-face-6',
-        'vink-face-7',
-        'vink-face-8',
-        'vink-face-9'
+        'emphasize-face-1',
+        'emphasize-face-2',
+        'emphasize-face-3',
+        'emphasize-face-4',
+        'emphasize-face-5',
+        'emphasize-face-6',
+        'emphasize-face-7',
+        'emphasize-face-8',
+        'emphasize-face-9'
     ];
 
     /**
@@ -64,15 +63,7 @@ var db = (function() {
             if (Object.keys(items).length == 0) {
                 chrome.storage.local.set({
                     lastId: 0,
-                    markers: [],
-                    currentMenuSize: 2,
-                    menuSizeClasses: [
-                        'vink-menu-size-xsmall',   // 0
-                        'vink-menu-size-small',    // 1
-                        'vink-menu-size-medium',   // 2
-                        'vink-menu-size-large',    // 3
-                        'vink-menu-size-xlarge'    // 4
-                    ]
+                    markers: []
                 });
             }
         });
@@ -275,65 +266,18 @@ var db = (function() {
     }
 
     /**
-    * Return the current menu size class.
-    *
-    * @param {Function} callback - ({String} class)
-    */
-    function getMenuSize(callback) {
-        var keys = ['menuSizeClasses', 'currentMenuSize']
-        chrome.storage.local.get(keys, function(items) {
-            callback(items.menuSizeClasses[items.currentMenuSize]);
-        });
-    }
-
-    /**
-    * Increases the stored menu size and fires menuSizeChanged.
-    * If the current size level is max, then don't increase and
-    * don't fire.
-    */
-    function increaseMenuSize() {
-        var keys = ['menuSizeClasses', 'currentMenuSize']
-        chrome.storage.local.get(keys, function(items) {
-            if (items.currentMenuSize < items.menuSizeClasses.length - 1) {
-                ++items.currentMenuSize;
-                chrome.storage.local.set(items, function() {
-                    menuSizeChanged.dispatch()
-                });
-            }
-        });
-    }
-
-    /**
-    * Decreases the stored menu size and fires menuSizeChanged.
-    * If the current size level is min, then don't decrease and
-    * don't fire.
-    */
-    function decreaseMenuSize() {
-        chrome.storage.local.get('currentMenuSize', function(items) {
-            if (items.currentMenuSize > 0) {
-                --items.currentMenuSize;
-                chrome.storage.local.set(items, function() {
-                    menuSizeChanged.dispatch()
-                });
-            }
-        });
-    }
-
-    /**
     * public
     */
     return {
+        // methods
         getMarker: getMarker,
         registerMarker: registerMarker,
         removeMarker: removeMarker,
         removeMarkerByUrl: removeMarkerByUrl,
         initStorage: initStorage,
+        // events
         markerAdded: markerAdded,
         markerRemoved: markerRemoved,
-        getMenuSize: getMenuSize,
-        increaseMenuSize: increaseMenuSize,
-        decreaseMenuSize: decreaseMenuSize,
-        menuSizeChanged: menuSizeChanged
     };
 
 }());

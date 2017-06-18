@@ -1,69 +1,44 @@
-.vink-menu-size-xsmall {
-	font-size: 10px!important;
-	width: 280px!important;
-}
-
-.vink-menu-size-small {
-	font-size: 12px!important;
-	width: 330px!important;
-}
-
-.vink-menu-size-medium {
-	font-size: 14px!important;
-	width: 380px!important;
-}
-
-.vink-menu-size-large {
-	font-size: 16px!important;
-	width: 430px!important;
-}
-
-.vink-menu-size-xlarge {
-	font-size: 18px!important;
-	width: 480px!important;
-}
-
-.vink-face-1 { /* red */
+.emphasize-face-1 { /* red */
 	color: #FFFFFF;
 	background: #F44336;
 }
 
-.vink-face-2 { /* teal */
+.emphasize-face-2 { /* teal */
 	color: #FFFFFF;
 	background: #009688;
 }
 
-.vink-face-3 { /* indigo */
+.emphasize-face-3 { /* indigo */
 	color: #FFFFFF;
 	background: #3F51B5;
 }
 
-.vink-face-4 { /* pink */
+.emphasize-face-4 { /* pink */
 	color: #FFFFFF;
 	background: #E91E63;
 }
 
-.vink-face-5 { /* green */
+.emphasize-face-5 { /* green */
 	color: #FFFFFF;
 	background: #4CAF50;
 }
 
-.vink-face-6 { /* orange */
+.emphasize-face-6 { /* orange */
 	color: #000000;
 	background: #FF9800;
 }
 
-.vink-face-7 { /* blue */
+.emphasize-face-7 { /* blue */
 	color: #FFFFFF;
 	background: #2196F3;
 }
 
-.vink-face-8 { /* purple */
+.emphasize-face-8 { /* purple */
 	color: #FFFFFF;
 	background: #9C27B0;
 }
 
-.vink-face-9 { /* lime */
+.emphasize-face-9 { /* lime */
 	color: #000000;
 	background: #CDDC39;
 }

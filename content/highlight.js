@@ -5,12 +5,12 @@ var highlight = (function() {
 
     'use strict';
 
-    // Class name that identifies elements added by vink
-    const GLOBAL_CLASS_NAME = 'vink-element';
+    // Class name that identifies elements added by emphasize
+    const GLOBAL_CLASS_NAME = 'emphasize-element';
 
     // Class name stub that identifies elements belonging to a specific marker.
-    // Will be filled with a marker id, i.e. "vink-marker-34"
-    const MARKER_ID_STUB = 'vink-marker-';
+    // Will be filled with a marker id, i.e. "emphasize-marker-34"
+    const MARKER_ID_STUB = 'emphasize-marker-';
 
     /**
     * Highlights text passages of the web page according to the instructions
@@ -242,7 +242,7 @@ var highlight = (function() {
 
     /**
     * Remove all elements added by a specific marker or all elements
-    * made by vink.
+    * made by emphasize.
     *
     * @param {Number} markerId - if falsy remove all.
     * @param {Function} callback - ({jsonisable} err, {jsonisable} data)

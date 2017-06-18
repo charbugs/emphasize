@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "Vink",
+    "name": "Emphasize",
     "version": "0.1.0",
-    "description": "A framework for highlighting text in web pages",
+    "description": "Browser extension for advanced text search in web pages",
 
     "permissions": [
         "activeTab",
