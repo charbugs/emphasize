@@ -13,6 +13,7 @@
     "background": {
         "scripts": [
             "background/event.js",
+            "background/ajv.min.js",
             "background/parser.js",
             "background/db.js",
             "background/external.js",

@@ -1,180 +1,169 @@
-
+/** 
+ * @module parse
+ * This module defines functions for parsing/validating 
+ * the response of the marker programms.
+ * 
+ * It uses JSON schema and Ajv for validating.
+ * 
+ * The schema declarations can be viewed as a documentation 
+ * of the REST protocol between markers and the extension. 
+ */
 var parser = (function(){
 
-	'use strict';
-
     /**
-	* An Error that will be thrown if the object in question is not valid.
-	*/
-	function ParseError(message) {
-		this.message = message;
-		this.stack = (new Error()).stack;
-	}
-	ParseError.prototype = Object.create(Error.prototype);
-	ParseError.prototype.name = 'ParseError';
-
-
-    /**
-    * Checks if a object is present and required.
-    *
-    * Present means that the object has a value differnt from undefined.
-    *
-    * @param {any} ref - Object in question.
-    * @param {Boolean} force - Is the object required?
-    * @param {String} id - Alias of the object. Used in error messages.
-    * @error {ParseError} - Thrown if object is required but not present.
-    * @return {Boolean} - True if object is present, false if not
+    * An Error that will be thrown if the response data of a marker app
+    * does not match the communication protocol of marker and extension
     */
-    function checkForce(ref, force, id) {
+    function ResponseParseError(message) {
+        this.message = message;
+        this.stack = (new Error()).stack;
+    }
+    ResponseParseError.prototype = Object.create(Error.prototype);
+    ResponseParseError.prototype.name = 'ResponseParseError';
 
-        if (typeof ref == 'undefined' && force) {
-            var msg = 'parse error: ' + id + ' required but not present.';
-            throw new ParseError(msg);
+    /**
+    * If a marker was requested to mark a text, the response 
+    * must have this structure (in the words of json schema).
+    */
+    var markupResponseSchema = {
+        type: 'object',
+        required: ['markup'],
+        additionalProperties: false,
+        properties: {
+            markup: { 
+                type: 'array',
+                items: {
+                    type: 'integer'
+                }
+            },
+            message: { 
+                type: 'string'
+            }
         }
-        else if (typeof ref == 'undefined' && !force) {
-            return false; // not present and not required
+    };
+
+    /**
+    * If a marker was requested to pass it's setup, the response 
+    * must have this structure (in the words of json schema).
+    */
+    var setupResponseSchema = {
+        type: 'object',
+        required: ['name', 'description'],
+        additionalProperties: false,
+        properties: {
+            name: {
+                type: 'string'
+            },
+            description: {
+                type: 'string'
+            },
+            inputs: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    required: ['id', 'type'],
+                    additionalProperties: false,
+                    properties: {
+                        id: {
+                            type: 'string'
+                        },
+                        type: {
+                            type: 'string',
+                            enum: ['text', 'select']
+                        },
+                        values: {
+                            type: 'array',
+                            items: {
+                                type: 'string'
+                            }
+                        },
+                        label: {
+                            type: 'string'
+                        }
+                    }
+                }
+            }
         }
-        else {
-            return true; // present
+    };
+
+    // setup the validators
+    var ajv = Ajv({allErrors: true});
+    var markupValidator = ajv.compile(markupResponseSchema);
+    var setupValidator = ajv.compile(setupResponseSchema);
+
+    /**
+    * Schema validation of data. Throws an error if data is bad.
+    *
+    * @param {function} validator
+    * @param {any} data
+    * @throws Error  
+    */
+    function validate(validator, data) {
+        if(!validator(data)) {
+            var first = validator.errors[0];
+            var msg = "response" + first.dataPath + " " + first.message;
+            throw new Error(msg);
         }
     }
 
     /**
-    * Checks the type of an object.
+    * Throws an error is the setup response has defines a select input
+    * but does not specify the options of the selection. This function 
+    * is necessary due to an shortcoming in json schema.
     *
-    * @param {any} ref - Object in question.
-    * @param {Function|null} type - Type identifier (constructor or null).
-    * @param {String} id - Alias of the object. Used in error messages.
-    * @error {ParseError} - Thrown if the object has another type.
+    * @param {Object} setupResponse
+    * @throws Error
     */
-    function checkType(ref, type, id) {
-
-        if (typeof type !== 'undefined') {
-
-            if (type == null && ref !== null) {
-                var msg = 'parse error: ' + id + ' must be null.';
-                throw new ParseError(msg)
-            }
-            else if (ref.constructor !== type) {
-                var msg = 'parse error: type of ' + id + ' must be ' + type.name + '.';
-                throw new ParseError(msg);
-            }
-        }
-    }
-    /**
-    * Tests an object with an given test funtion.
-    *
-    * The object will be passed to the test function.
-    *
-    * @param {any} ref - Object in question.
-    * @param {Function} test - A test function.
-    * @param {String} id - Alias of the object. Used in error messages.
-    * @error {ParseError} - Thrown if test function returns falsy value.
-    */
-    function checkTest(ref, test, id) {
-
-        if (typeof test !== 'undefined') {
-
-            if(!Boolean(test(ref))) {
-                var msg = 'parse error: content of ' + id + ' is incorrect.';
-                throw new ParseError(msg);
-            }
-        }
-    }
-
-    /**
-    * Checks for unsupported properties in an object.
-    *
-    * @param {any} ref - Object in question.
-    * @param {Object} props - Determines the terms for each property in object.
-    * @param {String} id - Alias of the object. Used in error messages.
-    */
-    function checkUnsupported(ref, props, id) {
-
-        if (typeof props !== 'undefined') {
-
-            var supportedProps = Object.getOwnPropertyNames(props);
-            for (var key in ref) {
-
-                if (supportedProps.indexOf(key) == -1) {
-                    var msg = id + '.' + key + ' is not supported.';
-                    throw new ParseError(msg);
+    function checkForSelectValues(setupResponse) {
+        if (setupResponse.inputs) {
+            for (var input of setupResponse.inputs) {
+                if (input.type === 'select' && !input.values) {
+                    throw new Error('selection declared but no values given');
                 }
             }
         }
     }
 
     /**
-    * Iterates true the properties of an object and pass them to a
-    * parser function.
+    * Parses the response to a markup request.
     *
-    * Differents to checkEach(): Here each property has its own terms.
-    *
-    * @param {any} ref - Object in question.
-    * @param {Object} props - Determines the terms for each property in object.
-    * @param {String} id - Alias of the object. Used in error messages.
+    * @param {String} responseText
+    * @param {Function} callback - (err, data) 
     */
-    function checkProps(ref, props, id) {
-
-        if (typeof props !== 'undefined') {
-
-            for (var key in props) {
-
-                var terms = props[key];
-                var subRef = ref[key];
-                var nextId = id + '.' + key;
-                parse(subRef, terms, nextId);
-            }
+    function parseMarkupResponse(responseText, callback) {
+        try {
+            response = JSON.parse(responseText);
+            validate(markupValidator, response);
+            callback(null, response);
+        }
+        catch (err) {
+            var msg = 'Cannot parse marker response: ' + err.message;
+            callback(new ResponseParseError(msg), null);
         }
     }
 
     /**
-    * Iterates true the properties of an object and pass them to a
-    * parser function.
+    * Parses the response to a setup request.
     *
-    * Differents to checkProps(): Here all properties has the same terms.
-    *
-    * @param {any} ref - Object in question.
-    * @param {Object} props - Determines the terms for each property in object.
-    * @param {String} id - Alias of the object. Used in error messages.
+    * @param {String} responseText
+    * @param {Function} callback - (err, data) 
     */
-    function checkEach(ref, each, id) {
-
-        if(typeof each !== 'undefined') {
-
-            for (var key in ref) {
-
-                var terms = each;
-                var subRef = ref[key];
-                var nextId = id + '.' + key;
-                parse(subRef, terms, nextId);
-            }
+    function parseSetupResponse(responseText, callback) {
+        try {
+            response = JSON.parse(responseText);
+            validate(setupValidator, response);
+            checkForSelectValues(response);       
+            callback(null, response);
+        }
+        catch (err) {
+            var msg = 'Cannot parse marker response: ' + err.message;
+            callback(new ResponseParseError(msg), null);
         }
     }
 
-    /*
-    * Validates the structure of an object of any type.
-    *
-    * Returns nothing if the object is valid, else the helper functions will
-    * throw an ParseError.
-    *
-    * @param {any} ref - The object to be validate.
-    * @param {Object} terms - Determines the structure of the object.
-    * @param {String} id - Alias of the object. Used in error messages.
-    */
-    function parse(ref, terms, id) {
-
-        if (checkForce(ref, terms.force, id)) {
-            checkType(ref, terms.type, id);
-            checkTest(ref, terms.test, id);
-            checkUnsupported(ref, terms.props, id);
-            checkProps(ref, terms.props, id);
-            checkEach(ref, terms.each, id);
-        }
-    }
-
+    /** interfaces */
     return {
-        parse: parse
+        parseMarkupResponse: parseMarkupResponse,
+        parseSetupResponse: parseSetupResponse
     };
-
 }());

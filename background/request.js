@@ -14,17 +14,6 @@ var request = (function() {
 	RequestError.prototype = Object.create(Error.prototype);
 	RequestError.prototype.name = 'RequestError';
 
-	/**
-	* An Error that will be thrown if the response data of a marker app
-	* does not match the communication protocol of marker and extension
-	*/
-	function ResponseParseError(message) {
-		this.message = message;
-		this.stack = (new Error()).stack;
-	}
-	ResponseParseError.prototype = Object.create(Error.prototype);
-	ResponseParseError.prototype.name = 'ResponseParseError';
-
     /**
     * Stores requests.
     *
@@ -34,7 +23,7 @@ var request = (function() {
 
 	/**
 	* Requests a marker app to analyze a list of tokens
-    * and submit the result of this analysis.
+    * and to submit the result of this analysis.
     *
 	*
     * @param {String} id - id of request
@@ -55,9 +44,11 @@ var request = (function() {
 		};
 
 		request(id, url, data, function(err, responseText) {
-
-			handleResponseText(err, responseText,
-                parseMarkupResponse, callback);
+			if (err) {
+				callback(err, null);
+			} else {
+				parser.parseMarkupResponse(responseText, callback);
+			}
 		});
 	}
 
@@ -73,9 +64,11 @@ var request = (function() {
 		var data = { call: 'setup' };
 
 		request(id, url, data, function(err, responseText) {
-
-			handleResponseText(err, responseText,
-                parseSetupResponse, callback);
+			if (err) {
+				callback(err, null);
+			} else {
+				parser.parseSetupResponse(responseText, callback);
+			}
 		});
 	}
 
@@ -164,197 +157,6 @@ var request = (function() {
 			}
 		}
 	}
-
-    /**
-    * Handels the response text of marker app.
-    *
-    * @param {Error} err
-    * @param {String} responseText
-    * @param {Function} parser
-    * @param {Function} callback
-    */
-    function handleResponseText(err, responseText, parser, callback) {
-
-        if (err) {
-			callback(err, null);
-		} else {
-			try {
-				var response = parser(responseText);
-				callback(null, response);
-			} catch (err) {
-				if (err instanceof ResponseParseError)
-					callback(err, null);
-				else if (err instanceof RequestError)
-					callback(err, null);
-				else
-					throw err;
-			}
-		}
-    }
-
-	/**
-	* Parses the markup response of a marker app.
-    *
-    * This includes checking if the structure and content of the response
-    * is valid, and perform some transformations.
-	*
-	* @param {JSON String} responseText - response of marker
-	* @param {Number} numOfTokens - number of web page tokens
-	* @return {Object} - parsed response
-	*/
-	function parseMarkupResponse(responseText, numOfTokens) {
-
-        var markupResponseTerms = {
-
-            force: true,
-            type: Object,
-            props: {
-
-                markup: {
-
-                    force: true,
-                    type: Array,
-                    each: {
-
-                        type: Number,
-                        test: n => Number.isInteger(n)
-                    }
-
-                },
-
-                message: {
-
-                    force: false,
-                    type: String
-                }
-            }
-        }
-
-        var response = parseResponse(
-                responseText, markupResponseTerms, 'response');
-
-		var padding = numOfTokens - response.markup.length;
-		if (padding > 0)
-			response.mask = response.mask.concat(Array(padding).fill(0));
-
-		return response;
-	}
-
-	/**
-	* Parses the setup response of a marker app.
-    *
-    * This means checking if the structure and content of the response
-    * is valid.
-	*
-	* @param {String} responseText - response of marker
-	* @return {Object} - parsed response
-	*/
-	function parseSetupResponse(responseText) {
-
-        var setupResponseTerms = {
-
-            force: true,
-            type: Object,
-            props: {
-
-                name: {
-
-                    force: true,
-                    type: String
-                },
-
-                description: {
-
-                    force: false,
-                    type: String
-                },
-
-                inputs: {
-
-                    force: false,
-                    type: Array,
-                    each: {
-
-                        type: Object,
-                        props: {
-
-                            id: {
-
-                                force: true,
-                                type: String
-                            },
-
-                            type: {
-
-                                force: true,
-                                type: String,
-                                test: s => ['text', 'select'].indexOf(s) !== -1
-                            },
-
-                            values: {
-
-                                force: false,
-                                type: Array,
-                                each: {
-
-                                    type: String
-                                }
-                            },
-
-                            label: {
-
-                                force: false,
-                                type: String
-                            },
-
-                            tip:  {
-
-                                force: false,
-                                type: String
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return parseResponse(responseText, setupResponseTerms, 'response');
-	}
-
-    /**
-    * Parses the response text of a marker app.
-    *
-    * @param {JSON String} responseText
-    * @param {Object} responseTerms
-    * @return {Object} - parsed response
-    */
-    function parseResponse(responseText, responseTerms) {
-
-        var response;
-
-        try {
-	    	response = JSON.parse(responseText);
-		}
-        catch (err) {
-            var msg = 'Cannot parse marker response: ' + err.message;
-			throw new ResponseParseError(msg);
-		}
-
-        try {
-            parser.parse(response, responseTerms, 'response');
-        }
-        catch (err) {
-            if(err.name === 'ParseError') {
-                var msg = "Failed to parse response from server: " + err.message;
-                throw new ResponseParseError(msg);
-            }
-            else {
-                throw err;
-            }
-        }
-
-        return response;
-    }
 
 	/** interfaces of module */
 	return {
