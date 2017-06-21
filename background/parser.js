@@ -26,20 +26,34 @@ var parser = (function(){
     * must have this structure (in the words of json schema).
     */
     var markupResponseSchema = {
-        type: 'object',
-        required: ['markup'],
-        additionalProperties: false,
-        properties: {
-            markup: { 
-                type: 'array',
-                items: {
-                    type: 'integer'
+        oneOf: [
+            { // regular response 
+                type: 'object',
+                required: ['markup'],
+                additionalProperties: false,
+                properties: {
+                    markup: { 
+                        type: 'array',
+                        items: {
+                            type: 'integer'
+                        }
+                    },
+                    message: { 
+                        type: 'string'
+                    }
                 }
             },
-            message: { 
-                type: 'string'
+            { // error response
+                type: 'object',
+                required: ['error'],
+                additionalProperties: true,
+                properties: {
+                    error: {
+                        type: 'string',
+                    }
+                }
             }
-        }
+        ]
     };
 
     /**
@@ -47,43 +61,57 @@ var parser = (function(){
     * must have this structure (in the words of json schema).
     */
     var setupResponseSchema = {
-        type: 'object',
-        required: ['name', 'description'],
-        additionalProperties: false,
-        properties: {
-            name: {
-                type: 'string'
-            },
-            description: {
-                type: 'string'
-            },
-            inputs: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    required: ['id', 'type'],
-                    additionalProperties: false,
-                    properties: {
-                        id: {
-                            type: 'string'
-                        },
-                        type: {
-                            type: 'string',
-                            enum: ['text', 'select']
-                        },
-                        values: {
-                            type: 'array',
-                            items: {
-                                type: 'string'
+        oneOf: [
+            { // regular response
+                type: 'object',
+                required: ['name', 'description'],
+                additionalProperties: false,
+                properties: {
+                    name: {
+                        type: 'string'
+                    },
+                    description: {
+                        type: 'string'
+                    },
+                    inputs: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            required: ['id', 'type'],
+                            additionalProperties: false,
+                            properties: {
+                                id: {
+                                    type: 'string'
+                                },
+                                type: {
+                                    type: 'string',
+                                    enum: ['text', 'select']
+                                },
+                                values: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'string'
+                                    }
+                                },
+                                label: {
+                                    type: 'string'
+                                }
                             }
-                        },
-                        label: {
-                            type: 'string'
                         }
                     }
                 }
+            },
+            { // error response
+                type: 'object',
+                required: ['error'],
+                additionalProperties: false,
+                properties: {
+                    error: {
+                        type: 'string',
+                    }
+                }
             }
-        }
+        ]
     };
 
     // setup the validators

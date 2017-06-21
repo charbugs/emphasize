@@ -213,7 +213,8 @@ var models = (function() {
 
                             if (err) {
                                 if (err.name === 'ResponseParseError' ||
-                                    err.name === 'RequestError') {
+                                    err.name === 'RequestError' ||
+                                    err.name === 'MarkerError') {
 
                                     that.errorMessage = err.message;
                                     that.views.switch('error');
