@@ -13,7 +13,7 @@
     "background": {
         "scripts": [
             "background/event.js",
-            "background/ajv.min.js",
+            "vendor/ajv.min.js",
             "background/parser.js",
             "background/db.js",
             "background/external.js",
@@ -25,8 +25,8 @@
      },
 
     "browser_action": {
-        "default_icon": "popup/menu.png",
-        "default_popup": "popup/views.html"
+        "default_icon": "popup/popup.png",
+        "default_popup": "popup/popup.html"
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
