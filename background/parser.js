@@ -61,57 +61,43 @@ var parser = (function(){
     * must have this structure (in the words of json schema).
     */
     var setupResponseSchema = {
-        oneOf: [
-            { // regular response
-                type: 'object',
-                required: ['name', 'description'],
-                additionalProperties: false,
-                properties: {
-                    name: {
-                        type: 'string'
-                    },
-                    description: {
-                        type: 'string'
-                    },
-                    inputs: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            required: ['id', 'type'],
-                            additionalProperties: false,
-                            properties: {
-                                id: {
-                                    type: 'string'
-                                },
-                                type: {
-                                    type: 'string',
-                                    enum: ['text', 'select']
-                                },
-                                values: {
-                                    type: 'array',
-                                    items: {
-                                        type: 'string'
-                                    }
-                                },
-                                label: {
-                                    type: 'string'
-                                }
+        type: 'object',
+        required: ['name', 'description'],
+        additionalProperties: false,
+        properties: {
+            name: {
+                type: 'string'
+            },
+            description: {
+                type: 'string'
+            },
+            inputs: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    required: ['id', 'type'],
+                    additionalProperties: false,
+                    properties: {
+                        id: {
+                            type: 'string'
+                        },
+                        type: {
+                            type: 'string',
+                            enum: ['text', 'select']
+                        },
+                        values: {
+                            type: 'array',
+                            items: {
+                                type: 'string'
                             }
+                        },
+                        label: {
+                            type: 'string'
                         }
                     }
                 }
-            },
-            { // error response
-                type: 'object',
-                required: ['error'],
-                additionalProperties: false,
-                properties: {
-                    error: {
-                        type: 'string',
-                    }
-                }
             }
-        ]
+        }
     };
 
     // setup the validators
@@ -129,7 +115,7 @@ var parser = (function(){
     function validate(validator, data) {
         if(!validator(data)) {
             var first = validator.errors[0];
-            var msg = "response" + first.dataPath + " " + first.message;
+            var msg = "Response" + first.dataPath + " " + first.message;
             throw new Error(msg);
         }
     }
@@ -165,7 +151,7 @@ var parser = (function(){
             callback(null, response);
         }
         catch (err) {
-            var msg = 'Cannot parse marker response: ' + err.message;
+            var msg = 'Bad marker response: ' + err.message;
             callback(new ResponseParseError(msg), null);
         }
     }
@@ -184,7 +170,7 @@ var parser = (function(){
             callback(null, response);
         }
         catch (err) {
-            var msg = 'Cannot parse marker response: ' + err.message;
+            var msg = 'Bad marker response: ' + err.message;
             callback(new ResponseParseError(msg), null);
         }
     }

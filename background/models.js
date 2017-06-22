@@ -213,8 +213,7 @@ var models = (function() {
 
                             if (err) {
                                 if (err.name === 'ResponseParseError' ||
-                                    err.name === 'RequestError' ||
-                                    err.name === 'MarkerError') {
+                                    err.name === 'RequestError') {
 
                                     that.errorMessage = err.message;
                                     that.views.switch('error');
@@ -224,15 +223,21 @@ var models = (function() {
                                 }
                             }
                             else {
-                                proxy.invoke(that.tabId, 'highlight.highlight',
-                                resp.markup, that.marker,
-                                function() {
+                                if (resp.error) { // an error reported by the marker.
+                                    that.errorMessage = 'Marker sent an error: ' + resp.error;
+                                    that.views.switch('error');  
+                                }
+                                else {
+                                    proxy.invoke(that.tabId, 'highlight.highlight',
+                                    resp.markup, that.marker,
+                                    function() {
 
-                                    that.resultMessage = resp.message;
-                                    that.active = true;
-                                    that.views.switch('result');
+                                        that.resultMessage = resp.message;
+                                        that.active = true;
+                                        that.views.switch('result');
 
-                                });
+                                    });
+                                }
                             }
                         });
                     });
