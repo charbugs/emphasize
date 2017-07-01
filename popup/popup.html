@@ -40,6 +40,7 @@ Menu
 		|_ Error
 		|_ More
 	|_ Marker-2 ...
+	|_ Footer
 
 -->
 
@@ -114,10 +115,6 @@ Menu
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
 				v-on:click="menu.views.switch('repository')">
 				Repository</a>
-			<a href="#"
-				class="w3-button w3-hover-none w3-right"
-				v-on:click="menu.resetAllMarkers()">
-				<i class="fa fa-trash-o"></i></a>
 		</div>
 
 		<!-- input -->
@@ -232,14 +229,10 @@ Menu
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
 				Repository</a>
-			<a href="#"
-				class="w3-button w3-hover-none w3-right"
-				v-on:click="menu.resetAllMarkers()">
-				<i class="fa fa-trash-o"></i></a>
 		</div>
 		<div class="w3-container w3-padding-16 w3-margin">
 			Emphasize is extensible. Have a look at the 'Repository' section on
-			our web site for further markers.
+			the web site for further markers.
 		</div>
 	</template>
 
@@ -409,10 +402,20 @@ Menu
 	<!-- Footer -->
 
 	<div class="w3-bar w3-border-top w3-light-grey">
-  		<a href="#" class="w3-button w3-hover-none w3-padding-right-0" style="font-family: Roboto-Bold">Emphasize</a>
-		<span class="w3-small">Version {{version}}</span>
-		<a href="#" class="w3-button w3-hover-none w3-right w3-large"><i class="fa fa-github"></i></a>
-		<a href="#" class="w3-button w3-hover-none w3-right w3-large"><i class="fa fa-home"></i></a>
+  		<a 	href="#" 
+  			class="w3-button w3-hover-none w3-padding-right-0" 
+  			style="font-family: Roboto-Bold">
+  			Emphasize</a>
+		<span class="w3-small">
+			Version {{footerUi.version}}</span>
+		<a 	href="#" 
+			class="w3-button w3-hover-none w3-right w3-large"
+			v-on:click="footerUi.openWebPage('https://github.com/charbugs/emphasize')">
+			<i class="fa fa-github"></i></a>
+		<a 	href="#" 
+			class="w3-button w3-hover-none w3-right w3-large"
+			v-on:click="footerUi.openWebPage('https://github.com/charbugs/emphasize')">
+			<i class="fa fa-home"></i></a>
 	</div>
 
 </div>

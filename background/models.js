@@ -105,10 +105,23 @@ var models = (function() {
         this.markers.map(m => this.views.add(m.id));
         this.views.switch('list');
 
-        // Componts of the menu
+        // create the components of the menu
         this.markerUis = markers.map(m => new MarkerUi(this.tabId, m));
         this.listUi = new ListUi(this.markerUis);
         this.registerUi = new RegisterUi(tabId);
+        this.footerUi = new FooterUi();
+    }
+
+    /** 
+    * Represents the footer of the menu.
+    */
+    function FooterUi() {
+
+        this.openWebPage = function(url) {
+            chrome.tabs.create({ url: url });
+        }
+
+        this.version = chrome.runtime.getManifest().version;
     }
 
     /**
@@ -412,7 +425,7 @@ var models = (function() {
     }
 
     return {
-        menuContainer: new MenuContainer()
+        menuContainer: new MenuContainer(),
     };
 
 }());

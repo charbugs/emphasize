@@ -31,7 +31,7 @@ var controller = (function() {
                                 listUi: menu.listUi,
                                 registerUi: menu.registerUi,
                                 markerUis: menu.markerUis,
-                                version: chrome.runtime.getManifest().version
+                                footerUi: menu.footerUi
                             }
 	                    });
                     });
