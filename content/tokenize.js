@@ -16,7 +16,15 @@ var tokenize = (function() {
         var reSplitSpace = /\s*\S+\s*/g;
         var reLeadingPuncts = /^\s*[\.\:\,\;\!\?\-\"\'\(\)\[\]\{\}\%\&\/]\s*/;
         var reTrailingPuncts = /[\.\:\,\;\!\?\-\"\'\(\)\[\]\{\}\%\&\/]\s*$/;
-        var reAbbreviation = /^\s*(z\.B\.|ggf\.|allg\.|bzw\.|bspw\.|usw\.|etc\.|d\.h\.)\s*$/;
+
+        var reAbbreviations = [ 
+            // German
+            /^\s*(z\.B\.|ggf\.|allg\.|bzw\.|bspw\.|usw\.|etc\.|d\.h\.)\s*$/,
+            /^\s*(eigtl\.|Abb\.|i\.w\.S\.|i\.e\.S\.|jmd\.|u\.|u\.a\.|u\.Ä\.)\s*$/,
+            // English
+            /^\s*(P\.S\.|p\.s\.|i\.e\.|e\.g\.|vs\.)\s*$/,
+        ]
+            
         var tokens = [];
 
         for (var sub of string.match(reSplitSpace)) {
@@ -33,10 +41,15 @@ var tokenize = (function() {
             }
 
             // extract the abbreviation if there is one
-            sub = sub.replace(reAbbreviation, function(match) {
-                tokens.push(match);
-                return '';
-            });
+            for (var re of reAbbreviations) {
+                var before = sub.length;
+                sub = sub.replace(re, function(match) {
+                    tokens.push(match);
+                    return '';
+                });
+                if (sub.length != before)
+                    break;
+            }
 
             // split trailing punctuatin from sub token
             var trailingTokens = [];
