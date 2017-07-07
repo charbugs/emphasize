@@ -94,6 +94,13 @@ var models = (function() {
             this.markerUis.map(mui => mui.resetMarker());
         };
 
+        /**
+        * Opens a link in a new tab.
+        */
+        this.openWebPage = function(url) {
+            chrome.tabs.create({ url: url });
+        }
+
         ///////////////////// Init ////////////////////////
 
         this.tabId = tabId;
@@ -116,10 +123,6 @@ var models = (function() {
     * Represents the footer of the menu.
     */
     function FooterUi() {
-
-        this.openWebPage = function(url) {
-            chrome.tabs.create({ url: url });
-        }
 
         this.version = chrome.runtime.getManifest().version;
     }

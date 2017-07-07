@@ -15,6 +15,7 @@
     <style type="text/css" media="screen">
 		.w3-bottombar-light-grey{border-bottom:4px solid #eee!important}
     	.w3-bottombar-grey{border-bottom:4px solid #2196F3!important}
+    	a {color:#2196f3}
     </style>
 
 </head>
@@ -84,10 +85,13 @@ Menu
 
 				<span class="w3-small">
 					{{
-						markerUi.marker.description.length > 60 ?
-							markerUi.marker.description.substr(0, 60) + '...':
-							markerUi.marker.description
-					}}</span>
+						markerUi.marker.description
+							.replace(/\s+/g, ' ')
+							.replace(/<.*?>/g, '')
+							.substr(0, 60)
+							.replace(/\s+\w*$/, ' ...')
+					}}
+				</span>
 
 				<span v-if="markerUi.active"
 					class="w3-tag w3-small w3-right w3-round"
@@ -125,8 +129,8 @@ Menu
 			<!-- info text -->
 
 			<div class="w3-border-top w3-border-bottom">
-				<p>Add a marker to the system by entering the marker's address.
-					This should be a valid HTTP URL.</p>
+				<p>Add a new marker by entering the marker's address.
+					This must be a valid HTTP URL.</p>
 			</div>
 			<br>
 
@@ -262,7 +266,7 @@ Menu
 			<!-- description -->
 
 			<div class="w3-border-bottom w3-border-top">
-				<p class="">{{markerUi.marker.description}}</p>
+				<p v-html="markerUi.marker.description"></p>
 			</div>
 			<br>
 
@@ -331,10 +335,10 @@ Menu
 			<!-- message -->
 
 			<div class="w3-border-bottom w3-border-top">
-				<p v-if="markerUi.resultMessage">
-					{{markerUi.resultMessage}}</p>
+				<p v-if="markerUi.resultMessage"
+					v-html="markerUi.resultMessage"></p>
 				<p v-else>
-					Marker successfully applied (without a result message).
+					Marker applied without a result message.
 			</div>
 			<br><br>
 
@@ -410,11 +414,11 @@ Menu
 			Version {{footerUi.version}}</span>
 		<a 	href="#" 
 			class="w3-button w3-hover-none w3-right w3-large"
-			v-on:click="footerUi.openWebPage('https://github.com/charbugs/emphasize')">
+			v-on:click="menu.openWebPage('https://github.com/charbugs/emphasize')">
 			<i class="fa fa-github"></i></a>
 		<a 	href="#" 
 			class="w3-button w3-hover-none w3-right w3-large"
-			v-on:click="footerUi.openWebPage('https://github.com/charbugs/emphasize')">
+			v-on:click="menu.openWebPage('https://github.com/charbugs/emphasize')">
 			<i class="fa fa-home"></i></a>
 	</div>
 

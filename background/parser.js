@@ -7,6 +7,9 @@
  * 
  * The schema declarations can be viewed as a documentation 
  * of the REST protocol between markers and the extension. 
+ *
+ * There is a further check for malicious html in marker response
+ * using a html sanitizer library.
  */
 var parser = (function(){
 
@@ -20,6 +23,18 @@ var parser = (function(){
     }
     ResponseParseError.prototype = Object.create(Error.prototype);
     ResponseParseError.prototype.name = 'ResponseParseError';
+
+    /**
+    * Declares what html elements are allowed in the marker messages.
+    * Will be passed to the html sanitizer.
+    */
+    var htmlRules = {
+        allowedTags: ['a', 'b', 'i', 'em', 'strong', 'br', 'ul', 'li', 'ol',
+            'table', 'thead', 'tbody', 'tr', 'td', 'th'],
+        allowedAttributes: {
+            'a': ['href']
+        }
+    }
 
     /**
     * If a marker was requested to mark a text, the response 
@@ -121,9 +136,11 @@ var parser = (function(){
     }
 
     /**
-    * Throws an error is the setup response has defines a select input
-    * but does not specify the options of the selection. This function 
-    * is necessary due to an shortcoming in json schema.
+    * Throws an error if the setup response has defined a select input
+    * but does not specify the options of the selection.
+    *
+    * Have no idea how to do this test with json schema, so this function
+    * will take care of it.
     *
     * @param {Object} setupResponse
     * @throws Error
@@ -148,6 +165,10 @@ var parser = (function(){
         try {
             response = JSON.parse(responseText);
             validate(markupValidator, response);
+            if(response.message) {
+                response.message = sanitizeHtml(response.message, 
+                    htmlRules);
+            }
             callback(null, response);
         }
         catch (err) {
@@ -166,7 +187,9 @@ var parser = (function(){
         try {
             response = JSON.parse(responseText);
             validate(setupValidator, response);
-            checkForSelectValues(response);       
+            checkForSelectValues(response);
+            response.description = sanitizeHtml(response.description,
+                htmlRules);
             callback(null, response);
         }
         catch (err) {

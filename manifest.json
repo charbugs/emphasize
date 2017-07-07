@@ -14,6 +14,7 @@
         "scripts": [
             "background/event.js",
             "vendor/ajv.min.js",
+            "vendor/sanitize-html.min.js",
             "background/parser.js",
             "background/db.js",
             "background/external.js",
