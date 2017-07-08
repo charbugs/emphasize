@@ -113,8 +113,6 @@ var db = (function() {
                 return;
             }
 
-            url = normalizeUrl(url);
-
             if(urlExists(url, markers)) {
                 var msg = 'A marker of this URL already exists.';
                 if (callback)
@@ -146,16 +144,6 @@ var db = (function() {
 
             });
         });
-    }
-
-    /**
-    * Normalizes an URL by removing the trailing slash (if exists).
-    *
-    * @param {String} url
-    * @return {String} - normalized url
-    */
-    function normalizeUrl(url) {
-        return url.replace(/\/*$/, '');
     }
 
     /**

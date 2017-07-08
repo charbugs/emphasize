@@ -97,39 +97,14 @@ var request = (function() {
 	*/
 	function request(id, url, data, callback) {
 
-		resolveRedirects(url, function(endpointUrl) {
-
-			var xhr = new XMLHttpRequest();
-	        requestStorage[id] = xhr;
-			xhr.onreadystatechange = function() {
-				handleResponse(xhr, callback);
-			};
-			xhr.open('POST', endpointUrl, true);
-			xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.send(JSON.stringify(data));
-		});
-	}
-
-	/**
-	* Get the endpoint url after resolving all redirects.
-	*
-	* XMLHttpRequest actually follows the redirects by its own. But doing this
-	* with a POST request will end in a GET request, at least on
-	* Chromium 53.0.2785.89 Built on 8.5.
-	* So we resolve the redirects with a HEAD request.
-	*
-	* param {String} url - starting point url
-	* param {Function} callback - (endpoint url)
-	*/
-	function resolveRedirects(url, callback) {
 		var xhr = new XMLHttpRequest();
+        requestStorage[id] = xhr;
 		xhr.onreadystatechange = function() {
-			if (xhr.readyState === xhr.DONE) {
-				callback(xhr.responseURL);
-			}
-		}
-		xhr.open('HEAD', url, true);
-		xhr.send();
+			handleResponse(xhr, callback);
+		};
+		xhr.open('POST', url, true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify(data));
 	}
 
 	/**
