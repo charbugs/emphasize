@@ -294,6 +294,20 @@ var models = (function() {
             request.abortRequest(this.requestId);
         };
 
+        /**
+        * Crates an object for storing the current user input values.
+        * Sets the default option for any select input.
+        *
+        * As the current values of the selections is bound to this.userInputs 
+        * we must assign the default options to this container.
+        */
+        this.createUserInputContainer = function() {
+            var userInputs = {};
+            this.marker.inputs.filter(i => i.type === 'select')
+                .forEach(i => userInputs[i.id] = i.values[0]);
+            return userInputs;
+        }
+
         //////////////////// Init /////////////////////////
 
         this.tabId = tabId;
@@ -315,7 +329,7 @@ var models = (function() {
         //Holds user inputs.
         //Keys are input ids, values are text.
         //This object will be sent to the marker app.
-        this.userInputs = {};
+        this.userInputs = this.createUserInputContainer();
 
         // Messages
         this.errorMessage;
