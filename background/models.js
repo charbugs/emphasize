@@ -309,7 +309,7 @@ var models = (function() {
         //in the web page right now.
         this.active = false;
 
-        // Id for http requests
+        // Id for http requests. Needed to abort requests.
         this.requestId = String(tabId) + '-' + String(marker.id);
 
         //Holds user inputs.

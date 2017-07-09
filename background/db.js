@@ -42,6 +42,7 @@ var db = (function() {
     *   @prop {String} url
     *   @prop {String} name
     *   @prop {String} description
+    *   @prop {String} a short description
     *   @prop {Array of Input} inputs - user inputs provided my marker
     *   @prob {String} styleClass - class attribute to style highlightings
     */
@@ -49,7 +50,8 @@ var db = (function() {
 
         this.id = id;
         this.url = settings.url;
-        this.name = settings.name;
+        this.title = settings.title;
+        this.subtitle = settings.subtitle;
         this.description = settings.description;
         this.inputs = settings.inputs;
         this.styleClass = settings.styleClass;

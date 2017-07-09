@@ -80,17 +80,11 @@ Menu
 				v-on:click="menu.views.switch(markerUi.marker.id)">
 
 				<span style="font-family: Roboto-Medium"
-					class="w3-small">{{markerUi.marker.name}}
+					class="w3-small">{{markerUi.marker.title}}
 				</span><br>
 
 				<span class="w3-small">
-					{{
-						markerUi.marker.description
-							.replace(/\s+/g, ' ')
-							.replace(/<.*?>/g, '')
-							.substr(0, 60)
-							.replace(/\s+\w*$/, ' ...')
-					}}
+					{{markerUi.marker.subtitle}}
 				</span>
 
 				<span v-if="markerUi.active"
@@ -252,7 +246,7 @@ Menu
 				v-on:click="menu.views.switch('list')">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
-					{{markerUi.marker.name}}</span>
+					{{markerUi.marker.title}}</span>
 			<span v-on:click="markerUi.views.switch('more')"
 				class="w3-right w3-button w3-hover-none">
 				<i class="fa fa-wrench"></i></span>

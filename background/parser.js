@@ -77,10 +77,13 @@ var parser = (function(){
     */
     var setupResponseSchema = {
         type: 'object',
-        required: ['name', 'description'],
+        required: ['title', 'subtitle', 'description'],
         additionalProperties: false,
         properties: {
-            name: {
+            title: {
+                type: 'string'
+            },
+            subtitle: {
                 type: 'string'
             },
             description: {
