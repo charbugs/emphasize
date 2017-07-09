@@ -36,6 +36,9 @@ var parser = (function(){
         }
     }
 
+    var TITLE_LENGTH = 30;
+    var SUBTITLE_LENGTH = 100;
+
     /**
     * If a marker was requested to mark a text, the response 
     * must have this structure (in the words of json schema).
@@ -191,6 +194,8 @@ var parser = (function(){
             response = JSON.parse(responseText);
             validate(setupValidator, response);
             checkForSelectValues(response);
+            response.title = response.title.substring(0,TITLE_LENGTH);
+            response.subtitle = response.subtitle.substring(0,SUBTITLE_LENGTH);
             response.description = sanitizeHtml(response.description,
                 htmlRules);
             callback(null, response);

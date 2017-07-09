@@ -74,7 +74,33 @@ Menu
 
 		<!-- marker list -->
 
-		<ul class="w3-ul">
+		<div v-for="markerUi in markerUis"  
+			class="w3-cell-row w3-border-bottom w3-hover-light-grey w3-padding-16"
+			v-on:click="menu.views.switch(markerUi.marker.id)">
+			
+			<div class="w3-container w3-cell" 
+				style="width:345px; word-break:break-word;">
+				<span style="font-family: Roboto-Medium"
+					class="w3-small">
+					{{markerUi.marker.title}}
+				</span><br>
+				<span class="w3-small">
+					{{markerUi.marker.subtitle}}
+				</span>
+   			</div>
+  
+  			<div class="w3-container w3-cell w3-cell-bottom">
+  				<span v-if="markerUi.active"
+					class="w3-tag w3-small w3-right w3-round"
+					v-bind:class="markerUi.marker.styleClass"
+					style="font-family:Roboto-Regular">
+					active
+				</span>
+  			</div>
+
+		</div>
+
+		<!--ul class="w3-ul">
   			<li v-for="markerUi in markerUis"
 				class="w3-hover-light-grey w3-padding-16"
 				v-on:click="menu.views.switch(markerUi.marker.id)">
@@ -92,7 +118,7 @@ Menu
 					v-bind:class="markerUi.marker.styleClass"
 					style="font-family:Roboto-Regular">active</span>
 			</li>
-		</ul>
+		</ul-->
 	</template>
 
 	<!-- registration -->
@@ -399,7 +425,7 @@ Menu
 
 	<!-- Footer -->
 
-	<div class="w3-bar w3-border-top w3-light-grey">
+	<div class="w3-bar w3-light-grey">
   		<a 	href="#" 
   			class="w3-button w3-hover-none w3-padding-right-0" 
   			style="font-family: Roboto-Bold">
