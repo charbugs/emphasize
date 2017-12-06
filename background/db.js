@@ -60,16 +60,6 @@ var db = (function() {
     /**
     * If the storage is empty init it.
     */
-    /*function initStorage() {
-        chrome.storage.local.get(null, function(items) {
-            if (Object.keys(items).length == 0) {
-                chrome.storage.local.set({
-                    lastId: 0,
-                    markers: []
-                });
-            }
-        });
-    }*/
     function initStorage() {
         prome.storage.local.get(null).then(function(items) {
             if (Object.keys(items).length == 0)
@@ -81,23 +71,8 @@ var db = (function() {
     * Returns one or all marker(s) from storage.
     *
     * @param {Number | null} id - id of the marker to return (null if all)
-    * @param {Function} callback - fn({Marker} marker | {Array of Marker} markers).
+    * @return {Promise(Marker | Array of Marker)}
     */
-    /*function getMarker(id, callback) {
-
-        chrome.storage.local.get('markers', function(items) {
-            if (id === null)
-                callback(items.markers);
-            else {
-                for (var key in items.markers) {
-                    if (items.markers[key].id === id) {
-                        callback(items.markers[key]);
-                        break;
-                    }
-                }
-            }
-        });
-    }*/
     function getMarker(id) {
         return prome.storage.local.get(null).then(function(items) {
             if (id === null)
@@ -120,53 +95,8 @@ var db = (function() {
     *
     * @param {String} requestId - Id for the http request.
     * @param {String} url - Url of marker to register.
-    * @param {Function} [callback] - fn(err, new marker).
+    * @return {Promise(Marker)} - the new marker.
     */
-    /*function registerMarker(requestId, url, callback) {
-
-        chrome.storage.local.get(null, function(items) {
-
-            var markers = items.markers;
-
-            if(url === undefined || !checkUrl(url)) {
-                var msg = 'Need a valid HTTP URL';
-                if (callback)
-                    callback(new DatabaseError(msg), null);
-                return;
-            }
-
-            if(urlExists(url, markers)) {
-                var msg = 'A marker of this URL already exists.';
-                if (callback)
-                    callback(new DatabaseError(msg), null);
-                return;
-            }
-
-            request.requestSetup(requestId, url, function(err, setup) {
-
-                if (err) {
-                    if (callback)
-                        callback(err, null);
-                    return;
-                }
-
-                setup.url = url;
-                setup.styleClass = determineStyleClass(markers);
-                var newMarker = new Marker(++items.lastId, setup);
-                markers.push(newMarker);
-                var updated = {markers: markers, lastId: items.lastId};
-
-                chrome.storage.local.set(updated, function() {
-
-                    if (callback)
-                        callback(null, newMarker);
-
-                    markerAdded.dispatch(newMarker);
-                });
-
-            });
-        });
-    }*/    
     function registerMarker(requestId, url) {
 
         var items, newMarker;
@@ -249,31 +179,8 @@ var db = (function() {
     * Fires markerRemoved on success.
     *
     * @param {Number} id - Id of the marker to remove.
-    * @param {Function} [callback] - fn(err, removed marker).
+    * @return {Promise(Marker)} - removed marker.
     */
-    /*function removeMarker(id, callback) {
-
-        chrome.storage.local.get('markers', function(items) {
-
-            var markers = items.markers;
-            for (var i=0; i < markers.length; i++) {
-
-                if (markers[i].id === id) {
-
-                    let marker = markers.splice(i, 1)[0];
-                    chrome.storage.local.set({markers: markers}, function() {
-
-                        if (callback) {
-                            callback(null, marker);
-                        }
-
-                        markerRemoved.dispatch(marker);
-                    });
-                }
-            }
-        });
-    }*/
-
     function removeMarker(id, idIsUrl) {
 
         var removedMarker;

@@ -165,23 +165,8 @@ var parser = (function(){
     * Parses the response to a markup request.
     *
     * @param {String} responseText
-    * @param {Function} callback - (err, data) 
+    * @return {Promise(Object)} - parsed marker response.
     */
-    /*function parseMarkupResponse(responseText, callback) {
-        try {
-            response = JSON.parse(responseText);
-            validate(markupValidator, response);
-            if (response.message) {
-                response.message = sanitizeHtml(response.message, 
-                    htmlRules);
-            }
-            callback(null, response);
-        }
-        catch (err) {
-            var msg = 'Bad marker response: ' + err.message;
-            callback(new ResponseParseError(msg), null);
-        }
-    }*/
     function parseMarkupResponse(responseText) {
     
         try {
@@ -197,30 +182,12 @@ var parser = (function(){
         }
     }
     
-
     /**
     * Parses the response to a setup request.
     *
     * @param {String} responseText
-    * @param {Function} callback - (err, data) 
+    * @return {Promise(Object)} - parsed marker response.
     */
-    /*function parseSetupResponse(responseText, callback) {
-        try {
-            response = JSON.parse(responseText);
-            validate(setupValidator, response);
-            checkForSelectValues(response);
-            response.title = response.title.substring(0,TITLE_LENGTH);
-            response.subtitle = response.subtitle.substring(0,SUBTITLE_LENGTH);
-            response.description = sanitizeHtml(response.description,
-                htmlRules);
-            callback(null, response);
-        }
-        catch (err) {
-            var msg = 'Bad marker response: ' + err.message;
-            callback(new ResponseParseError(msg), null);
-        }
-    }*/
-
     function parseSetupResponse(responseText) {
         try {
             response = JSON.parse(responseText);

@@ -206,58 +206,6 @@ var models = (function() {
         /**
         * Applies the marker to the current web page.
         */
-        /*this.applyMarker = function() {
-
-            var that = this;
-
-            that.views.switch('progress');
-
-            proxy.invoke(that.tabId, 'extract.extractTextNodes',
-            function() {
-
-                proxy.invoke(that.tabId, 'extract.getWords',
-                function(err, words) {
-
-                    proxy.invoke(that.tabId, 'extract.getUrl',
-                    function(err, wpUrl) {
-
-                        request.requestMarkup(that.requestId, that.marker.url,
-                        words, wpUrl, that.userInputs,
-                        function(err, resp) {
-
-                            if (err) {
-                                if (err.name === 'ResponseParseError' ||
-                                    err.name === 'RequestError') {
-
-                                    that.errorMessage = err.message;
-                                    that.views.switch('error');
-                                }
-                                else {
-                                    throw err;
-                                }
-                            }
-                            else {
-                                if (resp.error) { // an error reported by the marker.
-                                    that.errorMessage = 'Marker sent an error: ' + resp.error;
-                                    that.views.switch('error');  
-                                }
-                                else {
-                                    proxy.invoke(that.tabId, 'highlight.highlight',
-                                    resp.markup, that.marker,
-                                    function() {
-
-                                        that.resultMessage = resp.message;
-                                        that.active = true;
-                                        that.views.switch('result');
-
-                                    });
-                                }
-                            }
-                        });
-                    });
-                });
-            });
-        };*/
         this.applyMarker = function() {
 
             var that = this;
@@ -394,16 +342,8 @@ var models = (function() {
         * Creates that menu if not already extists.
         *
         * @param {Number} tabId
-        * @param {Function} callback - ({MenuModel} menu)
+        * @return {Promise(Menu)}
         */
-        /*this.get = function(tabId, callback) {
-            var menu = this.select(tabId);
-            if (menu) {
-                callback(menu);
-            } else {
-                this.create(tabId, callback);
-            }
-        };*/
         this.get = function(tabId) {
             var menu = this.select(tabId);
             if (menu)
@@ -431,18 +371,8 @@ var models = (function() {
         * Creates and returns a new menu instance.
         *
         * @param {Number} tabId
-        * @param {Function} callback - ({Menu} menu)
+        * @return {Promise(Menu)}
         */
-        /*this.create = function(tabId, callback) {
-            var that = this;
-            // Markers are fetched here to avoid having a callback in the
-            // Menu constructor.
-            db.getMarker(null, function(markers) {
-                var menu = new Menu(tabId, markers);
-                that.menus.push(menu);
-                callback(menu);
-            });
-        };*/
         this.create = function(tabId) {
             var that = this;
             return db.getMarker(null).then(function(markers) {
@@ -451,16 +381,6 @@ var models = (function() {
                 return menu;
             });
         };
-
-        /*
-        this.create = function(tabId) {
-            return db.getMarker(null).then(function(markers) {
-                var menu = new Menu(tabId, markers);
-                this.menus.push(menu);
-                return menu;
-            });
-        };
-        */
 
         /**
         * Kicks the menu of a certain tab out of the container.

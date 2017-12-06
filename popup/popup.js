@@ -38,33 +38,6 @@ var controller = (function() {
                 showTabDisabledMessage();
             });
         });
-
-        /*chrome.runtime.getBackgroundPage(function(bg) {      
-
-            bg.proxy.connectWebPage(function(tabId) {
-
-                if (!tabId) {
-                    showTabDisabledMessage();
-                }
-                else {
-
-                    bg.models.menuContainer.get(tabId, function(menu) {
-
-                        new Vue({
-                            el: '#menu',
-                            data: {
-                                menu: menu,
-                                listUi: menu.listUi,
-                                registerUi: menu.registerUi,
-                                markerUis: menu.markerUis,
-                                footerUi: menu.footerUi
-                            }
-	                    });
-                    });
-                }
-            });
-
-        });*/
     }
 
     return {

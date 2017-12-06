@@ -61,40 +61,10 @@ var proxy = (function(){
 	* First param {Number} is the tab id.
 	* Second param {String} is the name of the function to invoke.
 	* (Must be given with full module path, as in "module.fn".)
-	* Last param {Function} is a callback: ({Any} err, {Any} data)
-	* All other params {jsonisable} will be passed to the target function.
+	* All other params {jsonable} will be passed to the target function.
+	*
+	* @return {Promise(any jsonable)}
 	*/
-	/*function invoke() {
-
-		var args = Array.prototype.slice.call(arguments);
-		var tabId = args.shift()
-		var path = args.shift();
-		var callback = args.pop();
-		var message = { command: 'invoke', path: path, args: args };
-
-		chrome.tabs.sendMessage(tabId, message, null, function(resp) {
-			if (resp) {
-				if (resp.err) {
-					if (callback) {
-						callback(resp.err, null);
-					} else {
-						throw resp.err;
-					}
-				} else {
-					if (callback) {
-						callback(null, resp.data);
-					}
-				}
-			} else {
-				// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
-				if (chrome.runtime.lastError) {
-					throw chrome.runtime.lastError.message;
-				} else {
-					throw new Error('some error with sendMessage()');
-				}
-			}
-		});
-	}*/
 	function invoke() {
 
 		var args = Array.prototype.slice.call(arguments);
@@ -116,7 +86,6 @@ var proxy = (function(){
 		});
 	}
 
-
     /**
     * Checks if an url is blocked by the system.
     */
@@ -132,32 +101,8 @@ var proxy = (function(){
 	* Finds out if the content scripts already injected in the current web page.
 	* If not injects them.
 	*
-	* @param {Function} callback
-	*	  @prop {Number} tabId - id of current tab, null if blocked url
+	* @return {Promise.resolve(tabId) | Promise.reject(InjectionError)} 
 	*/
-	/*function connectWebPage(callback) {
-
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-
-            if (isBlockedUrl(tabs[0].url)) {
-                callback(null);
-            }
-            else {
-			    var tabId = tabs[0].id;
-			    var message = {command: 'isAlive'};
-			    chrome.tabs.sendMessage(tabId, message, function (response) {
-				    if (response) {
-					    callback(tabId);
-                    }
-				    else {
-					    executeScripts(tabId, function() {
-						    callback(tabId);
-					    });
-                    }
-			    });
-            }
-		});
-	}*/
 	function connectWebPage() {
 
 		var tabId;

@@ -1,16 +1,5 @@
 const prome = {
 
-	/*runtime: {
-
-		getBackgroundPage: function() {
-			return new Promise(function(resolve, reject) {
-				chrome.runtime.getBackgroundPage(function(bg) {
-					resolve(bg);
-				});
-			});
-		}
-	},*/
-
 	storage : {
 
 		local: {

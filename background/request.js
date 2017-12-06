@@ -4,6 +4,19 @@ var request = (function() {
 	'use strict';
 
 	/**
+	* On CORS:
+	* 
+	* "Chrome extensions can make cross-domain requests to any domain *if* the
+	* domain is included in the "permissions" section of the manifest.json file.
+	* The server doesn't need to include any additional CORS headers or do any
+	* more work in order for the request to succeed." (see https://www.
+	* html5rocks.com/en/tutorials/cors/#toc-cross-domain-from-chrome-extensions)
+	*
+	* CORS is only permitted for a few protocols including http and https. Since
+	* we only allow markers on http and https CORS is no problem.
+    */
+
+	/**
 	* An Error that will be thrown if somthing went wrong while
 	* trying to get the response data from the marker app.
 	*/
@@ -43,25 +56,8 @@ var request = (function() {
 	* @param {String} wpUrl - url of the current web page.
 	* @param {Object} inputs - user inputs belonging to the marker.
 	*	    Keys {String} are input ids, values {String} are user inputs.
-	* @param {Function} callback - ({Error} err, {Object} parsed response)
+	* @return {Promise.resolve(Object)} - parsed marker response.
 	*/
-	/*function requestMarkup(id, url, tokens, wpUrl, inputs, callback) {
-
-		var data = {
-			call: 'markup',
-			tokens: tokens,
-			url: wpUrl,
-			inputs: inputs
-		};
-
-		request(id, url, data, function(err, responseText) {
-			if (err) {
-				callback(err, null);
-			} else {
-				parser.parseMarkupResponse(responseText, callback);
-			}
-		});
-	}*/
 	function requestMarkup(id, url, tokens, wpUrl, inputs) {
 
 		var data = {
@@ -85,20 +81,8 @@ var request = (function() {
 	*
     * @param {String} id - id of request
 	* @param {String} url - request url
-	* @param {Function} callback - ({Error} err, {Object} parsed response)
+	* @return {Promise.resolve(Object)} - parsed marker response.
 	*/
-	/*function requestSetup(id, url, callback) {
-
-		var data = { call: 'setup' };
-
-		request(id, url, data, function(err, responseText) {
-			if (err) {
-				callback(err, null);
-			} else {
-				parser.parseSetupResponse(responseText, callback);
-			}
-		});
-	}*/
 	function requestSetup(id, url) {
 
 		var data = { 
@@ -124,38 +108,14 @@ var request = (function() {
         requestStorage[id].abort();
     }
 
-    /**
-	* On request error handling: 
-	* 
-	* "Chrome extensions can make cross-domain requests to any domain *if* the
-	* domain is included in the "permissions" section of the manifest.json file.
-	* The server doesn't need to include any additional CORS headers or do any
-	* more work in order for the request to succeed." (see https://www.
-	* html5rocks.com/en/tutorials/cors/#toc-cross-domain-from-chrome-extensions)
-	*
-	* CORS is only permitted for a few protocols including http and https. Since
-	* we only allow markers on http and https CORS is no problem.
-    */
-
 	/**
 	* Performs a http request.
 	*
     * @param {String} id - id of request
 	* @param {String} url
-	* @param {jsonisable} data
-	* @param {Function} callback - ({String} response to request)
+	* @param {jsonable} data
+	* @return {Promise.resolve(String)} - unparsed response text.
 	*/
-	/*function request(id, url, data, callback) {
-
-		var xhr = new XMLHttpRequest();
-        requestStorage[id] = xhr;
-		xhr.onreadystatechange = function() {
-			handleResponse(xhr, callback);
-		};
-		xhr.open('POST', url, true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(JSON.stringify(data));
-	}*/
 	function request(id, url, data) {
 
 		return new Promise(function(resolve, reject) {
@@ -176,27 +136,8 @@ var request = (function() {
 	* Handles a http response.
 	*
 	* @param {XMLHttpRequest} xhr
-	* @param {Function} callback
-	* 	@param {String} - response to request
+	* @return {Promise(String)} - unparsed response text.
 	*/
-	/*function handleResponse(xhr, callback) {
-		if (xhr.readyState === xhr.DONE) {
-			if (xhr.status === 0) {
-                var msg = 'Something went wrong while requesting marker.';
-				var err = new RequestError(msg);
-				callback(err, null);
-			}
-			else if (xhr.status === 200) {
-				callback(null, xhr.responseText);
-			}
-			else {
-                var msg = 'Failed to receive data from marker. Server answers: ';
-                msg = msg + xhr.status;
-				var err = new RequestError(msg);
-				callback(err, null);
-			}
-		}
-	}*/
 	function handleResponse(xhr) {
 	
 		if (xhr.status === 0) {
