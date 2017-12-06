@@ -15,6 +15,32 @@ var controller = (function() {
 
         chrome.runtime.getBackgroundPage(function(bg) {
 
+            bg.proxy.connectWebPage()
+
+            .then(function(tabId) {
+                return bg.models.menuContainer.get(tabId);
+            })
+
+            .then(function(menu) {
+                new Vue({
+                    el: '#menu',
+                    data: {
+                        menu: menu,
+                        listUi: menu.listUi,
+                        registerUi: menu.registerUi,
+                        markerUis: menu.markerUis,
+                        footerUi: menu.footerUi
+                    }
+                });
+            })
+            
+            .catch(function(error) {
+                showTabDisabledMessage();
+            });
+        });
+
+        /*chrome.runtime.getBackgroundPage(function(bg) {      
+
             bg.proxy.connectWebPage(function(tabId) {
 
                 if (!tabId) {
@@ -38,7 +64,7 @@ var controller = (function() {
                 }
             });
 
-        });
+        });*/
     }
 
     return {

@@ -13,6 +13,7 @@
     "background": {
         "scripts": [
             "background/event.js",
+            "background/prome.js",
             "vendor/ajv.min.js",
             "vendor/sanitize-html.min.js",
             "background/parser.js",

@@ -60,7 +60,7 @@ var db = (function() {
     /**
     * If the storage is empty init it.
     */
-    function initStorage() {
+    /*function initStorage() {
         chrome.storage.local.get(null, function(items) {
             if (Object.keys(items).length == 0) {
                 chrome.storage.local.set({
@@ -68,6 +68,12 @@ var db = (function() {
                     markers: []
                 });
             }
+        });
+    }*/
+    function initStorage() {
+        prome.storage.local.get(null).then(function(items) {
+            if (Object.keys(items).length == 0)
+                prome.storage.local.set({ lastId: 0, markers: [] });
         });
     }
 
@@ -77,7 +83,7 @@ var db = (function() {
     * @param {Number | null} id - id of the marker to return (null if all)
     * @param {Function} callback - fn({Marker} marker | {Array of Marker} markers).
     */
-    function getMarker(id, callback) {
+    /*function getMarker(id, callback) {
 
         chrome.storage.local.get('markers', function(items) {
             if (id === null)
@@ -91,8 +97,22 @@ var db = (function() {
                 }
             }
         });
+    }*/
+    function getMarker(id) {
+        return prome.storage.local.get(null).then(function(items) {
+            if (id === null)
+                return items.markers;
+            else {
+                for (var key in items.markers) {
+                    if (items.markers[key].id === id) {
+                        return items.markers[key];                     
+                        break;
+                    }
+                }   
+            }
+        });
     }
-
+    
     /**
     * Registers a new marker to the database.
     *
@@ -102,7 +122,7 @@ var db = (function() {
     * @param {String} url - Url of marker to register.
     * @param {Function} [callback] - fn(err, new marker).
     */
-    function registerMarker(requestId, url, callback) {
+    /*function registerMarker(requestId, url, callback) {
 
         chrome.storage.local.get(null, function(items) {
 
@@ -146,7 +166,37 @@ var db = (function() {
 
             });
         });
+    }*/    
+    function registerMarker(requestId, url) {
+
+        var items, newMarker;
+
+        return prome.storage.local.get(null)
+
+        .then(function(_items) {
+            items = _items;
+            if(url === undefined || !checkUrl(url))
+                throw new DatabaseError('Need a valid HTTP URL');
+            if(urlExists(url, items.markers))
+                throw new DatabaseError('A marker of this URL already exists.');
+            return request.requestSetup(requestId, url);
+        })
+
+        .then(function(setup) {
+            setup.url = url;
+            setup.styleClass = determineStyleClass(items.markers);
+            newMarker = new Marker(++items.lastId, setup);
+            items.markers.push(newMarker);
+            var update = { markers: items.markers, lastId: items.lastId };
+            return prome.storage.local.set(update);
+        })
+
+        .then(function() {
+            markerAdded.dispatch(newMarker);
+            return newMarker;
+        });   
     }
+       
 
     /**
     * Checks if a url is valid in terms of the database.
@@ -201,7 +251,7 @@ var db = (function() {
     * @param {Number} id - Id of the marker to remove.
     * @param {Function} [callback] - fn(err, removed marker).
     */
-    function removeMarker(id, callback) {
+    /*function removeMarker(id, callback) {
 
         chrome.storage.local.get('markers', function(items) {
 
@@ -222,48 +272,37 @@ var db = (function() {
                 }
             }
         });
-    }
+    }*/
 
-    /**
-    * Remove a marker from storage.
-    *
-    * Fires markerRemoved on success.
-    *
-    * @param {String} url - Url of the marker to remove.
-    * @param {Function} [callback] - fn(err, removed marker).
-    */
-    function removeMarkerByUrl(url, callback) {
+    function removeMarker(id, idIsUrl) {
 
-        chrome.storage.local.get('markers', function(items) {
+        var removedMarker;
+        var key = idIsUrl ? 'url' : 'id';
+        return prome.storage.local.get('markers')
 
-            var markers = items.markers;
-            for (var i=0; i < markers.length; i++) {
-
-                if (markers[i].url === url) {
-
-                    let marker = markers.splice(i, 1)[0];
-                    chrome.storage.local.set({markers: markers}, function() {
-
-                        if (callback) {
-                            callback(null, marker);
-                        }
-
-                        markerRemoved.dispatch(marker);
-                    });
+        .then(function(items) {
+            for (var i=0; i < items.markers.length; i++) {
+                if (items.markers[i][key] === id) { 
+                    removedMarker = items.markers.splice(i, 1)[0];
                 }
             }
+            return prome.storage.local.set({ markers: items.markers });
+        })
+
+        .then(function() {
+            markerRemoved.dispatch(removedMarker);
+            return removedMarker; 
         });
     }
 
     /**
-    * public
+    * public interfaces
     */
     return {
         // methods
         getMarker: getMarker,
         registerMarker: registerMarker,
         removeMarker: removeMarker,
-        removeMarkerByUrl: removeMarkerByUrl,
         initStorage: initStorage,
         // events
         markerAdded: markerAdded,

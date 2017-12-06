@@ -47,7 +47,11 @@ var counterproxy = (function() {
 			target.apply(object, args);
 		}
 		else {
-			throw new Error('Error in counterproxy: '+path+' is not a function.');
+			var msg = 'Error in counterproxy: '+path+' is not a function.';
+			if (callback)
+				callback({ err: msg, data: null });
+			else
+				throw new Error(msg);
 		}
 	}
 

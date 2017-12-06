@@ -167,11 +167,11 @@ var parser = (function(){
     * @param {String} responseText
     * @param {Function} callback - (err, data) 
     */
-    function parseMarkupResponse(responseText, callback) {
+    /*function parseMarkupResponse(responseText, callback) {
         try {
             response = JSON.parse(responseText);
             validate(markupValidator, response);
-            if(response.message) {
+            if (response.message) {
                 response.message = sanitizeHtml(response.message, 
                     htmlRules);
             }
@@ -181,7 +181,22 @@ var parser = (function(){
             var msg = 'Bad marker response: ' + err.message;
             callback(new ResponseParseError(msg), null);
         }
+    }*/
+    function parseMarkupResponse(responseText) {
+    
+        try {
+            response = JSON.parse(responseText);
+            validate(markupValidator, response);
+            if (response.message)
+                response.message = sanitizeHtml(response.message, htmlRules);
+            return Promise.resolve(response);
+        } 
+        catch(err) {
+            var msg = 'Bad marker response: ' + err.message;
+            return Promise.reject(new ResponseParseError(msg));
+        }
     }
+    
 
     /**
     * Parses the response to a setup request.
@@ -189,7 +204,7 @@ var parser = (function(){
     * @param {String} responseText
     * @param {Function} callback - (err, data) 
     */
-    function parseSetupResponse(responseText, callback) {
+    /*function parseSetupResponse(responseText, callback) {
         try {
             response = JSON.parse(responseText);
             validate(setupValidator, response);
@@ -203,6 +218,23 @@ var parser = (function(){
         catch (err) {
             var msg = 'Bad marker response: ' + err.message;
             callback(new ResponseParseError(msg), null);
+        }
+    }*/
+
+    function parseSetupResponse(responseText) {
+        try {
+            response = JSON.parse(responseText);
+            validate(setupValidator, response);
+            checkForSelectValues(response);
+            response.title = response.title.substring(0,TITLE_LENGTH);
+            response.subtitle = response.subtitle.substring(0,SUBTITLE_LENGTH);
+            response.description = sanitizeHtml(response.description,
+                htmlRules);
+            return Promise.resolve(response);
+        }
+        catch (err) {
+            var msg = 'Bad marker response: ' + err.message;
+            return Promise.reject(new ResponseParseError(msg));
         }
     }
 

@@ -74,10 +74,11 @@ var models = (function() {
         */
         this.removeMarkerUi = function(remMarker) {
             var that = this;
-            for (let i=0; i<this.markerUis.length; i++) {
-                if (this.markerUis[i].marker.id === remMarker.id) {
-                    proxy.invoke(this.tabId, 'highlight.remove', remMarker.id,
-                    function() {
+            for (let i=0; i<that.markerUis.length; i++) {
+                if (that.markerUis[i].marker.id === remMarker.id) {
+                    
+                    proxy.invoke(that.tabId, 'highlight.remove', remMarker.id)
+                    .then(function() {
                         that.markerUis.splice(i, 1);
                         that.views.remove(remMarker.id);
                         that.views.switch('list');
@@ -155,16 +156,13 @@ var models = (function() {
         this.registerMarker = function() {
             var that = this;
             that.views.switch('progress');
-            db.registerMarker(that.requestId, that.inputUrl,
-                function(err, marker) {
-                    if (err) {
-                        that.errorMessage = err.message;
-                        that.views.switch('error');
-                    } else {
-                        that.views.switch('success');
-                    }
-                }
-            );
+            db.registerMarker(that.requestId, that.inputUrl)
+            .then(function() {
+                that.views.switch('success');
+            }).catch(function(error) {
+                that.errorMessage = error.message;
+                that.views.switch('error');
+            });
         };
 
         /**
@@ -208,7 +206,7 @@ var models = (function() {
         /**
         * Applies the marker to the current web page.
         */
-        this.applyMarker = function() {
+        /*this.applyMarker = function() {
 
             var that = this;
 
@@ -259,17 +257,66 @@ var models = (function() {
                     });
                 });
             });
-        };
+        };*/
+        this.applyMarker = function() {
+
+            var that = this;
+            var words, wpUrl, markerResponse;
+
+            that.views.switch('progress');
+
+            proxy.invoke(that.tabId, 'extract.extractTextNodes')
+
+            .then(function() {
+                return proxy.invoke(that.tabId, 'extract.getWords');
+            })
+
+            .then(function(_words) {
+                words = _words;
+                return proxy.invoke(that.tabId, 'extract.getUrl');
+            })
+
+            .then(function(_wpUrl) {
+                wpUrl = _wpUrl;
+                return request.requestMarkup(
+                    that.requestId, that.marker.url,
+                    words, wpUrl, that.userInputs);
+            })
+
+            .then(function(_markerResponse) {
+                markerResponse = _markerResponse;
+                return proxy.invoke(
+                    that.tabId, 'highlight.highlight',
+                    markerResponse.markup, that.marker);
+            })
+
+            .then(function() {
+                that.resultMessage = markerResponse.message;
+                that.active = true;
+                that.views.switch('result');
+            })
+
+            .catch(function(err) {
+                if (err.name === 'ResponseParseError' || 
+                    err.name === 'RequestError' ||
+                    err.name === 'MarkerError') {
+                    that.errorMessage = err.message;
+                    that.views.switch('error');
+                } else {
+                    throw err;
+                }
+            });
+        }
 
         /**
         * Removes the highlighting made by the marker.
         */
         this.resetMarker = function() {
-            var that = this;
-            proxy.invoke(that.tabId, 'highlight.remove', that.marker.id,
-                function() {
-                    that.active = false;
-                    that.views.switch('ready');
+            var that = this
+            proxy.invoke(that.tabId, 'highlight.remove', that.marker.id)
+            .then(function() {
+                that.active = false;
+                that.views.switch('ready');
             });
         };
 
@@ -349,13 +396,20 @@ var models = (function() {
         * @param {Number} tabId
         * @param {Function} callback - ({MenuModel} menu)
         */
-        this.get = function(tabId, callback) {
+        /*this.get = function(tabId, callback) {
             var menu = this.select(tabId);
             if (menu) {
                 callback(menu);
             } else {
                 this.create(tabId, callback);
             }
+        };*/
+        this.get = function(tabId) {
+            var menu = this.select(tabId);
+            if (menu)
+                return Promise.resolve(menu);
+            else
+                return this.create(tabId);
         };
 
         /**
@@ -379,7 +433,7 @@ var models = (function() {
         * @param {Number} tabId
         * @param {Function} callback - ({Menu} menu)
         */
-        this.create = function(tabId, callback) {
+        /*this.create = function(tabId, callback) {
             var that = this;
             // Markers are fetched here to avoid having a callback in the
             // Menu constructor.
@@ -388,7 +442,25 @@ var models = (function() {
                 that.menus.push(menu);
                 callback(menu);
             });
+        };*/
+        this.create = function(tabId) {
+            var that = this;
+            return db.getMarker(null).then(function(markers) {
+                var menu = new Menu(tabId, markers);
+                that.menus.push(menu);
+                return menu;
+            });
         };
+
+        /*
+        this.create = function(tabId) {
+            return db.getMarker(null).then(function(markers) {
+                var menu = new Menu(tabId, markers);
+                this.menus.push(menu);
+                return menu;
+            });
+        };
+        */
 
         /**
         * Kicks the menu of a certain tab out of the container.

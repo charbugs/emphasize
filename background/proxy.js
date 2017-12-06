@@ -19,6 +19,39 @@ var proxy = (function(){
         /^chrome:\/\// // not possible to inject content scripts here
     ];
 
+    /**
+	* An error that will be thrown if something went wrong with the message channel.
+	*/
+	function ChannelError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	ChannelError.prototype = Object.create(Error.prototype);
+	ChannelError.prototype.name = 'ChannelError';
+
+	/**
+	* An proxy error that substitutes errors on that causes on the content side.
+	* Nescessary since the content scripts can not send error objects to the 
+	* background (but they can of course send an error string).
+	*/
+	function ContentError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	ContentError.prototype = Object.create(Error.prototype);
+	ContentError.prototype.name = 'ContentError';
+
+	/**
+	* An error that will be thrown if content scripts can not be injected in
+	* the current website.
+	*/
+	function InjectionError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	InjectionError.prototype = Object.create(Error.prototype);
+	InjectionError.prototype.name = 'InjectionError';
+
 	/**
 	* Invokes a function that lives in a script of the web page context.
 	*
@@ -31,7 +64,7 @@ var proxy = (function(){
 	* Last param {Function} is a callback: ({Any} err, {Any} data)
 	* All other params {jsonisable} will be passed to the target function.
 	*/
-	function invoke() {
+	/*function invoke() {
 
 		var args = Array.prototype.slice.call(arguments);
 		var tabId = args.shift()
@@ -61,7 +94,28 @@ var proxy = (function(){
 				}
 			}
 		});
+	}*/
+	function invoke() {
+
+		var args = Array.prototype.slice.call(arguments);
+		var tabId = args.shift()
+		var path = args.shift();
+		var message = { command: 'invoke', path: path, args: args };
+
+		return prome.tabs.sendMessage(tabId, message, null).then(function(resp) {
+			if (resp) {
+				if (resp.err)
+					throw new ContentError(resp.err);
+				else
+					return resp.data; 
+			} else {
+				// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
+				if (chrome.runtime.lastError)
+					throw new ChannelError(chrome.runtime.lastError.message);
+			}
+		});
 	}
+
 
     /**
     * Checks if an url is blocked by the system.
@@ -81,7 +135,7 @@ var proxy = (function(){
 	* @param {Function} callback
 	*	  @prop {Number} tabId - id of current tab, null if blocked url
 	*/
-	function connectWebPage(callback) {
+	/*function connectWebPage(callback) {
 
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
@@ -102,6 +156,34 @@ var proxy = (function(){
                     }
 			    });
             }
+		});
+	}*/
+	function connectWebPage() {
+
+		var tabId;
+		return prome.tabs.query({active: true, currentWindow: true})
+
+		.then(function(tabs) {
+            if (isBlockedUrl(tabs[0].url)) {
+            	var msg = 'Scripts can not be injected to this tab.';
+                throw new InjectionError(msg);
+            }
+            else {
+			    tabId = tabs[0].id;
+			    var message = {command: 'isAlive'};
+			    return chrome.tabs.sendMessage(tabId, message);
+			}
+		})
+
+		.then(function(isAlive) {
+			if (isAlive) {
+				return tabId;
+			} 
+			else {
+				return new Promise(function(resolve) {
+					executeScripts(tabId, () => resolve(tabId));
+				});	
+			}
 		});
 	}
 
