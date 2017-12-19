@@ -12,16 +12,24 @@
 
     "background": {
         "scripts": [
-            "background/event.js",
-            "background/prome.js",
             "vendor/ajv.min.js",
             "vendor/sanitize-html.min.js",
-            "background/parser.js",
-            "background/db.js",
-            "background/external.js",
-            "background/request.js",
-            "background/proxy.js",
-			"background/models.js"
+
+            "common/errors.js",
+            "common/event.js",
+            "common/prome.js",
+            "common/bgchannel.js",
+
+            "request/protocol.js",
+            "request/parser.js",
+            "request/request.js",
+
+            "storage/analyzer.js",
+            "storage/registration.js",
+            "storage/database.js",
+
+            "popup/menu.js",
+            "popup/menucontainer.js"
         ],
         "persistent": false
      },

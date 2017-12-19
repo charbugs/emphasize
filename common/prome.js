@@ -1,3 +1,6 @@
+/**
+ * Wraps chrome api methods to return promises.
+ */
 const prome = {
 
 	storage : {
