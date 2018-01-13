@@ -12,38 +12,36 @@
 
     "background": {
         "scripts": [
-            "vendor/ajv.min.js",
-            "vendor/sanitize-html.min.js",
+            "lib/ajv.min.js",
+            "lib/sanitize-html.min.js",
 
-            "common/namespaces.js",
-            "common/errors.js",
-            "common/prome.js",
-            "common/event.js",
-            "common/job.js",
-            "common/bgchannel.js",
+            "src/common/namespaces.js",
+            "src/common/errors.js",
+            "src/common/prome.js",
+            "src/common/event.js",
+            "src/common/job.js",
+            "src/common/bgchannel.js",
             
-            "communication/protocol.js",
-            "communication/parse.js",
-            "communication/request.js",
+            "src/communication/protocol.js",
+            "src/communication/parse.js",
+            "src/communication/request.js",
 
-            "storage/setupstore.js",
-            "storage/facestore.js",
+            "src/storage/setupstore.js",
+            "src/storage/facestore.js",
 
-            "administration/registration.js",
+            "src/administration/registration.js",
 
-            "annotation/marker.js",
+            "src/annotation/marker.js",
 
-            "popup/menu.js",
-            "popup/menucontainer.js",
-
-            "tests/tests.js"
+            "src/popup/menu.js",
+            "src/popup/menucontainer.js"
         ],
         "persistent": false
      },
 
     "browser_action": {
-        "default_icon": "popup/popup.png",
-        "default_popup": "popup/popup.html"
+        "default_icon": "src/popup/popup.png",
+        "default_popup": "src/popup/popup.html"
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",

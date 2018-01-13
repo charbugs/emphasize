@@ -15,11 +15,11 @@
 
 	/* content scripts to inject in web page in given order */
 	var contentScripts = [
-		'popup/faces.css',
-		'webpage/tokenize.js',
-		'webpage/extract.js',
-		'webpage/highlight.js',
-		'webpage/counterproxy.js'
+		'src/popup/faces.css',
+		'src/webpage/tokenize.js',
+		'src/webpage/extract.js',
+		'src/webpage/highlight.js',
+		'src/webpage/counterproxy.js'
 	];
 
 	/* urls the extension will/should not work on */
