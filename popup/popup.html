@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="../vendor/w3.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="popup.css">
-    <link rel="stylesheet" href="../common/faces.css">
+    <link rel="stylesheet" href="faces.css">
 
 	<script type="text/javascript" src="../vendor/vue.min.js"></script>
 	<script type="text/javascript" src="popup.js"></script>
@@ -24,53 +24,53 @@
 <div id="menu">
 
 
-	<!-- ANALYZER LIST -->
+	<!-- MARKER LIST -->
 
-	<template v-if="menu.view == 'ANALYZER_LIST'">
+	<template v-if="menu.view == 'MARKER_LIST'">
 
 		<!-- navigation header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
-				Analyzers</a>
+				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
 				v-on:click="menu.showRegistration()">
 				Register</a>
 		</div>
 
-		<!-- analyzers -->
+		<!-- markers -->
 
-		<div v-for="analyzer in menu.analyzers"  
+		<div v-for="marker in menu.markers"  
 			class="w3-cell-row w3-border-bottom w3-hover-light-grey w3-padding-16"
-			v-on:click="menu.showAnalyzer(analyzer)">
+			v-on:click="menu.showMarker(marker)">
 			
 			<div class="w3-container w3-cell" 
 				style="width:80%; word-break:break-all;">
 				<span style="font-family: Roboto-Medium"
 					class="w3-small">
-					{{analyzer.setup.title}}
+					{{marker.setup.title}}
 				</span>
    			</div>
 		</div>
 
 	</template>
 
-	<!-- ANALYZER READY -->
+	<!-- MARKER READY -->
 
-	<template v-if="menu.view == 'ANALYZER_CURRENT' && 
-		menu.curAnalyzer.state == Analyzer.READY">
+	<template v-if="menu.view == 'MARKER_CURRENT' && 
+		menu.curMarker.state == menu.curMarker.READY">
 
 		<!-- header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey">
 			<a href="#" class="w3-button w3-hover-none w3-large"
-				v-on:click="menu.showAnalyzerList()">
+				v-on:click="menu.showMarkerList()">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
-					{{menu.curAnalyzer.setup.title}}</span>
-			<span v-on:click="menu.showAnalyzerMore()"
+					{{menu.curMarker.setup.title}}</span>
+			<span v-on:click="menu.showMarkerMore()"
 				class="w3-right w3-button w3-hover-none">
 				<i class="fa fa-wrench"></i></span>
 		</div>
@@ -83,29 +83,29 @@
 
 			<div class="w3-border-bottom w3-border-top"
 				style="width:100%; word-break:break-all;">
-				<p v-html="menu.curAnalyzer.setup.description"></p>
+				<p v-html="menu.curMarker.setup.description"></p>
 			</div>
 			<br>
 
 			<!-- inputs -->
 
-			<p v-for="input in menu.curAnalyzer.setup.inputs" class="w3-tooltip">
+			<p v-for="input in menu.curMarker.setup.inputs" class="w3-tooltip">
 
 				<!-- text input -->
 
 				<label>{{ input.label || input.id }}</label>
 
 				<input v-if="input.type=='text'"
-					v-on:keyup.enter="menu.applyAnalyzer()"
+					v-on:keyup.enter="menu.applyMarker()"
 					class="w3-input w3-border"
 					type="text"
-					v-model="menu.curAnalyzer.input.userInputs[input.id]">
+					v-model="menu.curMarker.input.inputs[input.id]">
 
 				<!-- select input -->
 
 				<select v-if="input.type=='select'"
 					class="w3-input w3-border w3-white"
-					v-model="menu.curAnalyzer.input.userInputs[input.id]">
+					v-model="menu.curMarker.input.inputs[input.id]">
 					<option v-for="val of input.values">
 						{{ val }}
 					</option>
@@ -114,8 +114,8 @@
 
 			<!-- apply button -->
 
-			<button v-on:click="menu.applyAnalyzer()"
-				v-bind:class="menu.curAnalyzer.setup.styleClass"
+			<button v-on:click="menu.applyMarker()"
+				v-bind:class="menu.curMarker.setup.face"
 				class="w3-btn">
 				Apply</button>
 
@@ -123,20 +123,20 @@
 
 	</template>
 
-	<!-- ANALYZER WORKING -->
+	<!-- MARKER WORKING -->
 
-	<template v-if="menu.view == 'ANALYZER_CURRENT' && 
-		menu.curAnalyzer.state == Analyzer.WORKING">
+	<template v-if="menu.view == 'MARKER_CURRENT' && 
+		menu.curMarker.state == menu.curMarker.WORKING">
 		
 		<!-- header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey">
 			<a href="#" class="w3-button w3-hover-none w3-large"
-				v-on:click="menu.showAnalyzerList()">
+				v-on:click="menu.showMarkerList()">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
-					{{menu.curAnalyzer.setup.title}}</span>
-			<span v-on:click="menu.showAnalyzerMore()"
+					{{menu.curMarker.setup.title}}</span>
+			<span v-on:click="menu.showMarkerMore()"
 				class="w3-right w3-button w3-hover-none">
 				<i class="fa fa-wrench"></i></span>
 		</div>
@@ -147,7 +147,7 @@
 
 			<!-- info -->
 
-			<span>Requesting {{menu.curAnalyzer.setup.url}} ...</span>
+			<span>Requesting {{menu.curMarker.setup.url}} ...</span>
 
 			<!-- spinner -->
 
@@ -158,27 +158,27 @@
 
 			<!-- abort button -->
 
-			<a v-on:click="menu.abortAnalysis()"
+			<a v-on:click="menu.abortMarker()"
 				class="w3-right" href='#'>Abort</a>
 
 		</div>
 
 	</template>
 
-	<!-- ANALYZER DONE -->
+	<!-- MARKER DONE -->
 		
-	<template v-if="menu.view == 'ANALYZER_CURRENT' && 
-		menu.curAnalyzer.state == Analyzer.DONE">
+	<template v-if="menu.view == 'MARKER_CURRENT' && 
+		menu.curMarker.state == menu.curMarker.DONE">
 		
 		<!-- header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey">
 			<a href="#" class="w3-button w3-hover-none w3-large"
-				v-on:click="menu.showAnalyzerList()">
+				v-on:click="menu.showMarkerList()">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
-					{{menu.curAnalyzer.setup.title}}</span>
-			<span v-on:click="menu.showAnalyzerMore()"
+					{{menu.curMarker.setup.title}}</span>
+			<span v-on:click="menu.showMarkerMore()"
 				class="w3-right w3-button w3-hover-none">
 				<i class="fa fa-wrench"></i></span>
 		</div>
@@ -190,17 +190,17 @@
 			<!-- message -->
 
 			<div class="w3-border-bottom w3-border-top">
-				<p v-if="menu.curAnalyzer.output.report"
-					v-html="menu.curAnalyzer.output.report"></p>
+				<p v-if="menu.curMarker.output.report"
+					v-html="menu.curMarker.output.report"></p>
 				<p v-else>
-					Analyzer applied, but without a result message.
+					Marker applied, but without a result message.
 			</div>
 			<br><br>
 
 			<!-- clear button -->
 
-			<button v-on:click="menu.removeAnnotation()"
-				v-bind:class="menu.curAnalyzer.setup.styleClass"
+			<button v-on:click="menu.resetMarker()"
+				v-bind:class="menu.curMarker.setup.face"
 				class="w3-btn">
 				Clear
 			</button>
@@ -209,20 +209,20 @@
 
 	</template>
 
-	<!-- ANALYZER ERROR -->
+	<!-- MARKER ERROR -->
 
-	<template v-if="menu.view == 'ANALYZER_CURRENT' && 
-		menu.curAnalyzer.state == Analyzer.ERROR">
+	<template v-if="menu.view == 'MARKER_CURRENT' && 
+		menu.curMarker.state == menu.curMarker.ERROR">
 		
 		<!-- header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey">
 			<a href="#" class="w3-button w3-hover-none w3-large"
-				v-on:click="menu.showAnalyzerList()">
+				v-on:click="menu.showMarkerList()">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
-					{{menu.curAnalyzer.setup.title}}</span>
-			<span v-on:click="menu.showAnalyzerMore()"
+					{{menu.curMarker.setup.title}}</span>
+			<span v-on:click="menu.showMarkerMore()"
 				class="w3-right w3-button w3-hover-none">
 				<i class="fa fa-wrench"></i></span>
 		</div>
@@ -234,13 +234,13 @@
 			<!-- message -->
 
 			<div class="w3-border-bottom w3-border-top">
-				<p class="w3-text-red">{{menu.curAnalyzer.error.message}}</p>
+				<p class="w3-text-red">{{menu.curMarker.error.message}}</p>
 			</div>
 			<br><br>
 
 			<!-- back button -->
 
-			<button v-on:click="menu.resetAnalyzer()"
+			<button v-on:click="menu.resetMarker()"
 				class="w3-btn w3-blue">
 				Back
 			</button>
@@ -249,18 +249,18 @@
 
 	</template>
 
-	<!-- ANALYZER MORE -->
+	<!-- MARKER MORE -->
 
-	<template v-if="menu.view == 'ANALYZER_MORE'">
+	<template v-if="menu.view == 'MARKER_MORE'">
 		
 		<!-- header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey">
 			<a href="#" class="w3-button w3-hover-none w3-large"
-				v-on:click="menu.showAnalyzerList()">
+				v-on:click="menu.showMarkerList()">
 				<i class="fa fa-chevron-left"></i></a>
 			<span style="font-family:Roboto-Regular">
-					{{menu.curAnalyzer.setup.title}}</span>
+					{{menu.curMarker.setup.title}}</span>
 		</div>
 
 		<!-- content -->
@@ -273,20 +273,20 @@
 			<div class="w3-border-bottom w3-border-top">
 				<p>
 					<span>URL:</span><br>
-					<span>{{menu.curAnalyzer.setup.url}}</span>
+					<span>{{menu.curMarker.setup.url}}</span>
 				</p>
 			</div>
 			<br><br>
 
 			<!-- back button -->
 
-			<button v-on:click="menu.showAnalyzer(menu.curAnalyzer)"
+			<button v-on:click="menu.showMarker(menu.curMarker)"
 				class="w3-btn w3-blue">Back</button>
 
-			<!-- remove analyzer from system -->
+			<!-- remove marker from system -->
 
-			<a v-on:click="menu.removeAnalyzerFromSystem()"
-				class="w3-right w3-text-blue" href='#'>Remove analyzer</a>
+			<a v-on:click="menu.removeMarkerFromSystem()"
+				class="w3-right w3-text-blue" href='#'>Remove marker</a>
 
 		</div>
 
@@ -295,15 +295,15 @@
 	<!-- REGISTRATION READY -->
 
 	<template v-if="menu.view == 'REGISTRATION' &&
-		menu.registration.state == Registration.READY">
+		menu.registration.state == menu.registration.READY">
 
 		<!-- navigation header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.showAnalyzerList()">
-				Analyzers</a>
+				v-on:click="menu.showMarkerList()">
+				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
 				Register</a>
@@ -316,7 +316,7 @@
 			<!-- info text -->
 
 			<div class="w3-border-top w3-border-bottom">
-				<p>Add a new analyzer by entering the analyzer's URL.
+				<p>Add a new marker by entering the marker's URL.
 					This must be a valid HTTP URL.</p>
 			</div>
 			<br>
@@ -326,14 +326,14 @@
             <p>
                 <label>URL</label>
                 <input v-model="menu.registration.inputUrl"
-                v-on:keyup.enter="menu.registerAnalyzer()"
+                v-on:keyup.enter="menu.registerMarker()"
                 class="w3-input w3-border"
                 type="text">
             </p>
 
 			<!-- add button -->
 
-            <button v-on:click="menu.registerAnalyzer()"
+            <button v-on:click="menu.registerMarker()"
                 class="w3-btn w3-blue">
                 Add</button>
 
@@ -344,15 +344,15 @@
 	<!-- REGISTRATION WORKING -->
 
 	<template v-if="menu.view == 'REGISTRATION' &&
-		menu.registration.state == Registration.WORKING">
+		menu.registration.state == menu.registration.WORKING">
 
 		<!-- navigation header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.showAnalyzerList()">
-				Analyzers</a>
+				v-on:click="menu.showMarkerList()">
+				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
 				Register</a>
@@ -385,15 +385,15 @@
 	<!-- REGISTRATION DONE -->
 
 	<template v-if="menu.view == 'REGISTRATION' &&
-		menu.registration.state == Registration.DONE">
+		menu.registration.state == menu.registration.DONE">
 
 		<!-- navigation header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.showAnalyzerList()">
-				Analyzers</a>
+				v-on:click="menu.showMarkerList()">
+				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
 				Register</a>
@@ -422,15 +422,15 @@
 	<!-- REGISTRATION ERROR -->
 
 	<template v-if="menu.view == 'REGISTRATION' &&
-		menu.registration.state == Registration.ERROR">
+		menu.registration.state == menu.registration.ERROR">
 
 		<!-- navigation header -->
 
 		<div class="w3-bar w3-border-bottom w3-light-grey" >
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-light-grey w3-hover-border-grey"
-				v-on:click="menu.showAnalyzerList()">
-				Analyzers</a>
+				v-on:click="menu.showMarkerList()">
+				Markers</a>
 	  		<a href="#"
 				class="w3-bar-item w3-button w3-hover-none w3-bottombar-grey">
 				Register</a>

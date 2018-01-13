@@ -1,9 +1,11 @@
 /**
  * Wraps chrome api methods to return promises.
  */
-const prome = {
+(function(emphasize) {
 
-	storage : {
+	'use strict';
+
+	var storage = {
 
 		local: {
 
@@ -23,9 +25,9 @@ const prome = {
 				});
 			}
 		}
-	},
+	};
 
-	tabs: {
+	var tabs = {
 
 		sendMessage: function(tabId, message, options) {
 			return new Promise(function(resolve, reject) {
@@ -43,4 +45,12 @@ const prome = {
 			});
 		}
 	}
-};
+
+	// exports
+	emphasize.common.prome = {
+		storage,
+		tabs
+	}
+
+})(emphasize);
+

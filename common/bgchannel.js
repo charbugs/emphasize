@@ -1,13 +1,31 @@
 
 /**
- * Represents a communication channel of the extension background
+ * Provides a communication channel of the extension background
  * to communicate with the content scripts.
  */
-var BgChannel = class {
+(function(emphasize) {
 
-	constructor () {
-		throw new Error("This class can not be instantiated.");
-	}
+	'use strict';
+
+	// shortcuts
+	var prome = emphasize.common.prome;
+	var ChannelError = emphasize.common.errors.ChannelError;
+	var InjectionError = emphasize.common.errors.InjectionError;
+	var ContenError = emphasize.common.errors.ContentError;
+
+	/* content scripts to inject in web page in given order */
+	var contentScripts = [
+		'popup/faces.css',
+		'webpage/tokenize.js',
+		'webpage/extract.js',
+		'webpage/highlight.js',
+		'webpage/counterproxy.js'
+	];
+
+	/* urls the extension will/should not work on */
+	var blockedUrls = [
+		/^chrome:\/\//
+	];
 
 	/**
 	 * Finds out if the content scripts already injected in the current web page.
@@ -15,12 +33,12 @@ var BgChannel = class {
 	 *
 	 * return: (Number) - id of the tab to connect to.
 	 */
-	static async connectWebPage() {
+	async function connectWebPage() {
 
 		var tabs = await prome.tabs.query({active: true, currentWindow: true});
 		var tabId = tabs[0].id;
 
-		if (BgChannel.isBlockedUrl(tabs[0].url)) {
+		if (!tabs[0].url || isBlockedUrl(tabs[0].url)) {
 			var msg = 'Scripts can not be injected to this tab.';
 			throw new InjectionError(msg);
 		}
@@ -33,7 +51,7 @@ var BgChannel = class {
 		}
 		else {
 			return new Promise(function(resolve) {
-				BgChannel.executeScripts(tabId, () => resolve(tabId));
+				executeScripts(tabId, () => resolve(tabId));
 			});
 		}
 	}
@@ -41,8 +59,8 @@ var BgChannel = class {
 	/**
 	 * Checks if an url is blocked by the system.
 	 */
-	static isBlockedUrl(url) {
-		for (var re of BgChannel.blockedUrls) {
+	function isBlockedUrl(url) {
+		for (var re of blockedUrls) {
 			if (url.match(re)) {
 				return true;
 			}
@@ -58,7 +76,7 @@ var BgChannel = class {
 	 * param: tabId (Number) - id of current tab
 	 * param: callback (Function)
 	*/
-	static executeScripts(tabId, callback) {
+	function executeScripts(tabId, callback) {
 
 		function createCallback(tabId, script, callback) {
 			if (script.endsWith('.js'))
@@ -71,10 +89,10 @@ var BgChannel = class {
 				};
 		}
 
-		for (var i = BgChannel.contentScripts.length - 1; i >= 0; --i) {
+		for (var i = contentScripts.length - 1; i >= 0; --i) {
 			callback = createCallback(
 				tabId, 
-				BgChannel.contentScripts[i], 
+				contentScripts[i], 
 				callback
 			);
 		}
@@ -96,7 +114,7 @@ var BgChannel = class {
 	 *
 	 * return: (jsonable) return value from content script function.
 	 */
-	static async invoke() {
+	async function invoke() {
 
 		var args = Array.prototype.slice.call(arguments);
 		var tabId = args.shift()
@@ -116,18 +134,11 @@ var BgChannel = class {
 				throw new ChannelError(chrome.runtime.lastError.message);
 		}
 	}
-}
 
-/* content scripts to inject in web page in given order */
-BgChannel.contentScripts = [
-	'common/faces.css',
-	'webpage/tokenize.js',
-	'webpage/extract.js',
-	'webpage/highlight.js',
-	'webpage/counterproxy.js'
-];
+	// exports 
+	emphasize.common.bgchannel = {
+		connectWebPage,
+		invoke
+	}
 
-/* urls the extension will/should not work on */
-BgChannel.blockedUrls = [
-	/^chrome:\/\//
-];
+})(emphasize);

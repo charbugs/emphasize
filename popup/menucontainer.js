@@ -1,27 +1,31 @@
 /**
  * Creates, stores and supplies Menu instances.
  *
- * An menu instance will be created for each tab the app is used in.
+ * An menu instance will be created for each tab the popup is invoked in.
  */
-var MenuContainer = class {
+ (function(emphasize) {
 
-	constructor () {
-		throw new Error("This class can not be instantiated.");
-	}
+ 	'use strict';
 
-	/**
+ 	// shortcuts
+ 	var Menu = emphasize.popup.menu.Menu;
+
+ 	// Storage for all running menus
+	var menus = [];
+
+ 	/**
 	 * Returns the menu belonging to a specific tab.
 	 * Creates that menu if not already exists.
 	 *
 	 * param: (Number) tabId
 	 * return: (Menu)
 	 */
-	static get(tabId) {
-		var menu = MenuContainer.select(tabId);
+	async function get(tabId) {		
+		var menu = select(tabId);
 		if (menu)
-			return Promise.resolve(menu);
+			return menu;
 		else
-			return MenuContainer.create(tabId);
+			return await create(tabId);
 	};
 
 	/**
@@ -31,8 +35,8 @@ var MenuContainer = class {
 	* param: (Number) tabId
 	* return: (Menu | undefined)
 	*/
-	static select(tabId) {
-		for (var menu of MenuContainer.menus) {
+	function select(tabId) {
+		for (var menu of menus) {
 			if (tabId === menu.tabId){
 				return menu;
 			}
@@ -45,41 +49,15 @@ var MenuContainer = class {
 	* param: (Number) tabId
 	* return: (Menu)
 	*/
-	static async create(tabId) {
-		var analyzers = await Database.getAnalyzer(null);
-		var registration = await Database.getRegistration();
-		var menu = new Menu(tabId, analyzers, registration);
-		MenuContainer.menus.push(menu);
+	async function create(tabId) {
+		var menu = await Menu(tabId);
+		menus.push(menu);
 		return menu;
 	};
 
-	/**
-	 * param: (String) url
-	 */
-	static async addAnalyzerToAllMenus(url) {
-		for (var menu of MenuContainer.menus) {
-			var analyzer = await Database.getAnalyzer(url);
-			menu.analyzers.push(analyzer);
-		}
-	}
+	// exports
+	emphasize.popup.menucontainer = {
+		get
+	};
 
-	/**
-	 * param: (String) url
-	 */
-	static removeAnalyzerFromAllMenus(url) {
-		for (var menu of MenuContainer.menus) {
-			for (var i=0; i < menu.analyzers.length; i++) {
-				if (menu.analyzers[i].setup.url ===  url) {
-					menu.analyzers.splice(i, 1);
-				}
-			}
-		}
-	}
-};
-
-// Storage for all running menus
-MenuContainer.menus = [];
-// If an analyzer was added/removed to/from the system 
-// all menus have to be updated.
-Database.analyzerAdded.register(MenuContainer.addAnalyzerToAllMenus);
-Database.analyzerRemoved.register(MenuContainer.removeAnalyzerFromAllMenus);
+ })(emphasize);

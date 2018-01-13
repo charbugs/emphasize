@@ -1,145 +1,130 @@
 
-class Menu {
+(function(emphasize) {
 
-	constructor(tabId, analyzers, registration) {
+	'use strict';
 
-		this.tabId = tabId;
-		this.analyzers = analyzers;
-		this.registration = registration;
-		this.view = 'ANALYZER_LIST';
-		this.curAnalyzer = null;
+	// shortcuts
+	var store = emphasize.storage.setupstore;
+	var Registration = emphasize.administration.registration.Registration;
+	var Marker = emphasize.annotation.marker.Marker;
 
-		chrome.tabs.onUpdated.addListener(
-			this.handleWebPageReloaded.bind(this));
+	function Menu(tabId) {
+
+		return ({
+
+			tabId: tabId,
+
+			async init() {
+				store.setupAdded.register(
+					this.handleSetupAdded.bind(this));
+				store.setupRemoved.register(
+					this.handleSetupRemoved.bind(this));
+				chrome.tabs.onUpdated.addListener(
+					this.handleWebPageReloaded.bind(this));
+
+				var setups = await store.getSetup(null);
+				this.markers = setups.map(s => Marker(s, this.tabId));
+				this.curMarker = null;
+				
+				this.registration = Registration();
+				this.view = 'MARKER_LIST';
+				
+				return this;
+			},
+
+			openWebPage(url) {
+				chrome.tabs.create({ url: url });
+			},
+
+			///////////////////////////////////////////////
+			// show
+			///////////////////////////////////////////////
+
+			showMarkerList() {
+				this.curMarker = null;
+				this.view = 'MARKER_LIST';
+			},
+
+			showRegistration() {
+				this.view = 'REGISTRATION';
+			},
+
+			showMarker(marker) {
+				this.curMarker = marker;
+				this.view = 'MARKER_CURRENT';
+			},
+
+			showMarkerMore() {
+				this.view = 'MARKER_MORE';
+			},
+
+			///////////////////////////////////////////////
+			// marker
+			///////////////////////////////////////////////
+
+			async applyMarker() {
+				await this.curMarker.apply();
+			},
+
+			abortMarker() {
+				this.curMarker.abortAnalysis();
+			},
+
+			resetMarker() {
+				this.curMarker.reset(true);
+			},
+
+			removeMarkerFromSystem() {
+				store.removeSetup(this.curMarker.setup.url);
+			},
+
+			///////////////////////////////////////////////
+			// registration
+			///////////////////////////////////////////////
+
+			async registerMarker() {
+				await this.registration.registerMarker();
+			},
+
+			abortRegistration() {
+				this.registration.abortRegistration();
+			},
+
+			resetRegistration() {
+				this.registration.reset(true);
+			},
+
+			///////////////////////////////////////////////
+			// event handlers
+			///////////////////////////////////////////////
+
+			async handleSetupAdded(url) {
+				var setup = await store.getSetup(url);
+				this.markers.push(Marker(setup, this.tabId));
+			},
+
+			handleSetupRemoved(url) {
+				for (var i=0; i < this.markers.length; i++) {
+					if (this.markers[i].setup.url === url) {
+						this.markers[i].reset();
+						this.markers.splice(i, 1);
+						this.showMarkerList();
+					}
+				}
+			},
+
+			handleWebPageReloaded(tabId, info, tab) {
+				if (tabId === this.tabId && info.status === 'loading') {
+					this.markers.forEach(m => m.reset(true));
+				}
+			}
+
+		}).init();
 	}
 
-	/**
-	 * When the user reloads the web page we reset all analyzers.
-	 */
-	handleWebPageReloaded(tabId, info, tab) {
-		if (tabId === this.tabId && info.status === 'loading')
-			this.analyzers.forEach(a => this.resetAnalyzer(a));
+	// exports
+	emphasize.popup.menu = {
+		Menu
 	}
 
-	openWebPage(url) {
-		chrome.tabs.create({ url: url });
-	}
-
-	///////////////////////////////////////////////////////
-	// analyzer stuff
-	///////////////////////////////////////////////////////
-
-	showAnalyzerList() {
-		this.curAnalyzer = null;
-		this.view = 'ANALYZER_LIST';
-	}
-
-	showAnalyzer(analyzer) {
-		this.curAnalyzer = analyzer;
-		this.view = 'ANALYZER_CURRENT';
-	}
-
-	showAnalyzerMore() {
-		this.view = 'ANALYZER_MORE';
-	}
-
-	/** 
-	 * When we reset the analyzer we keep the present user inputs.
-	 */
-	resetAnalyzer() {
-		var userInputs = this.curAnalyzer.input.userInputs;
-		this.curAnalyzer.reset();
-		this.curAnalyzer.input.userInputs = userInputs;
-	}
-
-	/**
-	 * Applies an analyzer to the web page. I.e. requesting the analysis outcome
-	 * and annotate the web page text corresponding to the outcome.
-	 *
-	 * During the analysis the analyzer changes its state. That will cause
-	 * the menu to update, as the analyzers are bound to the html content.
-	 * So their schould be no need to switch the menu views explicitly.
-	 */
-	async applyAnalyzer() {
-
-		await BgChannel.invoke(this.tabId, 'extract.extractTextNodes');
-		var tokens = await BgChannel.invoke(this.tabId, 'extract.getWords');
-		var webpage = await BgChannel.invoke(this.tabId, 'extract.getUrl');
-		this.curAnalyzer.input.tokens = tokens;
-		this.curAnalyzer.input.webpage = webpage;
-		await this.curAnalyzer.analyze();
-
-		if (this.curAnalyzer.state === Analyzer.DONE) {
-			await BgChannel.invoke(this.tabId, 'highlight.highlight',
-				this.curAnalyzer.output.annotation, 
-				{ id: this.curAnalyzer.id, 
-					styleClass: this.curAnalyzer.setup.styleClass });
-		}
-	}
-
-	/**
-	 * Aborts a pending analysis.
-	 *
-	 * That will conclude with request error and causes the waiting 
-	 * applyAnalyzer() method to proceed.
-	 */
-	abortAnalysis() {
-		this.curAnalyzer.abortAnalysis();
-	}
-
-	async removeAnnotation() {
-		await BgChannel.invoke(this.tabId, 'highlight.remove', 
-			this.curAnalyzer.id);
-		this.resetAnalyzer();
-	}
-
-	///////////////////////////////////////////////////////
-	// (de)registration stuff
-	///////////////////////////////////////////////////////
-
-	showRegistration() {
-		this.view = 'REGISTRATION';
-	}
-
-	/** 
-	 * When we reset the registration we keep the present user inputs.
-	 */
-	resetRegistration() {
-		var inputUrl = this.registration.inputUrl;
-		this.registration.reset();
-		this.registration.inputUrl = inputUrl;
-	}
-
-	/** 
-	 * Registers an analyzer to the system.
-	 *
-	 * During the registration the registration object changes its state. 
-	 * That will cause the menu to update, as the registration object is 
-	 * bound to the html content.
-	 *
-	 * The MenuContainer will notice if the registration was successfull
-	 * and adds the new analyzer to all menus.
-	 */
-	async registerAnalyzer() {
-		await this.registration.registerAnalyzer();
-	}
-
-	/**
-	 * Aborts a pending registration.
-	 *
-	 * That will conclude with request error and causes the waiting 
-	 * registerAnalyzer() method to proceed.
-	 */
-	abortRegistration() {
-		this.registration.abortRegistration();
-	}
-	
-	/*
-	 * The MenuContainer will notice if the removal was successfull
-	 * and removes the analyzer from all menus.
-	 */
-	async removeAnalyzerFromSystem() {
-		await Database.removeSetup(this.curAnalyzer.setup.url);   
-		this.view = 'ANALYZER_LIST';
-	}
-}
+})(emphasize);

@@ -15,21 +15,28 @@
             "vendor/ajv.min.js",
             "vendor/sanitize-html.min.js",
 
+            "common/namespaces.js",
             "common/errors.js",
-            "common/event.js",
             "common/prome.js",
+            "common/event.js",
+            "common/job.js",
             "common/bgchannel.js",
+            
+            "communication/protocol.js",
+            "communication/parse.js",
+            "communication/request.js",
 
-            "request/protocol.js",
-            "request/parser.js",
-            "request/request.js",
+            "storage/setupstore.js",
+            "storage/facestore.js",
 
-            "storage/analyzer.js",
-            "storage/registration.js",
-            "storage/database.js",
+            "administration/registration.js",
+
+            "annotation/marker.js",
 
             "popup/menu.js",
-            "popup/menucontainer.js"
+            "popup/menucontainer.js",
+
+            "tests/tests.js"
         ],
         "persistent": false
      },

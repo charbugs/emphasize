@@ -1,14 +1,12 @@
 
-class Popup {
+var _popup = (function() {
 
-	constructor () {
-		throw new Error("This class can not be instantiated.");
-	}
+	'use strict';
 
 	/**
 	 * Informs that the menu is disabled on the current tab.
 	 */
-	static showTabDisabledMessage() {
+	function showTabDisabledMessage() {
 		document.body.innerHTML =
 			'<div class="w3-panel">Cannot work on this browser tab.</div>';
 	}
@@ -16,32 +14,39 @@ class Popup {
 	/**
 	 * Binds model objects to the html content using vue js.
 	 */
-	static async init() {
+	async function init() {
 
 		var bg = chrome.extension.getBackgroundPage();
+		var bgchannel = bg.emphasize.common.bgchannel;
+		var menucontainer = bg.emphasize.popup.menucontainer;
 
 		try {
-			var tabId = await bg.BgChannel.connectWebPage();
-			var menu = await bg.MenuContainer.get(tabId);
+			var tabId = await bgchannel.connectWebPage();
+			var menu = await menucontainer.get(tabId);
+			
 			new Vue({
 				el: '#menu',
 				data: {
 					menu: menu,
-					Analyzer: bg.Analyzer, // access to class properties
-					Registration: bg.Registration, // access to class properties
 					version: chrome.runtime.getManifest().version
 				}
 			});
 		} 
 		catch(err) {
 			if (err.name === 'InjectionError')
-				Popup.showTabDisabledMessage();
+				showTabDisabledMessage();
 			else
 				throw err;
 		}
 	}
-}
+
+	return {
+		init
+	};
+
+})();
+
 
 document.addEventListener('DOMContentLoaded', function() {
-	Popup.init();
+	_popup.init();
 });
