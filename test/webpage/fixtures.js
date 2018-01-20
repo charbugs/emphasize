@@ -1,13 +1,13 @@
 const fixtures = {
 
-	_htmlToElement(html) {
+	create(html) {
     	var template = document.createElement('template');
     	template.innerHTML = html;
     	return template.content.firstChild;
 	},
 
-	create(fixture) {
-		return this._htmlToElement(this[fixture].trim());	
+	get(fixture) {
+		return this.create(this[fixture].trim());	
 	},
 
 	render(fixture) {
@@ -18,9 +18,48 @@ const fixtures = {
 		document.querySelector('#fixtures').innerHTML = '';
 	},
 
-	sentence: `
-		<span>
-			Frank war heute nicht in der Schule.
-		</span>
-	`
+	simpleText: `
+		<span>lorem ipsum</span>
+	`,
+
+	complexText: `
+		<div>
+			lorem ipsum
+			<b>dolor sit</b>
+			<em>
+				<h1>amet consectetur</h1>
+				<h1>adipiscing elit</h1>
+			</em>
+		</div>
+	`,
+
+	withScript: `
+		<div>
+			lorem ipsum
+			<script type="text/javascript">
+				dolor sit
+			</script>
+			amet consectetur
+		</div>	
+	`,
+
+	withNoscript: `
+		<div>
+			lorem ipsum
+			<noscript>
+				dolor sit
+			</noscript>
+			amet consectetur
+		</div>	
+	`,
+
+	withStyle: `
+		<div>
+			lorem ipsum
+			<style>
+				dolor sit
+			</style>
+			amet consectetur
+		</div>	
+	`,
 };
