@@ -12,8 +12,8 @@
         return tokens;
     }
 
-    global.tokenize = {
+    global.tokenizers = {
         whiteSpace
     };
 
-})(emphasizeWebPage);
+})(emphasize);
