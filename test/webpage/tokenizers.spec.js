@@ -1,15 +1,7 @@
 
 describe('#tokenizers module', () => {
 	
-	var tokenizers;
-
-	beforeEach(() => {
-		tokenizers = emphasize.tokenizers;
-	});
-
-	it('should be an object', () => {
-		expect(tokenizers).toEqual(jasmine.any(Object));
-	});
+	var tokenizers = emphasize.tokenizers;
 
 	describe('#whiteSpace function', () => {
 
