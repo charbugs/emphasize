@@ -1,5 +1,7 @@
 (function(em) {
 
+    'use strict';
+
     function whiteSpace(string) {
         var tokens = [];
         string.replace(/\S+/g, (match, offset) => {
