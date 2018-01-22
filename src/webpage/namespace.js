@@ -1,1 +1,4 @@
-const emphasize = {};
+const emphasize = {
+	document: document,
+	NodeFilter: NodeFilter
+};

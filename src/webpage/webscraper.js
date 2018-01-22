@@ -1,18 +1,18 @@
-(function(global) {
+(function(em) {
 
 	'use strict';
 
 	function getUrl(document) {
-		return document.location.href;
+		return em.document.location.href;
 	}
 
 	function getTextNodes(element) {
 		
         var textNodes = [];
 
-        var walker = document.createTreeWalker(
+        var walker = em.document.createTreeWalker(
             element,
-            NodeFilter.SHOW_TEXT,
+            em.NodeFilter.SHOW_TEXT,
             { acceptNode: function (node) {
                 return node.data.trim().length > 0 &&
                     node.parentElement.nodeName != 'SCRIPT' &&
@@ -26,7 +26,7 @@
         return textNodes;
 	}
 
-	global.webscraper = {
+	em.webscraper = {
 		getUrl,
 		getTextNodes
 	};

@@ -1,4 +1,4 @@
-(function(global) {
+(function(em) {
 
     function whiteSpace(string) {
         var tokens = [];
@@ -12,7 +12,7 @@
         return tokens;
     }
 
-    global.tokenizers = {
+    em.tokenizers = {
         whiteSpace
     };
 
