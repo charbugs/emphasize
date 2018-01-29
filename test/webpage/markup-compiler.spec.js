@@ -9,7 +9,7 @@ describe('#markupCompiler module', () => {
 
 			var compile, tokens, node;
 			beforeEach(() => {
-				compile = emphasize.markupCompiler.compileMarkup;
+				compile = emphasize.markupCompiler.compileRemoteMarkup;
 				tokens = fixtures.singleTextNode().tokens;
 				node = tokens[0].node;
 			});
@@ -175,7 +175,7 @@ describe('#markupCompiler module', () => {
 
 			var compile, tokens, nodes;
 			beforeEach(() => {
-				compile = emphasize.markupCompiler.compileMarkup;
+				compile = emphasize.markupCompiler.compileRemoteMarkup;
 				var two = fixtures.twoTextNodes();
 				tokens = two.tokens;
 				nodes =two.nodes;
@@ -242,7 +242,7 @@ describe('#markupCompiler module', () => {
 
 			var compile, tokens, nodes;
 			beforeEach(() => {
-				compile = emphasize.markupCompiler.compileMarkup;
+				compile = emphasize.markupCompiler.compileRemoteMarkup;
 				var three = fixtures.threeTextNodes();
 				tokens = three.tokens;
 				nodes = three.nodes;

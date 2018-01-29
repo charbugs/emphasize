@@ -5,9 +5,9 @@
 
 	function* compileToken(item, webPageTokens) {
 		if (item.token < webPageTokens.length) {
-			var _item = Object.assign({}, webPageTokens[item.token], item);
-			delete _item.token;
-			yield _item;
+			var markupToken = Object.assign({}, webPageTokens[item.token], item);
+			delete markupToken.token;
+			yield markupToken;
 		}
 	}
 
@@ -25,9 +25,9 @@
 		var end = last.end;
 		var node = first.node;
 		var form = node.data.slice(begin, end);
-		var _item = Object.assign({ begin, end, form, node }, item);
-		delete _item.group;
-		yield _item;
+		var markupToken = Object.assign({ begin, end, form, node }, item);
+		delete markupToken.group;
+		yield markupToken;
 	}
 
 	function* compileGroupCrossNodes(item, webPageTokens, first, last) {
@@ -38,7 +38,7 @@
 		embeddedNodes.shift(); // === first.node
 		embeddedNodes.pop(); // === last.node
 
-		yield {
+		yield { // a markup token
 			begin: first.begin,
 			end: first.node.data.length,
 			form: first.node.data.slice(first.begin),
@@ -46,7 +46,7 @@
 		};
 
 		for (var node of embeddedNodes) {
-			yield {
+			yield { // a markup token
 				begin: 0,
 				end: node.data.length,
 				form: node.data,
@@ -54,7 +54,7 @@
 			};
 		}
 
-		yield {
+		yield { // a markup token
 			begin: 0,
 			end: last.end,
 			form: last.node.data.slice(0, last.end),
@@ -85,9 +85,9 @@
 		}
 	}
 
-	function* compile(markup, webPageTokens) {
+	function* compile(remoteMarkup, webPageTokens) {
 
-		for (var item of markup) {
+		for (var item of remoteMarkup) {
 			if ('token' in item)
 				yield* compileToken(item, webPageTokens);
 			else if ('tokens' in item)
@@ -99,12 +99,12 @@
 		}
 	}
 
-	function compileMarkup(markup, webPageTokens) {
-		return Array.from(compile(markup, webPageTokens));
+	function compileRemoteMarkup(remoteMarkup, webPageTokens) {
+		return Array.from(compile(remoteMarkup, webPageTokens));
 	}
 
 	em.markupCompiler = {
-		compileMarkup
+		compileRemoteMarkup
 	};
 
 })(emphasize);
