@@ -1,9 +1,11 @@
 
 'use strict';
 
-describe('#markupCompiler module', () => {
+describe('markupCompiler module', () => {
 
-	describe('#compileMarkup function', () => {
+	var em = emphasize;
+
+	describe('compileRemoteMarkup function', () => {
 
 		describe('when only a single text node is involved', () => {
 
@@ -18,7 +20,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ token: 2 }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node }
 					]
@@ -30,7 +33,8 @@ describe('#markupCompiler module', () => {
 					{ token: 2 },
 					{ token: 3}
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node },
 						{ begin: 18, end: 21, form: 'sit', node: node }	
@@ -42,7 +46,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ tokens: [2,3] }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node },
 						{ begin: 18, end: 21, form: 'sit', node: node }
@@ -54,7 +59,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ group: { first: 0, last: 2} }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor',	
 							node: node }
@@ -67,7 +73,8 @@ describe('#markupCompiler module', () => {
 					{ group: { first: 0, last: 2} },
 					{ group: { first: 3, last: 5} }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor', 
 							node: node },
@@ -81,7 +88,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ groups: [ { first: 0, last: 2}, { first: 3, last: 5} ] }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor', 
 							node: node },
@@ -97,7 +105,8 @@ describe('#markupCompiler module', () => {
 					{ group: { first: 1, last: 3} },
 					{ tokens: [4, 5] },
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 5, form: 'lorem', node: node },
 						{ begin: 6, end: 21, form: 'ipsum dolor sit', 
@@ -114,7 +123,8 @@ describe('#markupCompiler module', () => {
 					{ groups: [ { first: 2, last: 3}, { first: 4, last: 5} ] },
 					
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 11, form: 'lorem ipsum', node: node },
 						{ begin: 12, end: 21, form: 'dolor sit', node: node },
@@ -132,7 +142,8 @@ describe('#markupCompiler module', () => {
 					{ group: { first: 2, last: 3 }, mark: true },
 					{ groups: [ { first: 4, last: 5 } ], mark: true }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 5, form: 'lorem', node: node,
 							mark: true, gloss: 'a pretty nice token' },
@@ -150,7 +161,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ tokens: [1, 6] }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 6, end: 11, form: 'ipsum', node: node }
 					]
@@ -162,7 +174,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ group: { first: 3, last: 42000 } }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 18, end: 38, form: 'sit amet consectetur',
 							node: node }
@@ -191,7 +204,8 @@ describe('#markupCompiler module', () => {
 					{ groups: [ { first: 5, last: 6 } ], mark: true },
 					{ token: 7, mark: false }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 2, form: 'ut', node: nodes[0],
 							mark: true, gloss: 'a pretty nice token' },
@@ -213,7 +227,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ tokens: [4, 5] }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 17, end: 23, form: 'veniam', node: nodes[0] },
 						{ begin: 0, end: 4, form: 'quis', node: nodes[1] }
@@ -227,7 +242,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ group: { first: 3, last: 6} }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 11, end: 23, form: 'minim veniam', 
 							node: nodes[0] },
@@ -254,7 +270,8 @@ describe('#markupCompiler module', () => {
 				var markup = [
 					{ group: {first: 1, last: 7 } }
 				];
-				expect(compile(markup, tokens)).toEqual(
+				var compiledMarkup = Array.from(compile(markup, tokens));
+				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 5, end: 15, form: 'aute irure', node: nodes[0] },
 						{ begin: 0, end: 22, form: 'dolor in reprehenderit',
@@ -263,6 +280,41 @@ describe('#markupCompiler module', () => {
 					]
 				);
 			});
+		});
+	});
+
+	describe('compileRemoteMarkupAndSegment function', () => {
+
+		var compile, tokens, nodes;
+			beforeEach(() => {
+				compile = em.markupCompiler.compileRemoteMarkupAndSegment;
+				var three = fixtures.threeTextNodes();
+				tokens = three.tokens;
+				nodes = three.nodes;
+			});
+
+		it('should yield the compiled markup tokens node by node', () => {
+
+			var markup = [
+				{ tokens: [0, 1, 3, 4, 6, 7] }
+			];
+			var compiledMarkup = Array.from(compile(markup, tokens));
+			expect(compiledMarkup).toEqual(
+				[
+					[
+						{ begin: 0, end: 4, form: 'duis', node: nodes[0] },
+						{ begin: 5, end: 9, form: 'aute', node: nodes[0] }
+					],
+					[
+						{ begin: 0, end: 5, form: 'dolor', node: nodes[1] },
+						{ begin: 6, end: 8, form: 'in', node: nodes[1] }
+					],
+					[
+						{ begin: 0, end: 2, form: 'in', node: nodes[2] },
+						{ begin: 3, end: 12, form: 'voluptate', node: nodes[2] },
+					],
+				]
+			);
 		});
 	});
 });

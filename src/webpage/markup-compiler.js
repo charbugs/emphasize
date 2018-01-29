@@ -85,7 +85,7 @@
 		}
 	}
 
-	function* compile(remoteMarkup, webPageTokens) {
+	function* compileRemoteMarkup(remoteMarkup, webPageTokens) {
 
 		for (var item of remoteMarkup) {
 			if ('token' in item)
@@ -99,12 +99,24 @@
 		}
 	}
 
-	function compileRemoteMarkup(remoteMarkup, webPageTokens) {
-		return Array.from(compile(remoteMarkup, webPageTokens));
+	function* compileRemoteMarkupAndSegment(remoteMarkup, webPageTokens) {
+		var curNode;
+		var tokensOfNode = [];
+		for (var token of compileRemoteMarkup(remoteMarkup, webPageTokens)) {
+			if (curNode && curNode !== token.node) {
+				yield tokensOfNode;
+				tokensOfNode = [];
+			}
+			tokensOfNode.push(token);
+			curNode = token.node;
+		}
+		if (tokensOfNode.length > 0)
+			yield tokensOfNode;
 	}
 
 	em.markupCompiler = {
-		compileRemoteMarkup
+		compileRemoteMarkup,
+		compileRemoteMarkupAndSegment
 	};
 
 })(emphasize);
