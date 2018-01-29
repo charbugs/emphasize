@@ -12,18 +12,9 @@ describe('#webscraper module', () => {
 
 	describe('#getTextNodes', () => {
 
-		it('should return all non-empty text nodes within the passed \
-				element (simple text)', () => {
-			var simpleText = fixtures.get('simpleText');
-			var nodes = scraper.getTextNodes(simpleText);
-			expect(nodes.length).toEqual(1);
-			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
-		});
-
-		it('should return all non-empty text nodes within the passed \
-				element (complex text)', () => {
-			var complexText = fixtures.get('complexText');
-			var nodes = scraper.getTextNodes(complexText);
+		it('should return all non-empty text nodes of an element', () => {
+			var complex = fixtures.complexTextNodes();
+			var nodes = scraper.getTextNodes(complex.element);
 			expect(nodes.length).toEqual(4)
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('dolor sit');
@@ -32,24 +23,24 @@ describe('#webscraper module', () => {
 		});
 
 		it('should ignore text nodes of script elements', () => {
-			var withScript = fixtures.get('withScript');
-			var nodes = scraper.getTextNodes(withScript);
+			var withScript = fixtures.withScript();
+			var nodes = scraper.getTextNodes(withScript.element);
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
 		});
 
 		it('should ignore text nodes of noscript elements', () => {
-			var withNoscript = fixtures.get('withNoscript');
-			var nodes = scraper.getTextNodes(withNoscript);
+			var withNoscript = fixtures.withNoscript();
+			var nodes = scraper.getTextNodes(withNoscript.element);
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
 		});
 
 		it('should ignore text nodes of style elements', () => {
-			var withStyle = fixtures.get('withStyle');
-			var nodes = scraper.getTextNodes(withStyle);
+			var withStyle = fixtures.withStyle();
+			var nodes = scraper.getTextNodes(withStyle.element);
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
