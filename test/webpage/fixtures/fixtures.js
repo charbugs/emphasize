@@ -90,14 +90,14 @@ fixtures.threeTextNodes = function() {
 fixtures.complexTextNodes = function() {
 
 	var html = `
-		<div>
-			lorem ipsum
-			<b>dolor sit</b>
-			<em>
-				<h1>amet consectetur</h1>
-				<h2>adipiscing elit</h2>
-			</em>
-		</div>
+				<div>
+					lorem ipsum
+					<b>dolor sit</b>
+					<em>
+						<h1>amet consectetur</h1>
+						<h2>adipiscing elit</h2>
+					</em>
+				</div>
 	`.trim();
 	
 	var element = fixtures.elemFromString(html);
@@ -108,8 +108,8 @@ fixtures.complexTextNodes = function() {
 		element.querySelector('em h2').childNodes[0] // adipiscing elit
 	];
 	var tokens = [
-		{ begin: 4, end: 9, form: 'lorem', node: nodes[0] },
-		{ begin: 10, end: 15, form: 'ipsum', node: nodes[0] },
+		{ begin: 6, end: 11, form: 'lorem', node: nodes[0] },
+		{ begin: 12, end: 17, form: 'ipsum', node: nodes[0] },
 		{ begin: 0, end: 5, form: 'dolor', node: nodes[1] },
 		{ begin: 6, end: 9, form: 'sit', node: nodes[1] },
 		{ begin: 0, end: 4, form: 'amet', node: nodes[2] },
