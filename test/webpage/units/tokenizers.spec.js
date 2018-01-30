@@ -1,10 +1,17 @@
 'use strict';
 
-describe('#tokenizers module', () => {
+describe('tokenizers module', () => {
 	
 	var em = emphasize;
 
-	describe('#whiteSpace function', () => {
+	describe('Token class', () => {
+
+		it('should be instantiatable', () => {
+			expect(typeof new em.tokenizers.Token()).toEqual('object');
+		});
+	});
+
+	describe('whiteSpace function', () => {
 
 		var sent;
 		

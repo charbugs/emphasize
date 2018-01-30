@@ -2,6 +2,21 @@
 
     'use strict';
 
+    class Token {
+        /**
+         * @param {String} form
+         * @param {Text} node - html text node
+         * @param {Number} begin
+         * @param {Number} end
+         */
+        constructor(form, node, begin, end) {
+            this.form = form;
+            this.node = node;
+            this.begin = begin;
+            this.end = end;
+        }
+    }
+
     function whiteSpace(string) {
         var tokens = [];
         string.replace(/\S+/g, (match, offset) => {
@@ -15,6 +30,7 @@
     }
 
     em.tokenizers = {
+        Token,
         whiteSpace
     };
 
