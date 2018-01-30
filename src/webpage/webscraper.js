@@ -26,9 +26,21 @@
         return textNodes;
 	}
 
+    function getTokens(element, tokenizer) {
+        var tokens = [];
+        getTextNodes(element).forEach(node => {
+            tokenizer(node.data).forEach(token => {
+                token.node = node;
+                tokens.push(token);
+            });
+        });
+        return tokens;
+    }
+
 	em.webscraper = {
 		getUrl,
-		getTextNodes
+		getTextNodes,
+        getTokens
 	};
 
 })(emphasize);

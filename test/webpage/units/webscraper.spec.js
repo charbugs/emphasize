@@ -1,16 +1,17 @@
 
-describe('#webscraper module', () => {
+describe('webscraper module', () => {
 
-	var scraper = emphasize.webscraper;
+	var em = emphasize
+	var scraper = em.webscraper;
 
-	describe('#getUrl function', () => {
+	describe('getUrl function', () => {
 
 		it('should return the full url of the page', () => {
-			expect(scraper.getUrl(document)).toEqual(document.location.href);
+			expect(scraper.getUrl()).toEqual(em.document.location.href);
 		});
 	});
 
-	describe('#getTextNodes', () => {
+	describe('getTextNodes function', () => {
 
 		it('should return all non-empty text nodes of an element', () => {
 			var complex = fixtures.complexTextNodes();
@@ -44,6 +45,30 @@ describe('#webscraper module', () => {
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
+		});
+	});
+
+	describe('getTokens function', () => {
+
+		it('should return the tokens of a web page in order', () => {
+			var two = fixtures.twoTextNodes();
+			var tokenizer = jasmine.createSpy();
+			tokenizer.and.returnValues(
+				[
+					{ begin: 0, end: 2, form: 'ut' },
+					{ begin: 3, end: 7, form: 'enim' },
+					{ begin: 8, end: 10, form: 'ad' },
+					{ begin: 11, end: 16, form: 'minim' },
+					{ begin: 17, end: 23, form: 'veniam' }
+				],
+				[
+					{ begin: 0, end: 4, form: 'quis' },
+					{ begin: 5, end: 12, form: 'nostrud' },
+					{ begin: 13, end: 25, form: 'exercitation' }
+				]
+			);
+			var tokens = scraper.getTokens(two.element, tokenizer);
+			expect(tokens).toEqual(two.tokens);
 		});
 	});
 });
