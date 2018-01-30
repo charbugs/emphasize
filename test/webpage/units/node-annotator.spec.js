@@ -3,13 +3,14 @@ describe('node annotator module', () => {
 
 	var em = emphasize;
 
-	describe('annotate method', () => {
+	var single, annotate, removeAnnotation
+	beforeEach(() => {
+		single = fixtures.singleTextNode();
+		annotate = em.nodeAnnotator.annotate;
+		removeAnnotation = em.nodeAnnotator.removeAnnotation;
+	});
 
-		var single, annotate;
-		beforeEach(() => {
-			single = fixtures.singleTextNode();
-			annotate = em.nodeAnnotator.annotate;
-		});
+	describe('annotate method', () => {
 
 		it('should annotate a single token', () => {
 				
@@ -115,6 +116,31 @@ describe('node annotator module', () => {
 			expect(gloss.style.display).toBe('block');
 			wrapper.onmouseout();
 			expect(gloss.style.display).toBe('none');
+		});
+	});
+
+	describe('removeAnnotation function', () => {
+
+		it('should remove the annotation within the given element that was \
+			made by a specific marker', () => {
+
+			var tokens = ([
+				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
+					gloss: "a nice gloss" }
+			]);
+
+			var after = '<span>';
+			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+			after += 	' class="emphasize-marked">lorem';
+			after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
+			after +=	'</emphasize-wrapper>';
+			after += 	' ipsum dolor sit amet consectetur</span>';
+			
+			annotate(tokens, 42);
+			expect(single.element.outerHTML).toEqual(after);
+
+			removeAnnotation(single.element, 42);
+			expect(single.element.outerHTML).toEqual(single.html);			
 		});
 	});
 

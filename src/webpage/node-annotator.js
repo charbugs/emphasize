@@ -8,6 +8,19 @@
 	const CLASS_MARKED = 'emphasize-marked';
 	const CLASS_UNMARKED = 'emphasize-unmarked';
 
+	function removeAnnotation(element, id) {
+		var wrappers = element.querySelectorAll(`[${ATTR_MARKER_ID}="${id}"]`);
+		for (var wrapper of wrappers) {
+			var gloss = wrapper.querySelector(TAG_GLOSS);
+			if (gloss) {
+				wrapper.removeChild(gloss);
+			}
+			var parent = wrapper.parentNode;
+            wrapper.outerHTML = wrapper.innerHTML;
+            parent.normalize();
+		}
+	}
+
 	/**
 	 * @param {List of Token} tokens to annotated. 
 	 *			tokens should belong to a single text node.
@@ -79,7 +92,8 @@
     }
 
 	em.nodeAnnotator = {
-		annotate
+		annotate,
+		removeAnnotation
 	}
 
 })(emphasize);
