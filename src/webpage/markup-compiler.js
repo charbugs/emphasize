@@ -6,7 +6,7 @@
 	function* compileToken(item, webPageTokens) {
 		if (item.token < webPageTokens.length) {
 			var markupToken = Object.assign({}, webPageTokens[item.token], item);
-			delete markupToken.token;
+			delete markupToken.token; // from remote markup item
 			yield markupToken;
 		}
 	}
@@ -14,7 +14,7 @@
 	function* compileTokens(item, webPageTokens) {
 		for (var token of item.tokens) {
 			var _item = Object.assign({}, item);
-			delete _item.tokens;
+			delete _item.tokens; // from remote markup item
 			_item.token = token;
 			yield* compileToken(_item, webPageTokens);
 		}
@@ -26,7 +26,7 @@
 		var node = first.node;
 		var form = node.data.slice(begin, end);
 		var markupToken = Object.assign({ begin, end, form, node }, item);
-		delete markupToken.group;
+		delete markupToken.group; // from remote markup item
 		yield markupToken;
 	}
 
@@ -38,28 +38,36 @@
 		embeddedNodes.shift(); // === first.node
 		embeddedNodes.pop(); // === last.node
 
-		yield { // a markup token
+		var firstMarkupToken = Object.assign({}, {
 			begin: first.begin,
 			end: first.node.data.length,
 			form: first.node.data.slice(first.begin),
 			node: first.node
-		};
+		}, item);
+
+		delete firstMarkupToken.group;
+		yield firstMarkupToken;
 
 		for (var node of embeddedNodes) {
-			yield { // a markup token
+			var embeddedMarkupToken = Object.assign({}, {
 				begin: 0,
 				end: node.data.length,
 				form: node.data,
 				node: node
-			};
+			}, item);
+
+			delete embeddedMarkupToken.group;
+			yield embeddedMarkupToken;
 		}
 
-		yield { // a markup token
+		var lastMarkupToken = Object.assign({}, {
 			begin: 0,
 			end: last.end,
 			form: last.node.data.slice(0, last.end),
 			node: last.node
-		};
+		}, item);
+		delete lastMarkupToken.group;
+		yield lastMarkupToken;
 	}
 
 	function* compileGroup(item, webPageTokens) {

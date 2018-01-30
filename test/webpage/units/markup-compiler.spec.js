@@ -240,15 +240,15 @@ describe('markupCompiler module', () => {
 				two consecutive text nodes', () => {
 
 				var markup = [
-					{ group: { first: 3, last: 6} }
+					{ group: { first: 3, last: 6}, gloss: 'a nice gloss' }
 				];
 				var compiledMarkup = Array.from(compile(markup, tokens));
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 11, end: 23, form: 'minim veniam', 
-							node: nodes[0] },
+							node: nodes[0], gloss: 'a nice gloss' },
 						{ begin: 0, end: 12, form: 'quis nostrud',
-							node: nodes[1] }
+							node: nodes[1], gloss: 'a nice gloss' }
 					]
 				);
 			});
