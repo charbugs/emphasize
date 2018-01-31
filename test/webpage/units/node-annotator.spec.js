@@ -3,14 +3,16 @@ describe('node annotator module', () => {
 
 	var em = emphasize;
 
-	var single, annotate, removeAnnotation
+	var single, two, annotateNode, annotateNodes, removeAnnotation;
 	beforeEach(() => {
 		single = fixtures.singleTextNode();
-		annotate = em.nodeAnnotator.annotate;
+		two = fixtures.twoTextNodes();
+		annotateNode = em.nodeAnnotator.annotateNode;
+		annotateNodes = em.nodeAnnotator.annotateNodes;
 		removeAnnotation = em.nodeAnnotator.removeAnnotation;
 	});
 
-	describe('annotate method', () => {
+	describe('annotate function', () => {
 
 		it('should annotate a single token', () => {
 				
@@ -23,7 +25,7 @@ describe('node annotator module', () => {
 			after += 	' class="emphasize-marked">lorem</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -41,7 +43,7 @@ describe('node annotator module', () => {
 			after +=	' class="emphasize-marked">ipsum</emphasize-wrapper>';
 			after += 	' dolor sit amet consectetur</span>';
 			
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -60,7 +62,7 @@ describe('node annotator module', () => {
 			after +=	' class="emphasize-marked">dolor</emphasize-wrapper>';
 			after +=	' sit amet consectetur</span>';
 
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -78,7 +80,7 @@ describe('node annotator module', () => {
 			after += 	'lorem</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			expect(single.element.outerHTML).toEqual(after);				
 		});
 
@@ -96,7 +98,7 @@ describe('node annotator module', () => {
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -108,7 +110,7 @@ describe('node annotator module', () => {
 					gloss: "a nice gloss" }
 			]);
 
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			var wrapper = single.element.querySelector('emphasize-wrapper');
 			var gloss = wrapper.querySelector('emphasize-gloss');
 			
@@ -118,6 +120,37 @@ describe('node annotator module', () => {
 			expect(gloss.style.display).toBe('none');
 		});
 	});
+
+	describe('annotateNodes function', () => {
+
+		it('should annotate multiple nodes given multiple batches of tokens',
+			() => {
+
+			var tokenBatches = [
+				[
+					{ begin: 0, end: 2, form: 'ut', node: two.nodes[0] }
+				],
+				[
+					{ begin: 0, end: 4, form: 'quis', node: two.nodes[1] },
+					{ begin: 5, end: 12, form: 'nostrud', node: two.nodes[1] }	
+				]
+			];
+
+			var after = '<div><span>';
+			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+			after +=	' class="emphasize-marked">ut</emphasize-wrapper>';
+			after +=	' enim ad minim veniam'
+			after +=	'</span><span>';
+			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+			after +=	' class="emphasize-marked">quis</emphasize-wrapper>';
+			after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
+			after +=	' class="emphasize-marked">nostrud</emphasize-wrapper>';
+			after +=	' exercitation</span></div>'
+
+			annotateNodes(tokenBatches, 42);
+			expect(two.element.outerHTML).toEqual(after);
+		});
+	})
 
 	describe('removeAnnotation function', () => {
 
@@ -136,12 +169,14 @@ describe('node annotator module', () => {
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotate(tokens, 42);
+			annotateNode(tokens, 42);
 			expect(single.element.outerHTML).toEqual(after);
 
 			removeAnnotation(single.element, 42);
 			expect(single.element.outerHTML).toEqual(single.html);			
 		});
 	});
+
+
 
 });

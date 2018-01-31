@@ -22,11 +22,22 @@
 	}
 
 	/**
+	 * @param {Array of Array of Token} tokenBatches - Tokens to be annotated. 
+	 *		Tokens of each inner array should belong to a single text node.
+	 * @param {Number} id - that will assigned to annotation elements.
+	 */
+	function annotateNodes(tokenBatches, id) {
+		tokenBatches.forEach(tokens => {
+			annotateNode(tokens, id);
+		});
+	}
+
+	/**
 	 * @param {List of Token} tokens to annotated. 
 	 *			tokens should belong to a single text node.
 	 * @param {Number} id that will assigned to annotation elements.
 	 */
-	function annotate(tokens, id) {
+	function annotateNode(tokens, id) {
 		var newHtml = createNewInnerHtml(tokens, id);
 		var newNodes = htmlToElements(newHtml);
 		setEventHandlers(newNodes);
@@ -92,7 +103,8 @@
     }
 
 	em.nodeAnnotator = {
-		annotate,
+		annotateNode,
+		annotateNodes,
 		removeAnnotation
 	}
 
