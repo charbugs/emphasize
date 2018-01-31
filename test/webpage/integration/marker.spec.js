@@ -11,13 +11,17 @@ describe('marker class', () => {
 		marker = new em.marker.Marker(id, complex.element);
 	});
 
-	describe('web page data extraction on instantiation', () => {
+	describe('extractWebPageData method', () => {
 
-		it('after instantiation web page url should have been stored', () => {
+		beforeEach(() => {
+			marker.extractWebPageData();
+		});
+
+		it('should store the web page url', () => {
 			expect(marker._webPageData.url).toEqual(document.location.href);
 		});
 
-		it('after instantiation web page tokens should have been stored', () => {
+		it('should store the web page tokens', () => {
 			expect(marker._webPageData.tokens).toEqual(complex.tokens);
 		});
 	});
@@ -26,6 +30,7 @@ describe('marker class', () => {
 
 		var data;
 		beforeEach(() => {
+			marker.extractWebPageData();
 			data = marker.getWebPageDataForRemote();
 		});
 
@@ -40,6 +45,10 @@ describe('marker class', () => {
 	});
 
 	describe('annotate method', () => {
+
+		beforeEach(() => {
+			marker.extractWebPageData();
+		});
 
 		it('should annotate properly (1)', () => {
 
@@ -168,6 +177,10 @@ describe('marker class', () => {
 	});
 
 	describe('removeAnnotation method', () => {
+
+		beforeEach(() => {
+			marker.extractWebPageData();
+		});
 
 		it('should remove the annotation made by this marker', () => {
 

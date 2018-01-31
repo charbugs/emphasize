@@ -4,38 +4,37 @@
 
 	class Marker {
 
-	    constructor(id, root, tokenizer) {
-	    	this.id = id;
-	    	this._root = root || em.document.body;
-	    	this._tokenizer = tokenizer || em.tokenizers.whiteSpace;
-	    	this._webPageData = {};
-	    	this._extractWebPageData();
-	    }
+		constructor(id, root, tokenizer) {
+			this.id = id;
+			this._root = root || em.document.body;
+			this._tokenizer = tokenizer || em.tokenizers.whiteSpace;
+			this._webPageData = {};
+		}
 
-	    getWebPageDataForRemote() {
-	    	return {
-	    		url: this._webPageData.url,
-	    		tokens: this._webPageData.tokens.map(t => t.form)
-	    	}
-	    };
+		extractWebPageData() {
+			this._webPageData.url = em.webscraper.getUrl();
+			this._webPageData.tokens =  em.webscraper.getTokens(
+				this._root, this._tokenizer);
+		}
 
-	    annotate(remoteMarkup) {
-	    	var compile = em.markupCompiler.compileRemoteMarkupAndSegment;
-	    	var annotate = em.nodeAnnotator.annotate;
-	    	var segments = compile(remoteMarkup, this._webPageData.tokens);
-	    	for (var segment of segments) {
-	    		annotate(segment, this.id);
-	    	};
-	    }
+		getWebPageDataForRemote() {
+			return {
+				url: this._webPageData.url,
+				tokens: this._webPageData.tokens.map(t => t.form)
+			}
+		}
 
-	    removeAnnotation() {
+		annotate(remoteMarkup) {
+			var batchedMarkupTokens = em.markupCompiler.
+				compileRemoteMarkupAndSegment(remoteMarkup, 
+					this._webPageData.tokens);
+			batchedMarkupTokens = Array.from(batchedMarkupTokens);
+			em.nodeAnnotator.annotateNodes(batchedMarkupTokens, this.id);
+
+		}
+
+		removeAnnotation() {
 			em.nodeAnnotator.removeAnnotation(this._root, this.id);
-	    }
-
-		_extractWebPageData() {
-	    	this._webPageData.url = em.webscraper.getUrl();
-	    	this._webPageData.tokens =  em.webscraper.getTokens(
-	    		this._root,	this._tokenizer);
 		}
 	}
 
