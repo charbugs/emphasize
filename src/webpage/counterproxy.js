@@ -1,7 +1,7 @@
 /**
 * @module counterproxy
 */
-var counterproxy = (function() {
+(function(em) {
 
 	'use strict';
 
@@ -19,6 +19,14 @@ var counterproxy = (function() {
 			callback(true);
 		else if (message.command === 'invoke')
 			invoke(message.path, message.args, callback);
+
+		// "This function [the callback] becomes invalid when the event 
+		// listener returns, unless you return true from the event listener
+		// to indicate you wish to send a response asynchronously (this will
+		// keep the message channel open to the other end until sendResponse
+		// [the callback] is called)".
+		// See: https://developer.chrome.com/extensions/runtime#event-onMessage
+		return true;
 	}
 
 	/**
@@ -30,7 +38,7 @@ var counterproxy = (function() {
 	* @param {Array} args - arguments to pass to function
 	* @param {Function} callback - ({Object} resp)
 	*/
-	function invoke(path, args, callback) {
+	async function invoke(path, args, callback) {
 
 		var object;
 		var target = window;
@@ -42,46 +50,36 @@ var counterproxy = (function() {
 			}
 		}
 
-		if (target instanceof Function) {
-			args.push(callBackProxy.bind(this, callback));
-			target.apply(object, args);
-		}
-		else {
-			var msg = 'Error in counterproxy: '+path+' is not a function.';
-			if (callback)
-				callback({ err: msg, data: null });
-			else
-				throw new Error(msg);
-		}
-	}
-
-	/**
-	* Serves as a generic callback function.
-	* Checks return values and send them back to the proxy.
-	*
-	* @param {Function} callback - ({Object} resp)
-	* @param {jsonisable} err
-	* @param {jsonisable} data
-	*/
-	function callBackProxy(callback, err, data) {
-		if (err) {
+		if (!(target instanceof Function)) {
+			var msg = 'Error in counterproxy: ' + path + ' is not a function.';
 			if (callback) {
-				callback({ err: err, data: null });
+				callback({ err: msg, data: null });
+				return;
 			} else {
-				throw err;
+				throw new Error(msg);
 			}
-		} else {
+		}
+
+		try {
+			var data = await target.apply(object, args);
 			if (callback) {
 				callback({ err: null, data: data });
 			}
+		} catch (err) {
+			if (callback) {
+				var msg = err.message || err;
+				callback({ err: msg, data: null });
+			} else {
+				throw err;
+			}
 		}
 	}
 
-	/** interfaces of module */
-	return {
-		createMessageChannel: createMessageChannel
-	};
+	///////////////////////////////////////////////////////
+	// kind of main() of the webpage package
+	///////////////////////////////////////////////////////
+	createMessageChannel();
 
-}());
+}(emphasize));
 
-counterproxy.createMessageChannel();
+
