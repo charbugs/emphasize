@@ -11,14 +11,19 @@
 	var prome = emphasize.common.prome;
 	var ChannelError = emphasize.common.errors.ChannelError;
 	var InjectionError = emphasize.common.errors.InjectionError;
-	var ContenError = emphasize.common.errors.ContentError;
+	var ContentError = emphasize.common.errors.ContentError;
 
 	/* content scripts to inject in web page in given order */
 	var contentScripts = [
 		'src/popup/faces.css',
-		'src/webpage/tokenize.js',
-		'src/webpage/extract.js',
-		'src/webpage/highlight.js',
+		'src/webpage/namespace.js',
+		'src/webpage/errors.js',
+		'src/webpage/tokenizers.js',
+		'src/webpage/webscraper.js',
+		'src/webpage/markup-compiler.js',
+		'src/webpage/node-annotator.js',
+		'src/webpage/marker.js',
+		'src/webpage/agent.js',
 		'src/webpage/counterproxy.js'
 	];
 
@@ -125,7 +130,7 @@
 
 		if (resp) {
 			if (resp.err)
-				throw new ContentError(resp.err);
+				throw resp.err;
 			else
 				return resp.data; 
 		} else {

@@ -41,7 +41,7 @@
 	async function invoke(path, args, callback) {
 
 		var object;
-		var target = window;
+		var target = em;
 
 		for (var name of path.split('.')) {
 			if (target) {
@@ -51,12 +51,14 @@
 		}
 
 		if (!(target instanceof Function)) {
-			var msg = 'Error in counterproxy: ' + path + ' is not a function.';
+			var msg = path + ' is not a function.';
+			var err = new em.errors.ChannelError(msg);
+			err = makeErrorJsonable(err);
 			if (callback) {
-				callback({ err: msg, data: null });
+				callback({ err: err, data: null });
 				return;
 			} else {
-				throw new Error(msg);
+				throw err;
 			}
 		}
 
@@ -67,12 +69,22 @@
 			}
 		} catch (err) {
 			if (callback) {
-				var msg = err.message || err;
-				callback({ err: msg, data: null });
+				if (err.stack)  { // an proper error object
+					err = makeErrorJsonable(err);
+				}
+				callback({ err: err, data: null });
 			} else {
 				throw err;
 			}
 		}
+	}
+
+	function makeErrorJsonable(error) {
+		return {
+			name: error.name,
+			message: error.message,
+			stack: error.stack
+		};
 	}
 
 	///////////////////////////////////////////////////////
