@@ -22,10 +22,10 @@ describe('node annotator module', () => {
 			
 			var after = '<span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-marked">lorem</emphasize-wrapper>';
+			after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -38,12 +38,12 @@ describe('node annotator module', () => {
 			
 			var after = '<span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-marked">lorem</emphasize-wrapper>';
+			after +=	' class="emphasize-face-1">lorem</emphasize-wrapper>';
 			after += 	' <emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-marked">ipsum</emphasize-wrapper>';
+			after +=	' class="emphasize-face-1">ipsum</emphasize-wrapper>';
 			after += 	' dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -56,13 +56,13 @@ describe('node annotator module', () => {
 
 			var after = '<span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-marked">lorem</emphasize-wrapper>';
+			after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
 			after += 	' ipsum';
 			after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-marked">dolor</emphasize-wrapper>';
+			after +=	' class="emphasize-face-1">dolor</emphasize-wrapper>';
 			after +=	' sit amet consectetur</span>';
 
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -80,7 +80,7 @@ describe('node annotator module', () => {
 			after += 	'lorem</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			expect(single.element.outerHTML).toEqual(after);				
 		});
 
@@ -93,12 +93,12 @@ describe('node annotator module', () => {
 
 			var after = '<span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-marked">lorem';
+			after += 	' class="emphasize-face-1">lorem';
 			after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -110,7 +110,7 @@ describe('node annotator module', () => {
 					gloss: "a nice gloss" }
 			]);
 
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			var wrapper = single.element.querySelector('emphasize-wrapper');
 			var gloss = wrapper.querySelector('emphasize-gloss');
 			
@@ -138,16 +138,16 @@ describe('node annotator module', () => {
 
 			var after = '<div><span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-marked">ut</emphasize-wrapper>';
+			after +=	' class="emphasize-face-1">ut</emphasize-wrapper>';
 			after +=	' enim ad minim veniam'
 			after +=	'</span><span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-marked">quis</emphasize-wrapper>';
+			after +=	' class="emphasize-face-1">quis</emphasize-wrapper>';
 			after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-marked">nostrud</emphasize-wrapper>';
+			after +=	' class="emphasize-face-1">nostrud</emphasize-wrapper>';
 			after +=	' exercitation</span></div>'
 
-			annotateNodes(tokenBatches, 42);
+			annotateNodes(tokenBatches, 42, 'emphasize-face-1');
 			expect(two.element.outerHTML).toEqual(after);
 		});
 	})
@@ -164,12 +164,12 @@ describe('node annotator module', () => {
 
 			var after = '<span>';
 			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-marked">lorem';
+			after += 	' class="emphasize-face-1">lorem';
 			after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42);
+			annotateNode(tokens, 42, 'emphasize-face-1');
 			expect(single.element.outerHTML).toEqual(after);
 
 			removeAnnotation(single.element, 42);

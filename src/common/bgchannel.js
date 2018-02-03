@@ -18,12 +18,13 @@
 		'src/popup/faces.css',
 		'src/webpage/namespace.js',
 		'src/webpage/errors.js',
+		'src/webpage/utils.js',
 		'src/webpage/tokenizers.js',
 		'src/webpage/webscraper.js',
 		'src/webpage/markup-compiler.js',
 		'src/webpage/node-annotator.js',
 		'src/webpage/marker.js',
-		'src/webpage/agent.js',
+		'src/webpage/access.js',
 		'src/webpage/counterproxy.js'
 	];
 

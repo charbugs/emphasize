@@ -12,8 +12,19 @@
 	ChannelError.prototype = Object.create(Error.prototype);
 	ChannelError.prototype.name = 'ChannelError';
 
+	/**
+	* If something went wrong wile extension trying to access the web page scripts.
+	*/
+	function AccessError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	AccessError.prototype = Object.create(Error.prototype);
+	AccessError.prototype.name = 'AccessError';
+
 	em.errors = {
-		ChannelError
+		ChannelError,
+		AccessError
 	};
 
 })(emphasize);

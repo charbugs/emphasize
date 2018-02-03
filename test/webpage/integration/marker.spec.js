@@ -65,7 +65,7 @@ describe('marker class', () => {
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);			
 		});
 
@@ -78,7 +78,7 @@ describe('marker class', () => {
 			// indentation matters !! see the corresponding fixture
 			var after = `
 				<div>
-					<emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">lorem</emphasize-wrapper> ipsum
+					<emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">lorem</emphasize-wrapper> ipsum
 					<b>dolor sit</b>
 					<em>
 						<h1>amet consectetur</h1>
@@ -86,7 +86,7 @@ describe('marker class', () => {
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);			
 		});
 
@@ -107,7 +107,7 @@ describe('marker class', () => {
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);			
 		});
 
@@ -121,14 +121,14 @@ describe('marker class', () => {
 			var after = `
 				<div>
 					lorem ipsum
-					<b><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">dolor<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> sit</b>
+					<b><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">dolor<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> sit</b>
 					<em>
 						<h1>amet consectetur</h1>
 						<h2>adipiscing elit</h2>
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);			
 		});
 
@@ -142,14 +142,14 @@ describe('marker class', () => {
 			var after = `
 				<div>
 					lorem ipsum
-					<b>dolor <emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">sit<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></b>
+					<b>dolor <emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">sit<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></b>
 					<em>
-						<h1><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">amet consectetur<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></h1>
-						<h2><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">adipiscing<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> elit</h2>
+						<h1><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">amet consectetur<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></h1>
+						<h2><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">adipiscing<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> elit</h2>
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);			
 		});
 
@@ -164,14 +164,14 @@ describe('marker class', () => {
 			var after = `
 				<div>
 					lorem ipsum
-					<b>dolor <emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">sit<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></b>
+					<b>dolor <emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">sit<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></b>
 					<em>
-						<h1><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">amet<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> <emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">consectetur<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></h1>
-						<h2><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-marked">adipiscing<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> elit</h2>
+						<h1><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">amet<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> <emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">consectetur<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper></h1>
+						<h2><emphasize-wrapper data-emphasize-marker-id="42" class="emphasize-face-1">adipiscing<emphasize-gloss>a nice gloss</emphasize-gloss></emphasize-wrapper> elit</h2>
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);			
 		});
 	});
@@ -199,7 +199,7 @@ describe('marker class', () => {
 					</em>
 				</div>`.trim();
 
-			marker.annotate(remoteMarkup);
+			marker.annotate(remoteMarkup, 'emphasize-face-1');
 			expect(complex.element.outerHTML).toEqual(after);
 
 			marker.removeAnnotation();

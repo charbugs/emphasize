@@ -24,12 +24,13 @@
 			}
 		}
 
-		annotate(remoteMarkup) {
+		annotate(remoteMarkup, styleClass) {
 			var batchedMarkupTokens = em.markupCompiler.
 				compileRemoteMarkupAndSegment(remoteMarkup, 
 					this._webPageData.tokens);
 			batchedMarkupTokens = Array.from(batchedMarkupTokens);
-			em.nodeAnnotator.annotateNodes(batchedMarkupTokens, this.id);
+			em.nodeAnnotator.annotateNodes(
+				batchedMarkupTokens, this.id, styleClass);
 
 		}
 

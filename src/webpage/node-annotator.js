@@ -24,11 +24,13 @@
 	/**
 	 * @param {Array of Array of Token} tokenBatches - Tokens to be annotated. 
 	 *		Tokens of each inner array should belong to a single text node.
-	 * @param {Number} id - that will assigned to annotation elements.
+	 * @param {Number} id - that will be assigned to annotation elements.
+	 * @prama {String} styleClass - Class attrib that will be assign to 
+	 		annotation elements.
 	 */
-	function annotateNodes(tokenBatches, id) {
+	function annotateNodes(tokenBatches, id, styleClass) {
 		tokenBatches.forEach(tokens => {
-			annotateNode(tokens, id);
+			annotateNode(tokens, id, styleClass);
 		});
 	}
 
@@ -37,38 +39,38 @@
 	 *			tokens should belong to a single text node.
 	 * @param {Number} id that will assigned to annotation elements.
 	 */
-	function annotateNode(tokens, id) {
-		var newHtml = createNewInnerHtml(tokens, id);
+	function annotateNode(tokens, id, styleClass) {
+		var newHtml = createNewInnerHtml(tokens, id, styleClass);
 		var newNodes = htmlToElements(newHtml);
 		setEventHandlers(newNodes);
 		replaceNodeWithMultiples(tokens[0].node, newNodes);
 	}
 
-	function createNewInnerHtml(tokens, id) {
+	function createNewInnerHtml(tokens, id, styleClass) {
 		var text = tokens[0].node.data;
 		var html = "";
 		var offset = 0;
 		tokens.forEach(token => {
 			html += text.slice(offset, token.begin);
-			html += createTokenAnnotation(token, id);
+			html += createTokenAnnotation(token, id, styleClass);
 			offset = token.end;
 		});
 		html += text.slice(tokens[tokens.length-1].end);
 		return html;
 	}
 
-	function createTokenAnnotation(token, id) {
+	function createTokenAnnotation(token, id, styleClass) {
 		
-		var markClass = token.mark === false 
+		var styleClass = token.mark === false 
 			? CLASS_UNMARKED
-			: CLASS_MARKED;
+			: styleClass
 
 		var glossElement = token.gloss
 			? `<${TAG_GLOSS}>${token.gloss}</${TAG_GLOSS}>`
 			: "";
 
 		var html = 	`<${TAG_WRAPPER} ${ATTR_MARKER_ID}="${id}"`;
-		html += 	` class="${markClass}">`;
+		html += 	` class="${styleClass}">`;
 		html += 	`${token.form}`;
 		html +=		`${glossElement}`;
 		html +=		`</${TAG_WRAPPER}>`;	
