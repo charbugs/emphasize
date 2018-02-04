@@ -13,7 +13,7 @@
 	function createMarker(markerId) {
 		if (!currentMarker) {
 			var marker = new em.marker.Marker(markerId);
-			currentMarker = em.utils.sequenceSyncMethodExecution(
+			currentMarker = em.sequence.sequenceSyncMethodExecution(
 				marker, exectutionOrder);
 		}
 		else {

@@ -1,5 +1,5 @@
 
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
@@ -34,7 +34,7 @@
 	}
 
 	// exports 
-	emphasize.common.event = {
+	em.event = {
 		Event
 	}
 

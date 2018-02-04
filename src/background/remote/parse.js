@@ -1,26 +1,22 @@
 /**
  * Functions for parsing and validating the request/response data
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
-	// shortcuts
-	var protocol = emphasize.communication.protocol;
-	var ProtocolError = emphasize.common.errors.ProtocolError;
-
 	// validator functions
 	var setupRequestValidator = Ajv({allErrors: true})
-			.compile(protocol.setupRequestSchema);
+			.compile(em.protocol.setupRequestSchema);
 
 	var	setupResponseValidator = Ajv({allErrors: true})
-			.compile(protocol.setupResponseSchema);
+			.compile(em.protocol.setupResponseSchema);
 
 	var markupRequestValidator = Ajv({allErrors: true})
-			.compile(protocol.markupRequestSchema);
+			.compile(em.protocol.markupRequestSchema);
 
 	var markupResponseValidator = Ajv({allErrors: true})
-			.compile(protocol.markupResponseSchema);
+			.compile(em.protocol.markupResponseSchema);
 
 	/**
 	 * Helper function for json schema validation via Ajv library.
@@ -47,7 +43,7 @@
 		try {
 			validate(setupRequestValidator, data);
 		} catch (err) {
-			throw new ProtocolError(err.message);
+			throw new em.errors.ProtocolError(err.message);
 		}
 	}
 
@@ -83,11 +79,11 @@
 			checkForSelectValues(setup);
 		} 
 		catch(error) {
-			throw new ProtocolError(error.message);
+			throw new em.errors.ProtocolError(error.message);
 		}
 
 		setup.description = sanitizeHtml(
-			setup.description, protocol.htmlRules);
+			setup.description, em.protocol.htmlRules);
 
 		return setup;
 	}
@@ -102,7 +98,7 @@
 		try {
 			validate(markupRequestValidator, data);
 		} catch (err) {
-			throw new ProtocolError(err.message);
+			throw new em.errors.ProtocolError(err.message);
 		}
 	}
 
@@ -120,22 +116,22 @@
 			validate(markupResponseValidator, response);
 		} 
 		catch(error) {
-			throw new ProtocolError(error.message);
+			throw new em.errors.ProtocolError(error.message);
 		}
 
 		if (response.error) {
-			response.error = sanitizeHtml(response.error, protocol.htmlRules);
+			response.error = sanitizeHtml(response.error, em.protocol.htmlRules);
 		}
 
 		if (response.report) {
-			response.report = sanitizeHtml(response.report, protocol.htmlRules);
+			response.report = sanitizeHtml(response.report, em.protocol.htmlRules);
 		}
 
 		return response;
 	}
 
 	// exports
-	emphasize.communication.parse = {
+	em.parse = {
 		parseSetupRequest,
 		parseSetupResponse,
 		parseMarkupRequest,

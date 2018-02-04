@@ -1,5 +1,5 @@
 
-describe('access module', () => {
+describe('---------- access module ----------', () => {
 
 	var em = emphasize;
 

@@ -1,7 +1,7 @@
 /**
  * Module defines custom error classes.
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
@@ -64,12 +64,12 @@
 	 * Nescessary since the content scripts can not send error objects to the 
 	 * background (but they can of course send an error string).
 	 */
-	function ContentError(message) {
+	/*function ContentError(message) {
 		this.message = message;
 		this.stack = (new Error()).stack;
 	}
 	ContentError.prototype = Object.create(Error.prototype);
-	ContentError.prototype.name = 'ContentError';
+	ContentError.prototype.name = 'ContentError';*/
 
 	/**
 	 * An error that will be thrown if content scripts can not be injected in
@@ -82,15 +82,26 @@
 	InjectionError.prototype = Object.create(Error.prototype);
 	InjectionError.prototype.name = 'InjectionError';	
 
+	/**
+	* If something went wrong wile extension trying to access the web page scripts.
+	*/
+	function AccessError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	AccessError.prototype = Object.create(Error.prototype);
+	AccessError.prototype.name = 'AccessError';
+
 	// exports 
-	emphasize.common.errors = {
+	em.errors = {
 		RequestError,
 		ProtocolError,
 		MarkerError,
 		StorageError,
 		ChannelError,
-		ContentError,
-		InjectionError
+		//ContentError,
+		InjectionError,
+		AccessError
 	};
 
 })(emphasize);

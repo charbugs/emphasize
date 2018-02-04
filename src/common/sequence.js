@@ -56,7 +56,7 @@
 		return new Proxy(target, handler);
 	}
 
-	em.utils = {
+	em.sequence = {
 		sequenceAsyncMethodExecution,
 		sequenceSyncMethodExecution
 	};

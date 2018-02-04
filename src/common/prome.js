@@ -1,7 +1,7 @@
 /**
  * Wraps chrome api methods to return promises.
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
@@ -47,7 +47,7 @@
 	}
 
 	// exports
-	emphasize.common.prome = {
+	em.prome = {
 		storage,
 		tabs
 	}

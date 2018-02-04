@@ -1,6 +1,6 @@
 'use strict';
 
-describe('tokenizers module', () => {
+describe('---------- tokenizers module ----------', () => {
 	
 	var em = emphasize;
 

@@ -3,12 +3,9 @@
  *
  * An menu instance will be created for each tab the popup is invoked in.
  */
- (function(emphasize) {
+ (function(em) {
 
  	'use strict';
-
- 	// shortcuts
- 	var Menu = emphasize.popup.menu.Menu;
 
  	// Storage for all running menus
 	var menus = [];
@@ -50,13 +47,13 @@
 	* return: (Menu)
 	*/
 	async function create(tabId) {
-		var menu = await Menu(tabId);
+		var menu = await em.menu.Menu(tabId);
 		menus.push(menu);
 		return menu;
 	};
 
 	// exports
-	emphasize.popup.menucontainer = {
+	em.menucontainer = {
 		get
 	};
 

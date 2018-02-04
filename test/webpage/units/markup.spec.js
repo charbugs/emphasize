@@ -1,7 +1,7 @@
 
 'use strict';
 
-describe('markupCompiler module', () => {
+describe('---------- markup module ----------', () => {
 
 	var em = emphasize;
 
@@ -11,7 +11,7 @@ describe('markupCompiler module', () => {
 
 			var compile, tokens, node;
 			beforeEach(() => {
-				compile = emphasize.markupCompiler.compileRemoteMarkup;
+				compile = emphasize.markup.compileRemoteMarkup;
 				tokens = fixtures.singleTextNode().tokens;
 				node = tokens[0].node;
 			});
@@ -188,7 +188,7 @@ describe('markupCompiler module', () => {
 
 			var compile, tokens, nodes;
 			beforeEach(() => {
-				compile = emphasize.markupCompiler.compileRemoteMarkup;
+				compile = emphasize.markup.compileRemoteMarkup;
 				var two = fixtures.twoTextNodes();
 				tokens = two.tokens;
 				nodes =two.nodes;
@@ -258,7 +258,7 @@ describe('markupCompiler module', () => {
 
 			var compile, tokens, nodes;
 			beforeEach(() => {
-				compile = emphasize.markupCompiler.compileRemoteMarkup;
+				compile = emphasize.markup.compileRemoteMarkup;
 				var three = fixtures.threeTextNodes();
 				tokens = three.tokens;
 				nodes = three.nodes;
@@ -287,7 +287,7 @@ describe('markupCompiler module', () => {
 
 		var compile, tokens, nodes;
 			beforeEach(() => {
-				compile = em.markupCompiler.compileRemoteMarkupAndSegment;
+				compile = em.markup.compileRemoteMarkupAndSegment;
 				var three = fixtures.threeTextNodes();
 				tokens = three.tokens;
 				nodes = three.nodes;

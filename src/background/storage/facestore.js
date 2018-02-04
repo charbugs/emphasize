@@ -1,10 +1,7 @@
 
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
-
-	// shortcuts
-	var setupstore = emphasize.storage.setupstore;
 
 	var supportedFaces = [
 		'emphasize-face-1',
@@ -25,7 +22,7 @@
 	*/
 	async function determineFaceClass() {
 
-		var setups = await setupstore.getSetup(null);
+		var setups = await em.setupstore.getSetup(null);
 		var existingFaces = setups.map(s => s.face);
 
 		var nonExisting = supportedFaces.filter(f => 
@@ -43,7 +40,7 @@
 	}
 
 	// exports
-	emphasize.storage.facestore = {
+	em.facestore = {
 		determineFaceClass
 	};
 

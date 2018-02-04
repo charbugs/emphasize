@@ -1,6 +1,4 @@
-/**
-* @module counterproxy
-*/
+
 (function(em) {
 
 	'use strict';

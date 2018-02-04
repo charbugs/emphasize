@@ -15,13 +15,9 @@
  * Implements http requests for the communication with 
  * remote marker programms.
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
-
-	// shortcuts
-	var parse = emphasize.communication.parse;
-	var RequestError = emphasize.common.errors.RequestError;
 
 	// stores xhr requests
 	var requestStorage = {};
@@ -36,9 +32,9 @@
 	async function requestSetup(id, url) {
 
 		var data = { call: 'setup' };
-		parse.parseSetupRequest(data); // debug
+		em.parse.parseSetupRequest(data); // debug
 		var response = await post(id, url, data);
-		return parse.parseSetupResponse(response);
+		return em.parse.parseSetupResponse(response);
 	}
 
 	/**
@@ -52,9 +48,9 @@
 	async function requestMarkup(id, url, data) {
 
 		data.call = 'markup',
-		parse.parseMarkupRequest(data) // debug
+		em.parse.parseMarkupRequest(data) // debug
 		var response = await post(id, url, data);
-		return parse.parseMarkupResponse(response);
+		return em.parse.parseMarkupResponse(response);
 	}
 
 	/**
@@ -86,7 +82,7 @@
 
 			if (xhr.status === 0) {
 				var msg = 'Something went wrong while requesting marker.';
-				reject(new RequestError(msg));
+				reject(new em.errors.RequestError(msg));
 			}
 			else if (xhr.status === 200) {
 				resolve(xhr.responseText);
@@ -94,7 +90,7 @@
 			else {
 				var msg = 'Failed to receive data from marker. Server answers: ';
 				msg = msg + xhr.status;
-				reject(new RequestError(msg));
+				reject(new em.errors.RequestError(msg));
 			}
 		}
 	}
@@ -112,7 +108,7 @@
 	}
 
 	// exports
-	emphasize.communication.request = {
+	em.request = {
 		requestSetup,
 		requestMarkup,
 		abortRequest

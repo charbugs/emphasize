@@ -2,7 +2,7 @@
  * Module defines the protocol between the 
  * browser extension and the remote marker programms.
  */
- (function(emphasize) {
+ (function(em) {
 
  	'use strict';
 
@@ -144,7 +144,7 @@
 	};
 
 	/* exports */
-	emphasize.communication.protocol = {
+	em.protocol = {
 		setupRequestSchema,
 		setupResponseSchema,
 		markupRequestSchema,

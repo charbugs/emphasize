@@ -1,17 +1,12 @@
 /**
  * Stores marker setups.
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
-	// shortcuts
-	var prome = emphasize.common.prome;
-	var StorageError = emphasize.common.errors.StorageError;
-	var Event = emphasize.common.event.Event;
-
-	var setupAdded = new Event();
-	var setupRemoved = new Event();
+	var setupAdded = new em.event.Event();
+	var setupRemoved = new em.event.Event();
 
 	/**
 	 * Marker setup attributes
@@ -30,9 +25,9 @@
 	 * If the storage is empty init it.
 	 */
 	async function initStorage() {
-		var items = await prome.storage.local.get(null);
+		var items = await em.prome.storage.local.get(null);
 			if (Object.keys(items).length == 0)
-				prome.storage.local.set({ setups: [] });
+				em.prome.storage.local.set({ setups: [] });
 	}
 
 	/**
@@ -43,7 +38,7 @@
 	 */
 	async function getSetup(url) {
 
-		var items = await prome.storage.local.get('setups');
+		var items = await em.prome.storage.local.get('setups');
 		if (url === null) {
 			return items.setups;
 		} 
@@ -65,13 +60,13 @@
 	 */
 	async function removeSetup(url) {
 
-		var items = await prome.storage.local.get('setups');
+		var items = await em.prome.storage.local.get('setups');
 		for (var i=0; i < items.setups.length; i++) {
 			if (items.setups[i].url === url) { 
 				items.setups.splice(i, 1)[0];
 			}
 		}
-		await prome.storage.local.set({ setups: items.setups });
+		await em.prome.storage.local.set({ setups: items.setups });
 		setupRemoved.dispatch(url);
 	}
 
@@ -83,15 +78,15 @@
 	 */
 	async function addSetup(setup) {
 
-		var items = await prome.storage.local.get('setups');
+		var items = await em.prome.storage.local.get('setups');
 
 		if (!setup.url || !checkUrl(setup.url))
-			throw new StorageError('Need a valid HTTP URL in setup.');
+			throw new em.errors.StorageError('Need a valid HTTP URL in setup.');
 		if (urlExists(setup.url, items.setups))
-			throw new StorageError('A marker of this URL already exists.');
+			throw new em.errors.StorageError('A marker of this URL already exists.');
 
 		items.setups.push(setup);
-		await prome.storage.local.set({ setups: items.setups });
+		await em.prome.storage.local.set({ setups: items.setups });
 		setupAdded.dispatch(setup.url);
 	}
 
@@ -119,7 +114,7 @@
 	}
 
 	// exports
-	emphasize.storage.setupstore = {
+	em.setupstore = {
 		initStorage,
 		getSetup,
 		removeSetup,
@@ -132,5 +127,5 @@
 
 	
 document.addEventListener('DOMContentLoaded', function() {
-	emphasize.storage.setupstore.initStorage();
+	emphasize.setupstore.initStorage();
 });

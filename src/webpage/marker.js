@@ -25,17 +25,17 @@
 		}
 
 		annotate(remoteMarkup, styleClass) {
-			var batchedMarkupTokens = em.markupCompiler.
+			var batchedMarkupTokens = em.markup.
 				compileRemoteMarkupAndSegment(remoteMarkup, 
 					this._webPageData.tokens);
 			batchedMarkupTokens = Array.from(batchedMarkupTokens);
-			em.nodeAnnotator.annotateNodes(
+			em.annotation.annotateNodes(
 				batchedMarkupTokens, this.id, styleClass);
 
 		}
 
 		removeAnnotation() {
-			em.nodeAnnotator.removeAnnotation(this._root, this.id);
+			em.annotation.removeAnnotation(this._root, this.id);
 		}
 	}
 

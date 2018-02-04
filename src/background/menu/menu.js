@@ -1,12 +1,7 @@
 
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
-
-	// shortcuts
-	var store = emphasize.storage.setupstore;
-	var Registration = emphasize.administration.registration.Registration;
-	var Marker = emphasize.annotation.marker.Marker;
 
 	function Menu(tabId) {
 
@@ -15,18 +10,18 @@
 			tabId: tabId,
 
 			async init() {
-				store.setupAdded.register(
+				em.setupstore.setupAdded.register(
 					this.handleSetupAdded.bind(this));
-				store.setupRemoved.register(
+				em.setupstore.setupRemoved.register(
 					this.handleSetupRemoved.bind(this));
 				chrome.tabs.onUpdated.addListener(
 					this.handleWebPageReloaded.bind(this));
 
-				var setups = await store.getSetup(null);
-				this.markers = setups.map(s => Marker(s, this.tabId));
+				var setups = await em.setupstore.getSetup(null);
+				this.markers = setups.map(s => em.marker.Marker(s, this.tabId));
 				this.curMarker = null;
 				
-				this.registration = Registration();
+				this.registration = em.registration.Registration();
 				this.view = 'MARKER_LIST';
 				
 				return this;
@@ -75,7 +70,7 @@
 			},
 
 			removeMarkerFromSystem() {
-				store.removeSetup(this.curMarker.setup.url);
+				em.setupstore.removeSetup(this.curMarker.setup.url);
 			},
 
 			///////////////////////////////////////////////
@@ -99,8 +94,8 @@
 			///////////////////////////////////////////////
 
 			async handleSetupAdded(url) {
-				var setup = await store.getSetup(url);
-				this.markers.push(Marker(setup, this.tabId));
+				var setup = await em.setupstore.getSetup(url);
+				this.markers.push(em.marker.Marker(setup, this.tabId));
 			},
 
 			handleSetupRemoved(url) {
@@ -123,7 +118,7 @@
 	}
 
 	// exports
-	emphasize.popup.menu = {
+	em.menu = {
 		Menu
 	}
 

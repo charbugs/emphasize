@@ -1,5 +1,5 @@
 
-describe('webscraper module', () => {
+describe('---------- webscraper module ----------', () => {
 
 	var em = emphasize
 	var scraper = em.webscraper;

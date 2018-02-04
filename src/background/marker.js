@@ -1,19 +1,10 @@
 /**
  *	Defines a marker class.
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
-
-	// shortcuts
-	var request = emphasize.communication.request;
-	var setupstore = emphasize.storage.setupstore;
-	var invoke = emphasize.common.bgchannel.invoke;
-	var Job = emphasize.common.job.Job;
-	var RequestError = emphasize.common.errors.RequestError;
-	var ProtocolError = emphasize.common.errors.ProtocolError;
-	var MarkerError = emphasize.common.errors.MarkerError;
-
+	
 	/**
  	 * Represents the local part of an marker.
  	 * It requests the remote programm for analysis.
@@ -23,7 +14,7 @@
  	 */
 	function Marker(setup, tabId) {
 
-		return (Object.assign({}, Job(), {
+		return (Object.assign({}, em.job.Job(), {
 			
 			setup: setup,
 			tabId: tabId,
@@ -63,9 +54,9 @@
 					await this.annotate();
 					this.stateDone();
 				} catch(err) {
-					if (err instanceof RequestError ||
-						err instanceof ProtocolError ||
-						err instanceof MarkerError) {
+					if (err instanceof em.errors.RequestError ||
+						err instanceof em.errors.ProtocolError ||
+						err instanceof em.errors.MarkerError) {
 						this.error = err;
 						this.stateError();
 					} 
@@ -82,9 +73,9 @@
 			 * in `this.input.inputs`.
 			 */
 			async getInput() {
-				await invoke(this.tabId, 'extract.extractTextNodes');
-				var tokens = await invoke(this.tabId, 'extract.getWords');
-				var wpUrl = await invoke(this.tabId, 'extract.getUrl');
+				await em.messaging.invoke(this.tabId, 'extract.extractTextNodes');
+				var tokens = await em.messaging.invoke(this.tabId, 'extract.getWords');
+				var wpUrl = await em.messaging.invoke(this.tabId, 'extract.getUrl');
 				this.input.tokens = tokens;
 				this.input.webpageUrl = wpUrl;
 			},
@@ -93,11 +84,11 @@
 			 * Requests the marker to analyze the input data.
 			 */
 			async analyze() {
-				this.output = await request.requestMarkup(
+				this.output = await em.request.requestMarkup(
 					this.id, this.setup.url, this.input);
 
 				if (this.output.hasOwnProperty('error')) {
-					throw new MarkerError(output.error); 
+					throw new em.errors.MarkerError(output.error); 
 				}
 			},
 
@@ -106,7 +97,7 @@
 			 * of the analysis.
 			 */
 			async annotate() {
-				await invoke(this.tabId, 'highlight.highlight',
+				await em.messaging.invoke(this.tabId, 'highlight.highlight',
 					this.output.markup, 
 					{ id: this.id, styleClass: this.setup.face });
 			},
@@ -117,21 +108,21 @@
 	  	 	 * Will cause the waiting analyze() method to proceed.
 	 	 	 */ 
 			abortAnalysis() {
-				request.abortRequest(this.id);
+				em.request.abortRequest(this.id);
 			},
 
 			/**
 			 * Removes annotation from web page.
 			 */
 			async removeAnnotation() {
-				await invoke(this.tabId, 'highlight.remove', this.id);
+				await em.messaging.invoke(this.tabId, 'highlight.remove', this.id);
 			}
 
 		})).init();
 	}
 
 	// exports 
-	emphasize.annotation.marker = {
+	em.marker = {
 		Marker
 	};
 

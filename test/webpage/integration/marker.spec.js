@@ -1,6 +1,6 @@
 'use strict';
 
-describe('marker class', () => {
+describe('---------- marker class ----------', () => {
 
 	var em = emphasize;
 

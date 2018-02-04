@@ -1,4 +1,4 @@
-const emphasize = {
+var emphasize = {
 	document: document,
 	NodeFilter: NodeFilter
 };

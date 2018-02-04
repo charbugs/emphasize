@@ -104,7 +104,7 @@
         parentNode.normalize();
     }
 
-	em.nodeAnnotator = {
+	em.annotation = {
 		annotateNode,
 		annotateNodes,
 		removeAnnotation

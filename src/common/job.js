@@ -1,5 +1,5 @@
 
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
@@ -31,7 +31,7 @@
 	}
 
 	// exports
-	emphasize.common.job = {
+	em.job = {
 		Job
 	};
 

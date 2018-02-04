@@ -122,7 +122,7 @@
 			yield tokensOfNode;
 	}
 
-	em.markupCompiler = {
+	em.markup = {
 		compileRemoteMarkup,
 		compileRemoteMarkupAndSegment
 	};

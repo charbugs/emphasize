@@ -1,22 +1,13 @@
 /**
  * Defines a registration class to register new markers.
  */
-(function(emphasize) {
+(function(em) {
 
 	'use strict';
 
-	// shortcuts
-	var request = emphasize.communication.request;
-	var setupstore = emphasize.storage.setupstore;
-	var facestore = emphasize.storage.facestore;
-	var Job = emphasize.common.job.Job;
-	var RequestError = emphasize.common.errors.RequestError;
-	var ProtocolError = emphasize.common.errors.ProtocolError;
-	var StorageError = emphasize.common.errors.StorageError;
-
 	function Registration() {
 
-		return (Object.assign({}, Job(), {
+		return (Object.assign({}, em.job.Job(), {
 
 			report: "Marker successfully added.",
 
@@ -45,16 +36,16 @@
 				this.stateWorking();
 
 				try {
-					var setup = await request.requestSetup(this.id, this.inputUrl);
+					var setup = await em.request.requestSetup(this.id, this.inputUrl);
 					setup.url = this.inputUrl;
-					setup.face = await facestore.determineFaceClass();
-					await setupstore.addSetup(setup);
+					setup.face = await em.facestore.determineFaceClass();
+					await em.setupstore.addSetup(setup);
 					this.stateDone();
 				}
 				catch (err) {
-					if (err instanceof RequestError ||
-						err instanceof ProtocolError ||
-						err instanceof StorageError) {
+					if (err instanceof em.errors.RequestError ||
+						err instanceof em.errors.ProtocolError ||
+						err instanceof em.errors.StorageError) {
 						this.error = err;
 						this.stateError();
 					} 
@@ -70,14 +61,14 @@
 			 * Will cause the waiting registerMarker() method to proceed.
 			 */ 
 			abortRegistration() {
-				request.abortRequest(this.id);
+				em.request.abortRequest(this.id);
 			}
 
 		})).init();
 	}
 
 	// exports 
-	emphasize.administration.registration = {
+	em.registration = {
 		Registration
 	}
 

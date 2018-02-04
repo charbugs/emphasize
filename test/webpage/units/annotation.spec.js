@@ -1,5 +1,5 @@
 
-describe('node annotator module', () => {
+describe('---------- annotation module ----------', () => {
 
 	var em = emphasize;
 
@@ -7,9 +7,9 @@ describe('node annotator module', () => {
 	beforeEach(() => {
 		single = fixtures.singleTextNode();
 		two = fixtures.twoTextNodes();
-		annotateNode = em.nodeAnnotator.annotateNode;
-		annotateNodes = em.nodeAnnotator.annotateNodes;
-		removeAnnotation = em.nodeAnnotator.removeAnnotation;
+		annotateNode = em.annotation.annotateNode;
+		annotateNodes = em.annotation.annotateNodes;
+		removeAnnotation = em.annotation.removeAnnotation;
 	});
 
 	describe('annotate function', () => {
