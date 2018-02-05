@@ -1,7 +1,7 @@
 /**
  * Module defines custom error classes.
  */
-(function(em) {
+(function(pool) {
 
 	'use strict';
 
@@ -60,18 +60,6 @@
 	ChannelError.prototype.name = 'ChannelError';
 
 	/**
-	 * A proxy error that substitutes errors that causes on the content side.
-	 * Nescessary since the content scripts can not send error objects to the 
-	 * background (but they can of course send an error string).
-	 */
-	/*function ContentError(message) {
-		this.message = message;
-		this.stack = (new Error()).stack;
-	}
-	ContentError.prototype = Object.create(Error.prototype);
-	ContentError.prototype.name = 'ContentError';*/
-
-	/**
 	 * An error that will be thrown if content scripts can not be injected in
 	 * the current website.
 	 */
@@ -93,16 +81,13 @@
 	AccessError.prototype.name = 'AccessError';
 
 	// exports 
-	em.errors = {
-		RequestError,
-		ProtocolError,
-		MarkerError,
-		StorageError,
-		ChannelError,
-		//ContentError,
-		InjectionError,
-		AccessError
-	};
+	pool.RequestError = RequestError;
+	pool.ProtocolError = ProtocolError;
+	pool.MarkerError = MarkerError;
+	pool.StorageError = StorageError;
+	pool.ChannelError = ChannelError;
+	pool.InjectionError = InjectionError;
+	pool.AccessError = AccessError;
 
-})(emphasize);
+})(emphasize.pool);
 

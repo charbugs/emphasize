@@ -1,21 +1,31 @@
+// Some tests depend on dom `document` and `NodeFilter`
 
-describe('---------- webscraper module ----------', () => {
+describe('---------- WebScraper class ----------', () => {
 
-	var em = emphasize
-	var scraper = em.webscraper;
+	'use strict';
+
+	var webScraper;
+	beforeEach(() => {
+		webScraper = new emphasize.pool.WebScraper();
+	});
 
 	describe('getUrl function', () => {
 
 		it('should return the full url of the page', () => {
-			expect(scraper.getUrl()).toEqual(em.document.location.href);
+			webScraper.document = document;
+			expect(webScraper.getUrl()).toEqual(document.location.href);
 		});
 	});
 
 	describe('getTextNodes function', () => {
 
 		it('should return all non-empty text nodes of an element', () => {
-			var complex = fixtures.complexTextNodes();
-			var nodes = scraper.getTextNodes(complex.element);
+			webScraper.document = document;
+			webScraper.NodeFilter = NodeFilter;
+			webScraper.rootElement = fixtures.complexTextNodes().element;
+
+			var nodes = webScraper.getTextNodes();
+
 			expect(nodes.length).toEqual(4)
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('dolor sit');
@@ -24,24 +34,36 @@ describe('---------- webscraper module ----------', () => {
 		});
 
 		it('should ignore text nodes of script elements', () => {
-			var withScript = fixtures.withScript();
-			var nodes = scraper.getTextNodes(withScript.element);
+			webScraper.document = document;
+			webScraper.NodeFilter = NodeFilter;
+			webScraper.rootElement = fixtures.withScript().element;
+			
+			var nodes = webScraper.getTextNodes();
+			
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
 		});
 
 		it('should ignore text nodes of noscript elements', () => {
-			var withNoscript = fixtures.withNoscript();
-			var nodes = scraper.getTextNodes(withNoscript.element);
+			webScraper.document = document;
+			webScraper.NodeFilter = NodeFilter;
+			webScraper.rootElement = fixtures.withNoscript().element;
+
+			var nodes = webScraper.getTextNodes();
+			
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
 		});
 
 		it('should ignore text nodes of style elements', () => {
-			var withStyle = fixtures.withStyle();
-			var nodes = scraper.getTextNodes(withStyle.element);
+			webScraper.document = document;
+			webScraper.NodeFilter = NodeFilter;
+			webScraper.rootElement = fixtures.withStyle().element;
+
+			var nodes = webScraper.getTextNodes();
+			
 			expect(nodes.length).toEqual(2);
 			expect(nodes[0].data.trim()).toEqual('lorem ipsum');
 			expect(nodes[1].data.trim()).toEqual('amet consectetur');
@@ -51,9 +73,14 @@ describe('---------- webscraper module ----------', () => {
 	describe('getTokens function', () => {
 
 		it('should return the tokens of a web page in order', () => {
-			var two = fixtures.twoTextNodes();
-			var tokenizer = jasmine.createSpy();
-			tokenizer.and.returnValues(
+			webScraper.document = document;
+			webScraper.NodeFilter = NodeFilter;
+
+			var twoTextNodes = fixtures.twoTextNodes();
+			webScraper.rootElement = twoTextNodes.element;
+			
+			var tokenize = jasmine.createSpy();
+			tokenize.and.returnValues(
 				[
 					{ begin: 0, end: 2, form: 'ut' },
 					{ begin: 3, end: 7, form: 'enim' },
@@ -67,8 +94,10 @@ describe('---------- webscraper module ----------', () => {
 					{ begin: 13, end: 25, form: 'exercitation' }
 				]
 			);
-			var tokens = scraper.getTokens(two.element, tokenizer);
-			expect(tokens).toEqual(two.tokens);
+			webScraper.tokenize = tokenize;
+
+			var tokens = webScraper.getTokens();
+			expect(tokens).toEqual(twoTextNodes.tokens);
 		});
 	});
 });

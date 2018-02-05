@@ -12,15 +12,16 @@
 		'src/common/style.css',
 		'src/common/namespace.js',
 		'src/common/errors.js',
-		'src/common/sequence.js',
+		'src/common/Sequencer.js',
 
-		'src/webpage/tokenizers.js',
-		'src/webpage/webscraper.js',
-		'src/webpage/markup.js',
-		'src/webpage/annotation.js',
-		'src/webpage/marker.js',
-		'src/webpage/access.js',
-		'src/webpage/messaging.js'
+		'src/webpage/Tokenizer.js',
+		'src/webpage/WebScraper.js',
+		'src/webpage/MarkupCompiler.js',
+		'src/webpage/Annotator.js',
+		'src/webpage/Marker.js',
+		'src/webpage/Access.js',
+		'src/webpage/Messaging.js',
+		'src/webpage/init.js'
 	];
 
 	/* urls the extension will/should not work on */

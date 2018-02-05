@@ -1,17 +1,19 @@
 
-'use strict';
+describe('---------- MarkupCompiler Class ----------', () => {
 
-describe('---------- markup module ----------', () => {
-
-	var em = emphasize;
+	'use strict';
 
 	describe('compileRemoteMarkup function', () => {
 
+		function compileRemoteMarkup(markup, tokens) {
+			var compiler = new emphasize.pool.MarkupCompiler();
+			return Array.from(compiler.compileRemoteMarkup(markup, tokens));
+		}
+
 		describe('when only a single text node is involved', () => {
 
-			var compile, tokens, node;
+			var tokens, node;
 			beforeEach(() => {
-				compile = emphasize.markup.compileRemoteMarkup;
 				tokens = fixtures.singleTextNode().tokens;
 				node = tokens[0].node;
 			});
@@ -20,7 +22,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ token: 2 }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node }
@@ -33,7 +37,9 @@ describe('---------- markup module ----------', () => {
 					{ token: 2 },
 					{ token: 3}
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node },
@@ -46,7 +52,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ tokens: [2,3] }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node },
@@ -59,7 +67,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ group: { first: 0, last: 2} }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor',	
@@ -73,7 +83,9 @@ describe('---------- markup module ----------', () => {
 					{ group: { first: 0, last: 2} },
 					{ group: { first: 3, last: 5} }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor', 
@@ -88,7 +100,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ groups: [ { first: 0, last: 2}, { first: 3, last: 5} ] }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor', 
@@ -105,7 +119,9 @@ describe('---------- markup module ----------', () => {
 					{ group: { first: 1, last: 3} },
 					{ tokens: [4, 5] },
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 5, form: 'lorem', node: node },
@@ -123,7 +139,9 @@ describe('---------- markup module ----------', () => {
 					{ groups: [ { first: 2, last: 3}, { first: 4, last: 5} ] },
 					
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 11, form: 'lorem ipsum', node: node },
@@ -142,7 +160,9 @@ describe('---------- markup module ----------', () => {
 					{ group: { first: 2, last: 3 }, mark: true },
 					{ groups: [ { first: 4, last: 5 } ], mark: true }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 5, form: 'lorem', node: node,
@@ -161,7 +181,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ tokens: [1, 6] }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 6, end: 11, form: 'ipsum', node: node }
@@ -174,7 +196,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ group: { first: 3, last: 42000 } }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 18, end: 38, form: 'sit amet consectetur',
@@ -186,9 +210,8 @@ describe('---------- markup module ----------', () => {
 
 		describe('when two text nodes are involved', () => {
 
-			var compile, tokens, nodes;
+			var tokens, nodes;
 			beforeEach(() => {
-				compile = emphasize.markup.compileRemoteMarkup;
 				var two = fixtures.twoTextNodes();
 				tokens = two.tokens;
 				nodes =two.nodes;
@@ -204,7 +227,9 @@ describe('---------- markup module ----------', () => {
 					{ groups: [ { first: 5, last: 6 } ], mark: true },
 					{ token: 7, mark: false }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 0, end: 2, form: 'ut', node: nodes[0],
@@ -227,7 +252,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ tokens: [4, 5] }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 17, end: 23, form: 'veniam', node: nodes[0] },
@@ -242,7 +269,8 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ group: { first: 3, last: 6}, gloss: 'a nice gloss' }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 11, end: 23, form: 'minim veniam', 
@@ -256,9 +284,8 @@ describe('---------- markup module ----------', () => {
 
 		describe('when three text nodes are involed', () => {
 
-			var compile, tokens, nodes;
+			var tokens, nodes;
 			beforeEach(() => {
-				compile = emphasize.markup.compileRemoteMarkup;
 				var three = fixtures.threeTextNodes();
 				tokens = three.tokens;
 				nodes = three.nodes;
@@ -270,7 +297,9 @@ describe('---------- markup module ----------', () => {
 				var markup = [
 					{ group: {first: 1, last: 7 } }
 				];
-				var compiledMarkup = Array.from(compile(markup, tokens));
+				
+				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				
 				expect(compiledMarkup).toEqual(
 					[
 						{ begin: 5, end: 15, form: 'aute irure', node: nodes[0] },
@@ -285,20 +314,27 @@ describe('---------- markup module ----------', () => {
 
 	describe('compileRemoteMarkupAndSegment function', () => {
 
-		var compile, tokens, nodes;
+		function compileRemoteMarkupAndSegment(markup, tokens) {
+			var compiler = new emphasize.pool.MarkupCompiler();
+			return Array.from(
+				compiler.compileRemoteMarkupAndSegment(markup, tokens)
+			);
+		}
+
+		var tokens, nodes;
 			beforeEach(() => {
-				compile = em.markup.compileRemoteMarkupAndSegment;
 				var three = fixtures.threeTextNodes();
 				tokens = three.tokens;
 				nodes = three.nodes;
 			});
 
 		it('should yield the compiled markup tokens node by node', () => {
-
 			var markup = [
 				{ tokens: [0, 1, 3, 4, 6, 7] }
 			];
-			var compiledMarkup = Array.from(compile(markup, tokens));
+			
+			var compiledMarkup = compileRemoteMarkupAndSegment(markup, tokens);
+			
 			expect(compiledMarkup).toEqual(
 				[
 					[

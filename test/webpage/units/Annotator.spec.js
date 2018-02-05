@@ -1,18 +1,22 @@
+// Some tests depend on dom `document`
 
-describe('---------- annotation module ----------', () => {
+describe('---------- Annotator class ----------', () => {
 
-	var em = emphasize;
-
-	var single, two, annotateNode, annotateNodes, removeAnnotation;
-	beforeEach(() => {
-		single = fixtures.singleTextNode();
-		two = fixtures.twoTextNodes();
-		annotateNode = em.annotation.annotateNode;
-		annotateNodes = em.annotation.annotateNodes;
-		removeAnnotation = em.annotation.removeAnnotation;
-	});
+	'use strict';	
 
 	describe('annotate function', () => {
+
+		var single, annotator;
+		beforeEach(() => {
+
+			single = fixtures.singleTextNode();
+			annotator = new emphasize.pool.Annotator(
+				document,
+				undefined, // not relevant for annotateNode()
+				42,
+				'emphasize-face-1'
+			);
+		});
 
 		it('should annotate a single token', () => {
 				
@@ -25,7 +29,7 @@ describe('---------- annotation module ----------', () => {
 			after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -43,7 +47,7 @@ describe('---------- annotation module ----------', () => {
 			after +=	' class="emphasize-face-1">ipsum</emphasize-wrapper>';
 			after += 	' dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -62,7 +66,7 @@ describe('---------- annotation module ----------', () => {
 			after +=	' class="emphasize-face-1">dolor</emphasize-wrapper>';
 			after +=	' sit amet consectetur</span>';
 
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -80,7 +84,7 @@ describe('---------- annotation module ----------', () => {
 			after += 	'lorem</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			expect(single.element.outerHTML).toEqual(after);				
 		});
 
@@ -98,7 +102,7 @@ describe('---------- annotation module ----------', () => {
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			expect(single.element.outerHTML).toEqual(after);
 		});
 
@@ -110,7 +114,7 @@ describe('---------- annotation module ----------', () => {
 					gloss: "a nice gloss" }
 			]);
 
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			var wrapper = single.element.querySelector('emphasize-wrapper');
 			var gloss = wrapper.querySelector('emphasize-gloss');
 			
@@ -122,6 +126,18 @@ describe('---------- annotation module ----------', () => {
 	});
 
 	describe('annotateNodes function', () => {
+
+		var two, annotator;
+		beforeEach(() => {
+
+			two = fixtures.twoTextNodes();
+			annotator = new emphasize.pool.Annotator(
+				document,
+				undefined, // not relevant for annotateNodes()
+				42,
+				'emphasize-face-1'
+			);
+		});
 
 		it('should annotate multiple nodes given multiple batches of tokens',
 			() => {
@@ -147,12 +163,24 @@ describe('---------- annotation module ----------', () => {
 			after +=	' class="emphasize-face-1">nostrud</emphasize-wrapper>';
 			after +=	' exercitation</span></div>'
 
-			annotateNodes(tokenBatches, 42, 'emphasize-face-1');
+			annotator.annotateNodes(tokenBatches);
 			expect(two.element.outerHTML).toEqual(after);
 		});
 	})
 
 	describe('removeAnnotation function', () => {
+
+		var single, annotator;
+		beforeEach(() => {
+
+			single = fixtures.singleTextNode();
+			annotator = new emphasize.pool.Annotator(
+				document,
+				single.element,
+				42,
+				'emphasize-face-1'
+			);
+		});
 
 		it('should remove the annotation within the given element that was \
 			made by a specific marker', () => {
@@ -169,10 +197,10 @@ describe('---------- annotation module ----------', () => {
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotateNode(tokens, 42, 'emphasize-face-1');
+			annotator.annotateNode(tokens);
 			expect(single.element.outerHTML).toEqual(after);
 
-			removeAnnotation(single.element, 42);
+			annotator.removeAnnotation();
 			expect(single.element.outerHTML).toEqual(single.html);			
 		});
 	});

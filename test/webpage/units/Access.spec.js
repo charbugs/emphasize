@@ -1,0 +1,138 @@
+
+describe('---------- access module ----------', () => {
+
+	var access, marker;
+	beforeEach(() => {
+
+		Marker = function(markerId, styleClass) { 
+
+			var marker = jasmine.createSpyObj([
+				'extractWebPageData',
+				'getWebPageDataForRemote',
+				'annotate',
+				'removeAnnotation'
+			]);
+
+			marker.extractWebPageData.and.returnValue(7);
+			marker.getWebPageDataForRemote.and.returnValue(7);
+			marker.annotate.and.returnValue(7);
+			marker.removeAnnotation.and.returnValue(7);
+
+			marker.id = markerId;
+			marker.styleClass = styleClass;
+			return marker;
+		};
+
+		access = new emphasize.pool.Access({ 
+			Marker, 
+			AccessError: msg => new fixtures.MockError(msg)
+		});
+	});
+
+	describe('createMarker function', () => {
+
+		it('should create and store a new marker instance', () => {
+			access.createMarker(42, 'style');
+			expect(access.currentMarker.id).toEqual(42);
+			expect(access.currentMarker.styleClass).toEqual('style');
+		});
+
+		it('should throw error if there already is a current marker', () => {
+			access.currentMarker = {};
+			expect(() => access.createMarker(42, 'style'))
+				.toThrowError(fixtures.MockError);
+		});
+	});
+
+	describe('deleteMarker function', () => {
+
+		it('should throw an error if there is no marker instance to delete', 
+		() => {		
+			access.currentMarker = undefined;
+			expect(() => access.deleteMarker(42))
+				.toThrowError(fixtures.MockError);
+		});
+
+		it('should throw an error if there is a marker id mismatch', () => {
+			access.currentMarker = { id: 55 };
+			expect(() => access.deleteMarker(42))
+				.toThrowError(fixtures.MockError);
+		});
+
+		it('should delete the current marker if id matches', () => {
+			access.currentMarker ={ id: 42 };
+			access.deleteMarker(42);
+			expect(typeof access.currentMarker).toBe('undefined');
+		});
+	});
+
+	describe('all marker delegation functions', () => {
+
+		it('should throw an error if no marker extists', () => {
+					
+			expect(() => access.extractWebPageData(42))
+				.toThrowError(fixtures.MockError);
+			
+			expect(() => access.getWebPageDataForRemote(42))
+				.toThrowError(fixtures.MockError);
+			
+			expect(() => access.annotate(42), [])
+				.toThrowError(fixtures.MockError);
+			
+			expect(() => access.removeAnnotation(42))
+				.toThrowError(fixtures.MockError);
+
+		});		
+
+		it('should throw an error if there is an marker id mismatch', () => {
+			access.currentMarker = { id: 55 };
+			
+			expect(() => access.extractWebPageData(42))
+				.toThrowError(fixtures.MockError);
+			
+			expect(() => access.getWebPageDataForRemote(42))
+				.toThrowError(fixtures.MockError);
+			
+			expect(() => access.annotate(42), [])
+				.toThrowError(fixtures.MockError);
+			
+			expect(() => access.removeAnnotation(42))
+				.toThrowError(fixtures.MockError);
+		});
+
+		it('should pass arguments which follows the marker id to the \
+			respective marker method', () => {
+
+			access.createMarker(42, 'style');
+			var marker = access.currentMarker;
+
+			access.extractWebPageData(42, 'foo', 'bar');
+			expect(marker.extractWebPageData.calls.argsFor(0))
+				.toEqual(['foo', 'bar']);
+
+			access.getWebPageDataForRemote(42, 'foo', 'bar');
+			expect(marker.extractWebPageData.calls.argsFor(0))
+				.toEqual(['foo', 'bar']);
+
+			access.annotate(42, 'foo', 'bar');
+			expect(marker.extractWebPageData.calls.argsFor(0))
+				.toEqual(['foo', 'bar']);
+
+			access.removeAnnotation(42, 'foo', 'bar');
+			expect(marker.extractWebPageData.calls.argsFor(0))
+				.toEqual(['foo', 'bar']);
+		});
+
+		it('should return the return values of the respective marker methods', 
+		() => {
+			
+			access.createMarker(42, 'style');
+			var marker = access.currentMarker;
+
+			expect(access.extractWebPageData(42)).toEqual(7);
+			expect(access.getWebPageDataForRemote(42)).toEqual(7);
+			expect(access.annotate(42)).toEqual(7);
+			expect(access.removeAnnotation(42)).toEqual(7);
+		});
+	});
+});

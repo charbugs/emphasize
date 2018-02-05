@@ -1,43 +1,34 @@
-'use strict';
 
-describe('---------- tokenizers module ----------', () => {
+describe('---------- Tokenizers class ----------', () => {
+
+	'use strict';
 	
-	var em = emphasize;
-
-	describe('Token class', () => {
-
-		it('should be instantiatable', () => {
-			expect(typeof new em.tokenizers.Token()).toEqual('object');
-		});
-	});
-
 	describe('whiteSpace function', () => {
 
-		var sent;
-		
+		var tokens;
 		beforeEach(() => {
-			sent = "Lorem ipsum dolor lorem";
+			var sent = "Lorem ipsum dolor lorem";
+			var tokenizer = new emphasize.pool.Tokenizer();
+			tokens = tokenizer.whiteSpace(sent);
 		});
 
 		it('should return an array', () => {
-			expect(em.tokenizers.whiteSpace(sent)).toEqual(jasmine.any(Array));
+			expect(tokens).toEqual(jasmine.any(Array));
 		});
 
 		it('should return the right number of tokens', () => {
-			expect(em.tokenizers.whiteSpace(sent).length).toBe(4);
+			expect(tokens.length).toBe(4);
 		});
 
 		describe('each item of the returning array', () => {
 
 			it('should be an on object', () => {
-				em.tokenizers.whiteSpace(sent).forEach(item => {
+				tokens.forEach(item => {
 					expect(item).toEqual(jasmine.any(Object));
 				});
 			});
 
 			it('should have the right #begin, #end, #form value', () => {
-				var tokens = em.tokenizers.whiteSpace(sent);
-
 				expect(tokens[0]).toEqual(
 					jasmine.objectContaining({ begin:0, end:5, form:'Lorem'}));
 				expect(tokens[1]).toEqual(

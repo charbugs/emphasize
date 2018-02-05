@@ -172,3 +172,10 @@ fixtures.withStyle = function() {
 	return { html, element };
 
 };
+
+fixtures.MockError = function (message) {
+	this.message = message;
+	this.stack = (new Error()).stack;
+}
+fixtures.MockError.prototype = Object.create(Error.prototype);
+fixtures.MockError.prototype.name = 'MockError';	
