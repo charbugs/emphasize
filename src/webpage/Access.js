@@ -4,9 +4,9 @@
 
 	class Access {
 
-		constructor(props = {}) {
-			this.Marker = props.Marker;
-			this.AccessError = props.AccessError;
+		constructor(Marker, AccessError) {
+			this.Marker = Marker;
+			this.AccessError = AccessError;
 			this.currentMarker;
 		}
 
@@ -15,7 +15,6 @@
 				this.currentMarker = this.Marker(markerId, styleClass);
 			} else {
 				throw this.AccessError('There already exists a marker instance');
-
 			}
 		}
 

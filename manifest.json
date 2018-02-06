@@ -15,27 +15,27 @@
             "lib/ajv.min.js",
             "lib/sanitize-html.min.js",
 
-            "src/common/namespace.js",
-            "src/common/errors.js",
-            "src/common/prome.js",
-            "src/common/event.js",
-            "src/common/job.js",
+            "src/common/Namespace.js",
+            "src/common/Errors.js",
+            "src/common/Prome.js",
+            "src/common/Event.js",
+            "src/common/Job.js",
             
-            "src/background/injection.js",
-            "src/background/messaging.js",
+            "src/background/Injection.js",
+            "src/background/Messaging.js",
             
-            "src/background/remote/protocol.js",
-            "src/background/remote/parse.js",
-            "src/background/remote/request.js",
+            "src/background/remote/Protocol.js",
+            "src/background/remote/Parser.js",
+            "src/background/remote/Request.js",
 
-            "src/background/storage/setupstore.js",
-            "src/background/storage/facestore.js",
+            "src/background/SetupStore.js",
+            "src/background/Registration.js",
+            "src/background/Marker.js",
 
-            "src/background/registration.js",
-            "src/background/marker.js",
+            "src/background/menu/Menu.js",
+            "src/background/menu/MenuContainer.js",
 
-            "src/background/menu/menu.js",
-            "src/background/menu/menucontainer.js"
+            "src/background/Init.js"
         ],
         "persistent": false
      },

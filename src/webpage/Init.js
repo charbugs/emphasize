@@ -27,27 +27,35 @@
 			'extractWebPageData',
 			'getWebPageDataForRemote',
 			'annotate',
-			'removeAnnotation'
 		];
 		var marker = new pool.Marker({
-			markerId,
-			styleClass,
-			webScraper,
-			annotator: Annotator(markerId, styleClass),
-			markupCompiler
+			id: 			markerId,
+			styleClass: 	styleClass,
+			webScraper: 	webScraper,
+			annotator: 		Annotator(markerId, styleClass),
+			markupCompiler:	markupCompiler 
 		});
 		return sequencer.sequenceSyncMethodExecution(marker, order);
 	};
 
+	var AccessError = function(msg) {
+		return new pool.AccessError(msg);
+	};
+
 	var access = new pool.Access(
 		Marker,
-		msg => new pool.AccessError(msg)
+		AccessError
 	);
+
+
+	var ChannelError = function(msg) {
+		return new pool.ChannelError(msg);
+	};
 
 	var messaging = new pool.Messaging(
 		chrome,
 		access,
-		msg => new pool.ChannelError(msg)
+		ChannelError
 	);
 
 	messaging.createMessageChannel();

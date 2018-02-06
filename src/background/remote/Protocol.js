@@ -2,7 +2,7 @@
  * Module defines the protocol between the 
  * browser extension and the remote marker programms.
  */
- (function(em) {
+ (function(pool) {
 
  	'use strict';
 
@@ -144,7 +144,7 @@
 	};
 
 	/* exports */
-	em.protocol = {
+	pool.protocol = {
 		setupRequestSchema,
 		setupResponseSchema,
 		markupRequestSchema,
@@ -152,4 +152,4 @@
 		htmlRules
 	};
 
- })(emphasize);
+ })(emphasize.pool);

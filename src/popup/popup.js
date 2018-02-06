@@ -17,12 +17,12 @@ var _popup = (function() {
 	async function init() {
 
 		var bg = chrome.extension.getBackgroundPage();
-		var injection = bg.emphasize.injection;
-		var menucontainer = bg.emphasize.menucontainer;
+		var injection = bg.emphasize.app.injection;
+		var menuContainer = bg.emphasize.app.menuContainer;
 
 		try {
 			var tabId = await injection.connectWebPage();
-			var menu = await menucontainer.get(tabId);
+			var menu = await menuContainer.get(tabId);
 			
 			new Vue({
 				el: '#menu',

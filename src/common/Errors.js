@@ -71,7 +71,8 @@
 	InjectionError.prototype.name = 'InjectionError';	
 
 	/**
-	* If something went wrong wile extension trying to access the web page scripts.
+	* If something went wrong wile extension trying to access the web
+	* page scripts.
 	*/
 	function AccessError(message) {
 		this.message = message;
@@ -79,6 +80,17 @@
 	}
 	AccessError.prototype = Object.create(Error.prototype);
 	AccessError.prototype.name = 'AccessError';
+
+	/**
+	* If something went wrong wile extension trying to register
+	* a new marker to the system.
+	*/
+	function RegistrationError(message) {
+		this.message = message;
+		this.stack = (new Error()).stack;
+	}
+	RegistrationError.prototype = Object.create(Error.prototype);
+	RegistrationError.prototype.name = 'RegistrationError';
 
 	// exports 
 	pool.RequestError = RequestError;
@@ -88,6 +100,7 @@
 	pool.ChannelError = ChannelError;
 	pool.InjectionError = InjectionError;
 	pool.AccessError = AccessError;
+	pool.RegistrationError = RegistrationError;
 
 })(emphasize.pool);
 
