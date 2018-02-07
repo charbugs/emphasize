@@ -23,10 +23,10 @@ describe('---------- access module ----------', () => {
 			return marker;
 		};
 
-		access = new emphasize.pool.Access({ 
+		access = new emphasize.pool.Access( 
 			Marker, 
-			AccessError: msg => new fixtures.MockError(msg)
-		});
+			msg => new fixtures.MockError(msg)
+		);
 	});
 
 	describe('createMarker function', () => {
