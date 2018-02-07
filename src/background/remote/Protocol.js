@@ -73,7 +73,7 @@
 	 */
 	var markupRequestSchema = {
 		type: 'object',
-		required: ['call', 'tokens', 'inputs', 'webpageUrl'],
+		required: ['call', 'tokens', 'inputs', 'url'],
 		additionalProperties: false,
 		properties: {
 			call: {
@@ -89,7 +89,7 @@
 			inputs: {
 				type: 'object',
 			},
-			webpageUrl: {
+			url: {
 				type: 'string'
 			}
 		}
@@ -102,21 +102,111 @@
 	 */
 	var markupResponseSchema = {
 			oneOf: [
-				{ // regular response 
+				{ // regular response
 					type: 'object',
-					required: ['markup'],
 					additionalProperties: false,
 					properties: {
 						markup: { 
 							type: 'array',
 							items: {
-								type: 'integer'
+								oneOf: [
+									{ // token
+										type: 'object',
+										required: ['token'],
+										additionalProperties: false,
+										properties: {
+											token: {
+												type: 'integer',
+											},
+											mark: {
+												type: 'boolean'
+											},
+											gloss: {
+												type: 'string'
+											}
+										}
+									},
+									{ // tokens
+										type: 'object',
+										required: ['tokens'],
+										additionalProperties: false,
+										properties: {
+											tokens: {
+												type: 'array',
+												items: {
+													type: 'integer'
+												}
+											},
+											mark: {
+												type: 'boolean'
+											},
+											gloss: {
+												type: 'string'
+											}	
+										}
+									},
+									{ // group
+										type: 'object',
+										required: ['group'],
+										additionalProperties: false,
+										properties: {
+											group: {
+												type: 'object',
+												required: ['first', 'last'],
+												additionalProperties: false,
+												properties: {
+													first: {
+														type: 'integer'
+													},
+													last: {
+														type: 'integer'
+													}
+												}
+											},
+											mark: {
+												type: 'boolean'
+											},
+											gloss: {
+												type: 'string'
+											}
+										}
+									},
+									{ // groups
+										type: 'object',
+										required: ['groups'],
+										additionalProperties: false,
+										properties: {
+											groups: {
+												type: 'array',
+												items: {
+													type: 'object',
+													required: ['first', 'last'],
+													additionalProperties: false,
+													properties: {
+														first: {
+															type: 'integer'
+														},
+														last: {
+															type: 'integer'
+														}
+													}
+												}
+											},
+											mark: {
+												type: 'boolean'
+											},
+											gloss: {
+												type: 'string'
+											}
+										}
+									}
+								]
 							}
 						},
 						report: { 
 							type: 'string'
 						}
-					}
+					}	
 				},
 				{ // error response
 					type: 'object',
@@ -149,7 +239,7 @@
 		setupResponseSchema,
 		markupRequestSchema,
 		markupResponseSchema,
-		htmlRules
+		htmlRules,
 	};
 
  })(emphasize.pool);

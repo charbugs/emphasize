@@ -67,29 +67,10 @@
 		 */
 		parseSetupResponse(data) {
 			
-			/**
-			 * Throws an error if the setup has defined a select input
-			 * but does not specify the options of the selection. Have
-			 * no idea how to do this test with json schema, so this
-			 * function will take care of it.
-			 *
-			 * param: (Object) setup - setup response data
-			 */
-			var checkForSelectValues = function(setup) {
-				if (setup.inputs) {
-					for (var input of setup.inputs) {
-						if (input.type === 'select' && !input.values) {
-							throw new Error(
-								'selection declared but no values given');
-						}
-					}
-				}
-			}
-
 			try {
 				var setup = JSON.parse(data);
 				this._validate(this.setupResponseValidator, setup);
-				checkForSelectValues(setup);
+				this._checkForSelectValues(setup);
 			} 
 			catch(error) {
 				throw this.ProtocolError(error.message);
@@ -99,6 +80,25 @@
 				setup.description, this.protocol.htmlRules);
 
 			return setup;
+		}
+
+		/**
+		 * Throws an error if the setup has defined a select input
+		 * but does not specify the options of the selection. Have
+		 * no idea how to do this test with json schema, so this
+		 * function will take care of it.
+		 *
+		 * param: (Object) setup - setup response data
+		 */
+		_checkForSelectValues(setupResponse) {
+			if (setupResponse.inputs) {
+				for (var input of setupResponse.inputs) {
+					if (input.type === 'select' && !input.values) {
+						throw new Error(
+							'Selection declared but no values given.');
+					}
+				}
+			}
 		}
 
 		/**
@@ -127,6 +127,7 @@
 			try {
 				response = JSON.parse(response);
 				this._validate(this.markupResponseValidator, response);
+				this._checkEachTokenIsUnique(response);
 			} 
 			catch(error) {
 				throw this.ProtocolError(error.message);
@@ -142,7 +143,58 @@
 					this.protocol.htmlRules);
 			}
 
+			if (response.markup) {
+				response.markup.forEach(item => {
+					if (item.gloss) {
+						item.gloss = this.sanitizeHtml(item.gloss,
+							this.protocol.htmlRules);
+					}
+				});
+			}
+
 			return response;
+		}
+
+		_checkEachTokenIsUnique(response) {
+			if (!response.markup)
+				return;
+
+			var tokenNums = [];
+
+			response.markup.forEach(item => {
+				
+				for (var num of this._getTokenNumsOfItem(item)) {
+				
+					if (tokenNums[num])
+						throw new Error(`Token ${num} is not unique.`);
+					else {
+						tokenNums[num] = true;
+					}
+				}
+			});
+		}
+
+		*_getTokenNumsOfItem(item) {
+			if (item.token) {
+				yield item.token;
+			}
+			else if (item.tokens) {
+				for (var token of item.tokens) {
+					yield token;
+				}
+			}
+			else if (item.group) {
+				for (var i = item.group.first; i <= item.group.last; i++) {
+					yield i;
+				}
+			}
+			else if (item.groups) {
+				for (var group of item.groups) {
+					for (var i = group.first; i <= group.last; i++) {
+						yield i;
+					}		
+				};
+			}
 		}
 	}
 
