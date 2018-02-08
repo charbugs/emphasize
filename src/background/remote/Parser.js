@@ -50,12 +50,13 @@
 		 *
 		 * param: (Object) data - setup request data
 		 */
-		parseSetupRequest(data) {
+		parseSetupRequest(request) {
 			try {
-				this._validate(this._setupRequestValidator, data);
+				this._validate(this._setupRequestValidator, request);
 			} catch (err) {
 				throw this._createProtocolError(err.message);
 			}
+			return request;
 		}
 
 		/**
@@ -65,21 +66,21 @@
 		 * param: (String) data - setup response data
 		 * return: (Object) - parsed setup data
 		 */
-		parseSetupResponse(data) {
+		parseSetupResponse(response) {
 			
 			try {
-				var setup = JSON.parse(data);
-				this._validate(this._setupResponseValidator, setup);
-				this._checkForSelectValues(setup);
+				var response = JSON.parse(response);
+				this._validate(this._setupResponseValidator, response);
+				this._checkForSelectValues(response);
 			} 
 			catch(error) {
 				throw this._createProtocolError(error.message);
 			}
 
-			setup.description = this._sanitizeHtml(
-				setup.description, this._protocol.htmlRules);
+			response.description = this._sanitizeHtml(
+				response.description, this._protocol.htmlRules);
 
-			return setup;
+			return response;
 		}
 
 		/**
@@ -90,9 +91,9 @@
 		 *
 		 * param: (Object) setup - setup response data
 		 */
-		_checkForSelectValues(setupResponse) {
-			if (setupResponse.inputs) {
-				for (var input of setupResponse.inputs) {
+		_checkForSelectValues(response) {
+			if (response.inputs) {
+				for (var input of response.inputs) {
 					if (input.type === 'select' && !input.values) {
 						throw new Error(
 							'Selection declared but no values given.');
@@ -106,13 +107,14 @@
 		 *
 		 * param: (Object) data - markup request data
 		 */
-		parseMarkupRequest(data) {
-		 
+		parseMarkupRequest(request) {
+			
 			try {
-				this._validate(this._markupRequestValidator, data);
+				this._validate(this._markupRequestValidator, request);
 			} catch (err) {
 				throw this._createProtocolError(err.message);
 			}
+			return request;
 		}
 
 		/**

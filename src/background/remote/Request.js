@@ -48,7 +48,7 @@
 		async requestSetup(url) {
 
 			var data = { call: 'setup' };
-			this._parser.parseSetupRequest(data); // debug
+			data = this._parser.parseSetupRequest(data); // debug
 			var response = await this._post(url, data);
 			return this._parser.parseSetupResponse(response);
 		}
@@ -63,7 +63,7 @@
 		async requestMarkup(url, data) {
 
 			data.call = 'markup',
-			this._parser.parseMarkupRequest(data) // debug
+			data = this._parser.parseMarkupRequest(data) // debug
 			var response = await this._post(url, data);
 			return this._parser.parseMarkupResponse(response);
 		}
