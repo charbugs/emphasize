@@ -356,30 +356,38 @@ describe('---------- request and response validation\
 			});
 		});
 
-		describe('protocol violation (token numbers not unique)', () => {
+		describe('protocol violation (token numbers issues)', () => {
 
-			it('should throw if token numbers in markup are not unique (1)', () => {
+			it('should throw if token numbers in markup are not unique (1)', 
+				() => {
+				
 				resp = { markup: [
 					{token: 1}, {token: 2}, {token:1}
 				]};
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
 
-			it('should throw if token numbers in markup are not unique (2)', () => {
+			it('should throw if token numbers in markup are not unique (2)', 
+				() => {
+				
 				resp = { markup: [
 					{tokens: [1,2,1] }
 				]};
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
 
-			it('should throw if token numbers in markup are not unique (3)', () => {
+			it('should throw if token numbers in markup are not unique (3)', 
+				() => {
+
 				resp = { markup: [
 					{tokens: [3,2,1] }, { token: 2}
 				]};
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
 
-			it('should throw if token numbers in markup are not unique (4)', () => {
+			it('should throw if token numbers in markup are not unique (4)', 
+				() => {
+				
 				resp = { markup: [
 					{group: {first:1, last:8} }, 
 					{token: 2}
@@ -387,7 +395,9 @@ describe('---------- request and response validation\
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
 
-			it('should throw if token numbers in markup are not unique (5)', () => {
+			it('should throw if token numbers in markup are not unique (5)', 
+				() => {
+				
 				resp = { markup: [
 					{group: {first:8, last: 17} },
 					{group: {first:1, last:8} }
@@ -395,7 +405,9 @@ describe('---------- request and response validation\
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
 
-			it('should throw if token numbers in markup are not unique (6)', () => {
+			it('should throw if token numbers in markup are not unique (6)', 
+				() => {
+				
 				resp = { markup: [
 					{groups: [
 						{first:1, last:8},
@@ -405,10 +417,30 @@ describe('---------- request and response validation\
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
 
-			it('should throw if token numbers in markup are not unique (7)', () => {
+			it('should throw if token numbers in markup are not unique (7)', 
+				() => {
+				
 				resp = { markup: [
 					{groups: [ {first:1, last:8} ] },
 					{token: [8,9,10]} 
+				]};
+				expect(() => parse(resp)).toThrowError(MockError);
+			});
+
+			it('should throw if first token number of a group is greater \
+				then the last (1)', () => {
+
+				resp = { markup: [
+					{ group: { first: 8, last: 1 } },	
+				]};
+				expect(() => parse(resp)).toThrowError(MockError);
+			});
+
+			it('should throw if first token number of a group is greater \
+				then the last (2)', () => {
+
+				resp = { markup: [
+					{ groups: [ {first: 1, last: 8 }, { first: 15, last: 11 } ] }
 				]};
 				expect(() => parse(resp)).toThrowError(MockError);
 			});
@@ -461,6 +493,7 @@ describe('---------- request and response validation\
 				resp = { markup: [
 					{ groups: [{first: 1, last: 5}, {first: 34, last: 36}]}
 				]};
+				parse(resp);
 				expect(() => parse(resp)).not.toThrowError(MockError);
 			});
 

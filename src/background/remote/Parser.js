@@ -129,7 +129,7 @@
 			try {
 				response = JSON.parse(response);
 				this._validate(this._markupResponseValidator, response);
-				this._checkEachTokenIsUnique(response);
+				this._checkTokenNumbers(response);
 			} 
 			catch(error) {
 				throw this._createProtocolError(error.message);
@@ -157,16 +157,37 @@
 			return response;
 		}
 
-		_checkEachTokenIsUnique(response) {
+		_checkTokenNumbers(response) {
 			if (!response.markup)
 				return;
+			// order matters
+			this._checkFirstLowerLast(response);
+			this._checkEachTokenIsUnique(response);
+		}
 
+		_checkFirstLowerLast(response) {
+			response.markup.forEach((item, index) => {
+				if (item.group) {
+					if (item.group.first > item.group.last) {
+						throw new Error(
+							`In markup item ${index}: first > last`);
+					}
+				}
+				else if (item.groups) {
+					item.groups.forEach(group => {
+						if (group.first > group.last) {
+							throw new Error(
+								`In markup item ${index}: first > last`);
+						}
+					});
+				}
+			});
+		}
+
+		_checkEachTokenIsUnique(response) {
 			var tokenNums = [];
-
-			response.markup.forEach(item => {
-				
+			response.markup.forEach((item, index) => {
 				for (var num of this._getTokenNumsOfItem(item)) {
-				
 					if (tokenNums[num])
 						throw new Error(`Token ${num} is not unique.`);
 					else {
