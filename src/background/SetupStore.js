@@ -32,22 +32,22 @@
 
 	class SetupStore {
 
-		constructor(prome, Event, StorageError) {
-			this.prome = prome;
-			this.Event = Event;
-			this.StorageError = StorageError;
+		constructor(props = {}) {
+			this._prome = props.prome;
+			this._createEvent = props.createEvent;
+			this._createStorageError = props.createStorageError;
 
-			this.setupAdded = this.Event();
-			this.setupRemoved = this.Event();		
+			this.setupAdded = this._createEvent();
+			this.setupRemoved = this._createEvent();		
 		}
 
 		/**
 		 * If the storage is empty init it.
 		 */
 		async initStorage() {
-			var items = await this.prome.storage.local.get(null);
+			var items = await this._prome.storage.local.get(null);
 				if (Object.keys(items).length == 0)
-					this.prome.storage.local.set({ setups: [] });
+					this._prome.storage.local.set({ setups: [] });
 		}
 
 		/**
@@ -58,7 +58,7 @@
 		 */
 		async getSetup(url) {
 
-			var items = await this.prome.storage.local.get('setups');
+			var items = await this._prome.storage.local.get('setups');
 			if (url === null) {
 				return items.setups;
 			} 
@@ -80,13 +80,13 @@
 		 */
 		async removeSetup(url) {
 
-			var items = await this.prome.storage.local.get('setups');
+			var items = await this._prome.storage.local.get('setups');
 			for (var i=0; i < items.setups.length; i++) {
 				if (items.setups[i].url === url) { 
 					items.setups.splice(i, 1)[0];
 				}
 			}
-			await this.prome.storage.local.set({ setups: items.setups });
+			await this._prome.storage.local.set({ setups: items.setups });
 			this.setupRemoved.dispatch(url);
 		}
 
@@ -98,17 +98,17 @@
 		 */
 		async addSetup(setup) {
 
-			var items = await this.prome.storage.local.get('setups');
+			var items = await this._prome.storage.local.get('setups');
 
 			if (this._urlExists(setup.url, items.setups)) {
-				throw this.StorageError(
+				throw this._createStorageError(
 					'A marker of this URL already exists.');
 			}
 
 			setup.face = this._getStyleClass(items.setups);
 
 			items.setups.push(setup);
-			await this.prome.storage.local.set({ setups: items.setups });
+			await this._prome.storage.local.set({ setups: items.setups });
 			this.setupAdded.dispatch(setup);
 		}
 

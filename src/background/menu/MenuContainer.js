@@ -9,9 +9,9 @@
 
  	class MenuContainer {
 
- 		constructor(Menu) {
- 			this.Menu = Menu;
- 			this.menus = [];
+ 		constructor(props = {}) {
+ 			this._createMenu = props.createMenu;
+ 			this._menus = [];
  		}
  	
 	 	/**
@@ -22,11 +22,11 @@
 		 * return: (Menu)
 		 */
 		async get(tabId) {		
-			var menu = this.select(tabId);
+			var menu = this._select(tabId);
 			if (menu)
 				return menu;
 			else
-				return await this.create(tabId);
+				return await this._create(tabId);
 		}
 
 		/**
@@ -36,8 +36,8 @@
 		* param: (Number) tabId
 		* return: (Menu | undefined)
 		*/
-		select(tabId) {
-			for (var menu of this.menus) {
+		_select(tabId) {
+			for (var menu of this._menus) {
 				if (tabId === menu.tabId){
 					return menu;
 				}
@@ -50,9 +50,9 @@
 		* param: (Number) tabId
 		* return: (Menu)
 		*/
-		async create(tabId) {
-			var menu = await this.Menu(tabId).init();
-			this.menus.push(menu);
+		async _create(tabId) {
+			var menu = await this._createMenu(tabId).init();
+			this._menus.push(menu);
 			return menu;
 		}
 	}

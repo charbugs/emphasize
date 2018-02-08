@@ -5,30 +5,32 @@
 
 	class Menu {
 
-		constructor(tabId, setupStore, registration, Marker) {
+		constructor(props = {}) {
 
-			this.tabId = tabId;
-			this.setupStore = setupStore;
-			this.registration = registration,
-			this.Marker = Marker;
+			this.tabId = props.tabId;
+			this.registration = props.registration,
+			this._setupStore = props.setupStore;
+			this._createMarker = props.createMarker;
+			
+			this.markers;
 			this.curMarker = null;
 			this.view = 'MARKER_LIST';
 		}
 
 		async init() {
 			
-			this.setupStore.setupAdded.register(
-				this.handleSetupAdded.bind(this));
+			this._setupStore.setupAdded.register(
+				this._handleSetupAdded.bind(this));
 
-			this.setupStore.setupRemoved.register(
-				this.handleSetupRemoved.bind(this));
+			this._setupStore.setupRemoved.register(
+				this._handleSetupRemoved.bind(this));
 			
 			chrome.tabs.onUpdated.addListener(
-				this.handleWebPageReloaded.bind(this));
+				this._handleWebPageReloaded.bind(this));
 
-			var setups = await this.setupStore.getSetup(null);
+			var setups = await this._setupStore.getSetup(null);
 			
-			this.markers = setups.map(s => this.Marker(s, this.tabId));
+			this.markers = setups.map(s => this._createMarker(s, this.tabId));
 			
 			return this;
 		}
@@ -76,7 +78,7 @@
 		}
 
 		removeMarkerFromSystem() {
-			this.setupStore.removeSetup(this.curMarker.setup.url);
+			this._setupStore.removeSetup(this.curMarker.setup.url);
 		}
 
 		///////////////////////////////////////////////
@@ -99,11 +101,11 @@
 		// event handlers
 		///////////////////////////////////////////////
 
-		handleSetupAdded(setup) {
-			this.markers.push(this.Marker(setup, this.tabId));
+		_handleSetupAdded(setup) {
+			this.markers.push(this._createMarker(setup, this.tabId));
 		}
 
-		handleSetupRemoved(url) {
+		_handleSetupRemoved(url) {
 			for (var i=0; i < this.markers.length; i++) {
 				if (this.markers[i].setup.url === url) {
 					this.markers[i].reset();
@@ -113,7 +115,7 @@
 			}
 		}
 
-		handleWebPageReloaded(tabId, info, tab) {
+		_handleWebPageReloaded(tabId, info, tab) {
 			if (tabId === this.tabId && info.status === 'loading') {
 				this.markers.forEach(m => m.reset(true));
 			}

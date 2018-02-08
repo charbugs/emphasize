@@ -11,18 +11,17 @@
  	 */
 	class Marker {
 
-		constructor(setup, tabId, job, messaging, request, 
-			RequestError, ProtocolError, MarkerError) {
+		constructor(props = {}) {
 
-			Object.assign(this, job);
+			Object.assign(this, props.job);
 			
-			this.setup = setup;
-			this.tabId = tabId;
-			this.messaging = messaging;
-			this.request = request;
-			this.RequestError = RequestError;
-			this.ProtocolError = ProtocolError;
-			this.MarkerError = MarkerError;
+			this.setup = props.setup;
+			this.tabId = props.tabId;
+			this._messaging = props.messaging;
+			this._request = props.request;
+			this._createRequestError = props.createRequestError;
+			this._createProtocolError = props.createProtocolError;
+			this._createMarkerError = props.createMarkerError;
 			
 			this._init();
 			this.stateReady();
@@ -83,16 +82,16 @@
   	 	 * Will cause the waiting analyze() method to proceed.
  	 	 */ 
 		abortAnalysis() {
-			this.request.abortRequest();
+			this._request.abortRequest();
 		}
 
 		async _createPageMarker() {
-			await this.messaging.invoke(
+			await this._messaging.invoke(
 				this.tabId, 'createPageMarker', this.id, this.setup.face);
 		}
 
 		async _deletePageMarker() {
-			await this.messaging.invoke(
+			await this._messaging.invoke(
 				this.tabId, 'deletePageMarker', this.id);
 		}
 
@@ -104,10 +103,10 @@
 		 */
 		async _getInput() {
 
-			await this.messaging.invoke(
+			await this._messaging.invoke(
 				this.tabId, 'extractWebPageData', this.id);
 
-			var wpData = await this.messaging.invoke(
+			var wpData = await this._messaging.invoke(
 				this.tabId, 'getWebPageDataForRemote', this.id);
 
 			this.input.tokens = wpData.tokens;
@@ -119,7 +118,7 @@
 		 */
 		async _analyze() {
 
-			this.output = await this.request.requestMarkup(
+			this.output = await this._request.requestMarkup(
 				this.setup.url, this.input);
 
 			if (this.output.hasOwnProperty('error')) {
@@ -132,7 +131,7 @@
 		 * of the analysis.
 		 */
 		async _annotate() {
-			await this.messaging.invoke(
+			await this._messaging.invoke(
 				this.tabId, 'annotate',	this.id, this.output.markup);
 		}
 
@@ -140,7 +139,7 @@
 		 * Removes annotation from web page.
 		 */
 		async _removeAnnotation() {
-			await this.messaging.invoke(
+			await this._messaging.invoke(
 				this.tabId, 'removeAnnotation', this.id);
 		}
 	}

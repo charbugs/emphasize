@@ -21,11 +21,12 @@
 
 	class Request {
 
-		constructor(parser, XHR, RequestError) {
-			this.parser = parser;
-			this.XHR = XHR;
-			this.RequestError = RequestError;
-			this.xhr;
+		constructor(props = {}) {
+			this._parser = props.parser;
+			this._createXHR = props.createXHR;
+			this._createRequestError = props.createRequestError;
+			
+			this._xhr;
 		}
 
 		/**
@@ -35,7 +36,7 @@
 		* sets xhr.readyState == xhr.DONE and xhr.status == 0.
 		*/
 		abortRequest() {
-			this.xhr.abort();
+			this._xhr.abort();
 		}
 
 		/**
@@ -47,9 +48,9 @@
 		async requestSetup(url) {
 
 			var data = { call: 'setup' };
-			this.parser.parseSetupRequest(data); // debug
+			this._parser.parseSetupRequest(data); // debug
 			var response = await this._post(url, data);
-			return this.parser.parseSetupResponse(response);
+			return this._parser.parseSetupResponse(response);
 		}
 
 		/**
@@ -62,9 +63,9 @@
 		async requestMarkup(url, data) {
 
 			data.call = 'markup',
-			this.parser.parseMarkupRequest(data) // debug
+			this._parser.parseMarkupRequest(data) // debug
 			var response = await this._post(url, data);
-			return this.parser.parseMarkupResponse(response);
+			return this._parser.parseMarkupResponse(response);
 		}
 
 		/**
@@ -79,11 +80,11 @@
 
 			return new Promise(function(resolve, reject) {
 
-				that.xhr = that.XHR();
-				that.xhr.open('POST', url, true);
-				that.xhr.setRequestHeader('Content-Type', 'application/json');
-				that.xhr.send(JSON.stringify(data));
-				that.xhr.onreadystatechange = function() {
+				that._xhr = that._createXHR();
+				that._xhr.open('POST', url, true);
+				that._xhr.setRequestHeader('Content-Type', 'application/json');
+				that._xhr.send(JSON.stringify(data));
+				that._xhr.onreadystatechange = function() {
 					that._handleResponse(resolve, reject);
 				}
 			});
@@ -91,19 +92,19 @@
 
 		_handleResponse(resolve, reject) {
 		
-			if (this.xhr.readyState === this.xhr.DONE) {
+			if (this._xhr.readyState === this._xhr.DONE) {
 
-				if (this.xhr.status === 0) {
+				if (this._xhr.status === 0) {
 					var msg = 'Something went wrong while requesting marker.';
-					reject(this.RequestError(msg));
+					reject(this._createRequestError(msg));
 				}
-				else if (this.xhr.status === 200) {
-					resolve(this.xhr.responseText);
+				else if (this._xhr.status === 200) {
+					resolve(this._xhr.responseText);
 				}
 				else {
 					var msg = 'Failed to receive data from marker. Server answers: ';
-					msg = msg + this.xhr.status;
-					reject(this.RequestError(msg));
+					msg = msg + this._xhr.status;
+					reject(this._createRequestError(msg));
 				}
 			}
 		}

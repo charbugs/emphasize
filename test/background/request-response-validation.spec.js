@@ -3,12 +3,12 @@ describe('---------- request and response validation\
 	(integration tests) ----------', () => {
 
 	var MockError = fixtures.MockError;
-	var parser = new emphasize.pool.Parser(
-		emphasize.pool.protocol,
-		(msg) => new MockError(msg),
-		Ajv,
-		sanitizeHtml
-	);
+	var parser = new emphasize.pool.Parser({
+		protocol: 				emphasize.pool.protocol,
+		createProtocolError: 	msg => new MockError(msg),
+		Ajv: 					Ajv,
+		sanitizeHtml: 			sanitizeHtml
+	});
 
 	describe('marker response validation', () => {
 

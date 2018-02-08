@@ -32,9 +32,9 @@
 
 	class Injection {
 
-		constructor(prome, InjectionError) {
-			this.prome = prome;
-			this.InjectionError = InjectionError;
+		constructor(props = {}) {
+			this._prome = props.prome;
+			this._createInjectionError = props.createInjectionError;
 		}
 	
 		/**
@@ -47,7 +47,7 @@
 
 			var that = this;
 
-			var tabs = await this.prome.tabs.query({
+			var tabs = await this._prome.tabs.query({
 				active: true, 
 				currentWindow: true
 			});
@@ -56,11 +56,11 @@
 
 			if (!tabs[0].url || this._isBlockedUrl(tabs[0].url)) {
 				var msg = 'Scripts can not be injected to this tab.';
-				throw this.InjectionError(msg);
+				throw this._createInjectionError(msg);
 			}
 			
 			var message = {command: 'isAlive'};
-			var isAlive = await this.prome.tabs.sendMessage(tabId, message);
+			var isAlive = await this._prome.tabs.sendMessage(tabId, message);
 			
 			if (isAlive) {
 				return tabId;

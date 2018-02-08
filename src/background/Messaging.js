@@ -3,9 +3,9 @@
 
 	class Messaging {
 
-		constructor(prome, ChannelError) {
-			this.prome = prome;
-			this.ChannelError = ChannelError;
+		constructor(props = {}) {
+			this._prome = props.prome;
+			this._createChannelError = props.createChannelError;
 		}
 	
 		/**
@@ -28,7 +28,7 @@
 			var path = args.shift();
 			var message = { command: 'invoke', path: path, args: args };
 
-			var resp = await this.prome.tabs.sendMessage(tabId, message, null);
+			var resp = await this._prome.tabs.sendMessage(tabId, message, null);
 
 			if (resp) {
 				if (resp.err)
@@ -38,7 +38,7 @@
 			} else {
 				// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
 				if (chrome.runtime.lastError)
-					throw this.ChannelError(chrome.runtime.lastError.message);
+					throw this._createChannelError(chrome.runtime.lastError.message);
 			}
 		}
 	}

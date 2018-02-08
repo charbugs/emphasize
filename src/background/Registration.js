@@ -7,21 +7,22 @@
 
 	class Registration {
 
-		constructor(job, request, setupStore,
-			RequestError, ProtocolError, StorageError, RegistrationError) {
+		constructor(props = {}) {
 
-			Object.assign(this, job);
-			this.request = request;
-			this.setupStore = setupStore;
-			this.RequestError = RequestError;
-			this.ProtocolError = ProtocolError;
-			this.StorageError = StorageError;
-			this.RegistrationError = RegistrationError;
+			Object.assign(this, props.job);
+
+			this._request = props.request;
+			this._setupStore = props.setupStore;
+			this._createRequestError = props.createRequestError;
+			this._createProtocolError = props.createProtocolError;
+			this._createStorageError = props.createStorageError;
+			this._createRegistrationError = props.createRegistrationError;
+			
 			this.report = "Marker successfully added.";
-			this.init();
+			this._init();
 		}
 
-		init() {
+		_init() {
 			this.error = null;
 			this.inputUrl = null; // bound to an html input element
 			this.stateReady();
@@ -30,10 +31,10 @@
 		reset(keepUserInput) {
 			if (keepUserInput) {
 				var userInput = this.inputUrl;
-				this.init();
+				this._init();
 				this.inputUrl = userInput;
 			} else {
-				this.init();
+				this._init();
 			}
 		}
 
@@ -46,9 +47,9 @@
 
 			try {
 				await this._checkUrl(this.inputUrl);
-				var setup = await this.request.requestSetup(this.inputUrl);
+				var setup = await this._request.requestSetup(this.inputUrl);
 				setup.url = this.inputUrl;
-				await this.setupStore.addSetup(setup);
+				await this._setupStore.addSetup(setup);
 				this.stateDone();
 			}
 			catch (err) {
@@ -73,7 +74,7 @@
 		_checkUrl(url) {
 			var re = /^(http:\/\/|https:\/\/)\S+/;
 			if (!url || url.search(re) === -1) {
-				throw this.RegistrationError('Need a valid HTTP URL.');
+				throw this._createRegistrationError('Need a valid HTTP URL.');
 			}
 		}
 
@@ -83,7 +84,7 @@
 		 * Will cause the waiting registerMarker() method to proceed.
 		 */ 
 		abortRegistration() {
-			this.request.abortRequest();
+			this._request.abortRequest();
 		}
 	}
 

@@ -7,26 +7,26 @@
 
 	class Parser {
 
-		constructor(protocol, ProtocolError, Ajv, sanitizeHtml) {
+		constructor(props = {}) {
 
-			this.protocol = protocol;
-			this.ProtocolError = ProtocolError;
-			this.Ajv = Ajv;
-			this.sanitizeHtml = sanitizeHtml;
+			this._protocol = props.protocol;
+			this._createProtocolError = props.createProtocolError;
+			this._Ajv = props.Ajv;
+			this._sanitizeHtml = props.sanitizeHtml;
 
 
 			// validator functions
-			this.setupRequestValidator = Ajv({allErrors: true})
-					.compile(this.protocol.setupRequestSchema);
+			this._setupRequestValidator = this._Ajv({allErrors: true})
+					.compile(this._protocol.setupRequestSchema);
 
-			this.setupResponseValidator = Ajv({allErrors: true})
-					.compile(this.protocol.setupResponseSchema);
+			this._setupResponseValidator = this._Ajv({allErrors: true})
+					.compile(this._protocol.setupResponseSchema);
 
-			this.markupRequestValidator = Ajv({allErrors: true})
-					.compile(this.protocol.markupRequestSchema);
+			this._markupRequestValidator = this._Ajv({allErrors: true})
+					.compile(this._protocol.markupRequestSchema);
 
-			this.markupResponseValidator = Ajv({allErrors: true})
-					.compile(this.protocol.markupResponseSchema);		
+			this._markupResponseValidator = this._Ajv({allErrors: true})
+					.compile(this._protocol.markupResponseSchema);		
 		}
 
 		/**
@@ -52,9 +52,9 @@
 		 */
 		parseSetupRequest(data) {
 			try {
-				this._validate(this.setupRequestValidator, data);
+				this._validate(this._setupRequestValidator, data);
 			} catch (err) {
-				throw this.ProtocolError(err.message);
+				throw this._createProtocolError(err.message);
 			}
 		}
 
@@ -69,15 +69,15 @@
 			
 			try {
 				var setup = JSON.parse(data);
-				this._validate(this.setupResponseValidator, setup);
+				this._validate(this._setupResponseValidator, setup);
 				this._checkForSelectValues(setup);
 			} 
 			catch(error) {
-				throw this.ProtocolError(error.message);
+				throw this._createProtocolError(error.message);
 			}
 
-			setup.description = this.sanitizeHtml(
-				setup.description, this.protocol.htmlRules);
+			setup.description = this._sanitizeHtml(
+				setup.description, this._protocol.htmlRules);
 
 			return setup;
 		}
@@ -109,9 +109,9 @@
 		parseMarkupRequest(data) {
 		 
 			try {
-				this._validate(this.markupRequestValidator, data);
+				this._validate(this._markupRequestValidator, data);
 			} catch (err) {
-				throw this.ProtocolError(err.message);
+				throw this._createProtocolError(err.message);
 			}
 		}
 
@@ -126,28 +126,28 @@
 			
 			try {
 				response = JSON.parse(response);
-				this._validate(this.markupResponseValidator, response);
+				this._validate(this._markupResponseValidator, response);
 				this._checkEachTokenIsUnique(response);
 			} 
 			catch(error) {
-				throw this.ProtocolError(error.message);
+				throw this._createProtocolError(error.message);
 			}
 
 			if (response.error) {
-				response.error = this.sanitizeHtml(response.error, 
-					this.protocol.htmlRules);
+				response.error = this._sanitizeHtml(response.error, 
+					this._protocol.htmlRules);
 			}
 
 			if (response.report) {
-				response.report = this.sanitizeHtml(response.report, 
-					this.protocol.htmlRules);
+				response.report = this._sanitizeHtml(response.report, 
+					this._protocol.htmlRules);
 			}
 
 			if (response.markup) {
 				response.markup.forEach(item => {
 					if (item.gloss) {
-						item.gloss = this.sanitizeHtml(item.gloss,
-							this.protocol.htmlRules);
+						item.gloss = this._sanitizeHtml(item.gloss,
+							this._protocol.htmlRules);
 					}
 				});
 			}
