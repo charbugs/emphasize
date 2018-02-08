@@ -5,12 +5,30 @@
 
 	class MarkupCompiler {
 
+		 compileMarkup(markup, webPageTokens) {
+		 	return Array.from(this._compileMarkup(markup, webPageTokens));	
+		 }
+
+		*_compileMarkup(markup, webPageTokens) {
+
+			for (var item of markup) {
+				if ('token' in item)
+					yield* this._compileToken(item, webPageTokens);
+				else if ('tokens' in item)
+					yield* this._compileTokens(item, webPageTokens);
+				else if ('group' in item)
+					yield* this._compileGroup(item, webPageTokens);
+				else if ('groups' in item)
+					yield* this._compileGroups(item, webPageTokens);
+			}
+		}
+
 		*_compileToken(item, webPageTokens) {
 			if (item.token < webPageTokens.length) {
-				var markupToken = Object.assign({}, 
+				var annotatedToken = Object.assign({}, 
 					webPageTokens[item.token], item);
-				delete markupToken.token; // from remote markup item
-				yield markupToken;
+				delete annotatedToken.token; // from remote markup item
+				yield annotatedToken;
 			}
 		}
 
@@ -28,9 +46,9 @@
 			var end = last.end;
 			var node = first.node;
 			var form = node.data.slice(begin, end);
-			var markupToken = Object.assign({ begin, end, form, node }, item);
-			delete markupToken.group; // from remote markup item
-			yield markupToken;
+			var annotatedToken = Object.assign({ begin, end, form, node }, item);
+			delete annotatedToken.group; // from remote markup item
+			yield annotatedToken;
 		}
 
 		*_compileGroupCrossNodes(item, webPageTokens, first, last) {
@@ -43,37 +61,37 @@
 			embeddedNodes.shift(); // === first.node
 			embeddedNodes.pop(); // === last.node
 
-			var firstMarkupToken = Object.assign({}, {
+			var firstAnnotatedToken = Object.assign({}, {
 				begin: first.begin,
 				end: first.node.data.length,
 				form: first.node.data.slice(first.begin),
 				node: first.node
 			}, item);
 
-			delete firstMarkupToken.group;
-			yield firstMarkupToken;
+			delete firstAnnotatedToken.group;
+			yield firstAnnotatedToken;
 
 			for (var node of embeddedNodes) {
-				var embeddedMarkupToken = Object.assign({}, {
+				var embeddedAnnotatedToken = Object.assign({}, {
 					begin: 0,
 					end: node.data.length,
 					form: node.data,
 					node: node
 				}, item);
 
-				delete embeddedMarkupToken.group;
-				yield embeddedMarkupToken;
+				delete embeddedAnnotatedToken.group;
+				yield embeddedAnnotatedToken;
 			}
 
-			var lastMarkupToken = Object.assign({}, {
+			var lastAnnotatedToken = Object.assign({}, {
 				begin: 0,
 				end: last.end,
 				form: last.node.data.slice(0, last.end),
 				node: last.node
 			}, item);
 			
-			delete lastMarkupToken.group;
-			yield lastMarkupToken;
+			delete lastAnnotatedToken.group;
+			yield lastAnnotatedToken;
 		}
 
 		*_compileGroup(item, webPageTokens) {
@@ -101,42 +119,6 @@
 				_item.group = group;
 				yield* this._compileGroup(_item, webPageTokens);
 			}
-		}
-
-		*compileRemoteMarkup(remoteMarkup, webPageTokens) {
-
-			for (var item of remoteMarkup) {
-				if ('token' in item)
-					yield* this._compileToken(item, webPageTokens);
-				else if ('tokens' in item)
-					yield* this._compileTokens(item, webPageTokens);
-				else if ('group' in item)
-					yield* this._compileGroup(item, webPageTokens);
-				else if ('groups' in item)
-					yield* this._compileGroups(item, webPageTokens);
-			}
-		}
-
-		*compileRemoteMarkupAndSegment(remoteMarkup, webPageTokens) {
-			var curNode;
-			var tokensOfNode = [];
-			
-			var compiledMarkup = this.compileRemoteMarkup(
-				remoteMarkup, webPageTokens)
-			
-			for (var token of compiledMarkup) {
-				
-				if (curNode && curNode !== token.node) {
-					yield tokensOfNode;
-					tokensOfNode = [];
-				}
-				
-				tokensOfNode.push(token);
-				curNode = token.node;
-			}
-			
-			if (tokensOfNode.length > 0)
-				yield tokensOfNode;
 		}
 	}
 

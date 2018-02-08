@@ -3,13 +3,13 @@ describe('---------- Tokenizers class ----------', () => {
 
 	'use strict';
 	
-	describe('whiteSpace function', () => {
+	describe('tokenize method', () => {
 
 		var tokens;
 		beforeEach(() => {
 			var sent = "Lorem ipsum dolor lorem";
 			var tokenizer = new emphasize.pool.Tokenizer();
-			tokens = tokenizer.whiteSpace(sent);
+			tokens = tokenizer.tokenize(sent);
 		});
 
 		it('should return an array', () => {

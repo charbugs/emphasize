@@ -1,10 +1,10 @@
 
-describe('---------- access module ----------', () => {
+describe('---------- Access class ----------', () => {
 
 	var access, marker;
 	beforeEach(() => {
 
-		Marker = function(markerId, styleClass) { 
+		createMarker = function(markerId, styleClass) { 
 
 			var marker = jasmine.createSpyObj([
 				'extractWebPageData',
@@ -23,22 +23,22 @@ describe('---------- access module ----------', () => {
 			return marker;
 		};
 
-		access = new emphasize.pool.Access( 
-			Marker, 
-			msg => new fixtures.MockError(msg)
-		);
+		access = new emphasize.pool.Access({ 
+			createMarker: createMarker,
+			createAccessError: msg => new fixtures.MockError(msg)
+		});
 	});
 
 	describe('createMarker function', () => {
 
 		it('should create and store a new marker instance', () => {
 			access.createMarker(42, 'style');
-			expect(access.currentMarker.id).toEqual(42);
-			expect(access.currentMarker.styleClass).toEqual('style');
+			expect(access._currentMarker.id).toEqual(42);
+			expect(access._currentMarker.styleClass).toEqual('style');
 		});
 
 		it('should throw error if there already is a current marker', () => {
-			access.currentMarker = {};
+			access._currentMarker = {};
 			expect(() => access.createMarker(42, 'style'))
 				.toThrowError(fixtures.MockError);
 		});
@@ -48,21 +48,21 @@ describe('---------- access module ----------', () => {
 
 		it('should throw an error if there is no marker instance to delete', 
 		() => {		
-			access.currentMarker = undefined;
+			access._currentMarker = undefined;
 			expect(() => access.deleteMarker(42))
 				.toThrowError(fixtures.MockError);
 		});
 
 		it('should throw an error if there is a marker id mismatch', () => {
-			access.currentMarker = { id: 55 };
+			access._currentMarker = { id: 55 };
 			expect(() => access.deleteMarker(42))
 				.toThrowError(fixtures.MockError);
 		});
 
 		it('should delete the current marker if id matches', () => {
-			access.currentMarker ={ id: 42 };
+			access._currentMarker ={ id: 42 };
 			access.deleteMarker(42);
-			expect(typeof access.currentMarker).toBe('undefined');
+			expect(typeof access._currentMarker).toBe('undefined');
 		});
 	});
 
@@ -85,7 +85,7 @@ describe('---------- access module ----------', () => {
 		});		
 
 		it('should throw an error if there is an marker id mismatch', () => {
-			access.currentMarker = { id: 55 };
+			access._currentMarker = { id: 55 };
 			
 			expect(() => access.extractWebPageData(42))
 				.toThrowError(fixtures.MockError);
@@ -104,7 +104,7 @@ describe('---------- access module ----------', () => {
 			respective marker method', () => {
 
 			access.createMarker(42, 'style');
-			var marker = access.currentMarker;
+			var marker = access._currentMarker;
 
 			access.extractWebPageData(42, 'foo', 'bar');
 			expect(marker.extractWebPageData.calls.argsFor(0))
@@ -127,7 +127,7 @@ describe('---------- access module ----------', () => {
 		() => {
 			
 			access.createMarker(42, 'style');
-			var marker = access.currentMarker;
+			var marker = access._currentMarker;
 
 			expect(access.extractWebPageData(42)).toEqual(7);
 			expect(access.getWebPageDataForRemote(42)).toEqual(7);

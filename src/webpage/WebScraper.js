@@ -4,27 +4,16 @@
 
     class WebScraper {
 
-        constructor(document, rootElement, tokenize, NodeFilter) {
-            this.document = document;
-            this.rootElement = rootElement;
-            this.tokenize = tokenize;
-            this.NodeFilter = NodeFilter;
+        constructor(props = {}) {
+            this._document = props.document;
+            this._rootElement = props.rootElement;
+            this._tokenizer = props.tokenizer;
+            this._NodeFilter = props.NodeFilter;
+            this._createToken = props.createToken;
         }
 
         getUrl() {
-            return this.document.location.href;
-        }
-
-        _createTreeWalker() {
-            return this.document.createTreeWalker(
-                this.rootElement,
-                this.NodeFilter.SHOW_TEXT,
-                { acceptNode: function (node) {
-                    return node.data.trim().length > 0 &&
-                        node.parentElement.nodeName != 'SCRIPT' &&
-                        node.parentElement.nodeName != 'NOSCRIPT' &&
-                        node.parentElement.nodeName != 'STYLE';
-            }});
+            return this._document.location.href;
         }
 
         getTextNodes() {
@@ -37,13 +26,29 @@
 
         getTokens() {
             var tokens = [];
-            this.getTextNodes(this.element).forEach(node => {
-                this.tokenize(node.data).forEach(token => {
-                    token.node = node;
-                    tokens.push(token);
+            this.getTextNodes(this._rootElement).forEach(node => {
+                this._tokenizer.tokenize(node.data).forEach(chunk => {
+                    tokens.push(this._createToken(
+                        chunk.form,
+                        node,
+                        chunk.begin,
+                        chunk.end
+                    ));
                 });
             });
             return tokens;
+        }
+
+         _createTreeWalker() {
+            return this._document.createTreeWalker(
+                this._rootElement,
+                this._NodeFilter.SHOW_TEXT,
+                { acceptNode: function (node) {
+                    return node.data.trim().length > 0 &&
+                        node.parentElement.nodeName != 'SCRIPT' &&
+                        node.parentElement.nodeName != 'NOSCRIPT' &&
+                        node.parentElement.nodeName != 'STYLE';
+            }});
         }
     }
 

@@ -6,180 +6,222 @@ describe('---------- Annotator class ----------', () => {
 
 	describe('annotate function', () => {
 
-		var single, annotator;
-		beforeEach(() => {
+		describe('when only a single text node is involved', () => {
 
-			single = fixtures.singleTextNode();
-			annotator = new emphasize.pool.Annotator(
-				document,
-				undefined, // not relevant for annotateNode()
-				42,
-				'emphasize-face-1'
-			);
-		});
+			var single, annotator;
+			beforeEach(() => {
+				single = fixtures.singleTextNode();
+				annotator = new emphasize.pool.Annotator({
+					document: document,
+					rootElement: single.element,
+					markerId: 42,
+					styleClass: 'emphasize-face-1'
+				});
+			});
 
-		it('should annotate a single token', () => {
+			it('should annotate a single token', () => {
+					
+				var annotatedTokens = ([
+					{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0] }
+				]);
 				
-			var tokens = ([
-				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0] }
-			]);
-			
-			var after = '<span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
-			after += 	' ipsum dolor sit amet consectetur</span>';
-			
-			annotator.annotateNode(tokens);
-			expect(single.element.outerHTML).toEqual(after);
-		});
-
-		it('should annotate two consecutive tokens', () => {
+				var after = '<span>';
+				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
+				after += 	' ipsum dolor sit amet consectetur</span>';
 				
-			var tokens = ([
-				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0] },
-				{ begin: 6, end: 11, form: 'ipsum', node: single.nodes[0] }
-			]);
-			
-			var after = '<span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-face-1">lorem</emphasize-wrapper>';
-			after += 	' <emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-face-1">ipsum</emphasize-wrapper>';
-			after += 	' dolor sit amet consectetur</span>';
-			
-			annotator.annotateNode(tokens);
-			expect(single.element.outerHTML).toEqual(after);
+				annotator.annotate(annotatedTokens);
+				expect(single.element.outerHTML).toEqual(after);
+			});
+
+			it('should annotate two consecutive tokens', () => {
+					
+				var annotatedTokens = ([
+					{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0] },
+					{ begin: 6, end: 11, form: 'ipsum', node: single.nodes[0] }
+				]);
+				
+				var after = '<span>';
+				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	' class="emphasize-face-1">lorem</emphasize-wrapper>';
+				after += 	' <emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	' class="emphasize-face-1">ipsum</emphasize-wrapper>';
+				after += 	' dolor sit amet consectetur</span>';
+				
+				annotator.annotate(annotatedTokens);
+				expect(single.element.outerHTML).toEqual(after);
+			});
+
+			it('should annotate two non-sequential tokens', () => {
+
+				var annotatedTokens = ([
+					{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0] },
+					{ begin: 12, end: 17, form: 'dolor', node: single.nodes[0] }
+				]);
+
+				var after = '<span>';
+				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
+				after += 	' ipsum';
+				after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	' class="emphasize-face-1">dolor</emphasize-wrapper>';
+				after +=	' sit amet consectetur</span>';
+
+				annotator.annotate(annotatedTokens);
+				expect(single.element.outerHTML).toEqual(after);
+			});
+
+			it('should annotate but not mark when mark feature is set to false', 
+				() => {
+
+				var annotatedTokens = ([
+					{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
+						mark: false }
+				]);
+
+				var after = '<span>';
+				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after += 	' class="emphasize-unmarked">'
+				after += 	'lorem</emphasize-wrapper>';
+				after += 	' ipsum dolor sit amet consectetur</span>';
+				
+				annotator.annotate(annotatedTokens);
+				expect(single.element.outerHTML).toEqual(after);				
+			});
+
+			it('should annotate with a gloss when gloss feature is given', () => {
+
+				var annotatedTokens = ([
+					{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
+						gloss: "a nice gloss" }
+				]);
+
+				var after = '<span>';
+				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after += 	' class="emphasize-face-1">lorem';
+				after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
+				after +=	'</emphasize-wrapper>';
+				after += 	' ipsum dolor sit amet consectetur</span>';
+				
+				annotator.annotate(annotatedTokens);
+				expect(single.element.outerHTML).toEqual(after);
+			});
+
+			it('should set mouseover handler to toggle the gloss element', 
+				() => {
+				
+				var annotatedTokens = ([
+					{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
+						gloss: "a nice gloss" }
+				]);
+
+				annotator.annotate(annotatedTokens);
+				var wrapper = single.element.querySelector('emphasize-wrapper');
+				var gloss = wrapper.querySelector('emphasize-gloss');
+				
+				wrapper.onmouseover();
+				expect(gloss.style.display).toBe('block');
+				wrapper.onmouseout();
+				expect(gloss.style.display).toBe('none');
+			});
 		});
 
-		it('should annotate two non-sequential tokens', () => {
+		describe('when multiple text nodes are involved', () => {
 
-			var tokens = ([
-				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0] },
-				{ begin: 12, end: 17, form: 'dolor', node: single.nodes[0] }
-			]);
+			// We simply test that the method processes the annotated tokens
+			// properly and pass then to the inner _annotateNode method
+			// which in turn annotates a single node as tested above.
 
-			var after = '<span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
-			after += 	' ipsum';
-			after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-face-1">dolor</emphasize-wrapper>';
-			after +=	' sit amet consectetur</span>';
+			var three, annotator;
+			beforeEach(() => {
+				three = fixtures.threeTextNodes();
+				annotator = new emphasize.pool.Annotator({
+					document: document,
+					rootElement: three.element,
+					markerId: 42,
+					styleClass: 'emphasize-face-1'
+				});
+				spyOn(annotator, '_annotateNode').and.callThrough();
+			});
 
-			annotator.annotateNode(tokens);
-			expect(single.element.outerHTML).toEqual(after);
-		});
+			it('should bundle the annotated tokens by node and invoke\
+				_annotateNode for each bundle', () => {
 
-		it('should annotate but not mark when mark feature is set to false', 
-			() => {
+				var annotatedTokens = [
+					{ begin: 0, end: 4, form: 'duis', node: three.nodes[0] },
+					{ begin: 5, end: 9, form: 'aute', node: three.nodes[0] },
+					{ begin: 0, end: 5, form: 'dolor', node: three.nodes[1] },
+					{ begin: 6, end: 8, form: 'in', node: three.nodes[1] },
+					{ begin: 0, end: 2, form: 'in', node: three.nodes[2] },
+					{ begin: 3, end: 12, form: 'voluptate', node: three.nodes[2] },
+				];
 
-			var tokens = ([
-				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
-					mark: false }
-			]);
+				annotator.annotate(annotatedTokens);
 
-			var after = '<span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-unmarked">'
-			after += 	'lorem</emphasize-wrapper>';
-			after += 	' ipsum dolor sit amet consectetur</span>';
-			
-			annotator.annotateNode(tokens);
-			expect(single.element.outerHTML).toEqual(after);				
-		});
+				expect(annotator._annotateNode.calls.argsFor(0)[0]).toEqual(
+					[
+						{ begin: 0, end: 4, form: 'duis', node: three.nodes[0] },
+						{ begin: 5, end: 9, form: 'aute', node: three.nodes[0] }
+					]
+				);
+				expect(annotator._annotateNode.calls.argsFor(1)[0]).toEqual(
+					[
+						{ begin: 0, end: 5, form: 'dolor', node: three.nodes[1] },
+						{ begin: 6, end: 8, form: 'in', node: three.nodes[1] },
+					]
+				);
+				expect(annotator._annotateNode.calls.argsFor(2)[0]).toEqual(
+					[
+						{ begin: 0, end: 2, form: 'in', node: three.nodes[2] },
+						{ begin: 3, end: 12, form: 'voluptate', node: three.nodes[2] },
+					]
+				);
+			});
 
-		it('should annotate with a gloss when gloss feature is given', () => {
+			it('should order the annotated tokens from first to last before\
+				passing to _annotateNode', () => {
 
-			var tokens = ([
-				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
-					gloss: "a nice gloss" }
-			]);
+				var annotatedTokens = [
+					{ begin: 10, end: 15, form: 'irure', node: three.nodes[0] },
+					{ begin: 5, end: 9, form: 'aute', node: three.nodes[0] },
+					{ begin: 0, end: 4, form: 'duis', node: three.nodes[0] },
+					{ begin: 9, end: 22, form: 'reprehenderit', node: three.nodes[1] },
+					{ begin: 0, end: 5, form: 'dolor', node: three.nodes[1] },
+					{ begin: 6, end: 8, form: 'in', node: three.nodes[1] }
+				];
 
-			var after = '<span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after += 	' class="emphasize-face-1">lorem';
-			after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
-			after +=	'</emphasize-wrapper>';
-			after += 	' ipsum dolor sit amet consectetur</span>';
-			
-			annotator.annotateNode(tokens);
-			expect(single.element.outerHTML).toEqual(after);
-		});
+				annotator.annotate(annotatedTokens);
 
-		it('should set mouseover handler to toggle the gloss element', 
-			() => {
-			
-			var tokens = ([
-				{ begin: 0, end: 5, form: 'lorem', node: single.nodes[0],
-					gloss: "a nice gloss" }
-			]);
-
-			annotator.annotateNode(tokens);
-			var wrapper = single.element.querySelector('emphasize-wrapper');
-			var gloss = wrapper.querySelector('emphasize-gloss');
-			
-			wrapper.onmouseover();
-			expect(gloss.style.display).toBe('block');
-			wrapper.onmouseout();
-			expect(gloss.style.display).toBe('none');
+				expect(annotator._annotateNode.calls.argsFor(0)[0]).toEqual(
+					[
+						{ begin: 0, end: 4, form: 'duis', node: three.nodes[0] },
+						{ begin: 5, end: 9, form: 'aute', node: three.nodes[0] },
+						{ begin: 10, end: 15, form: 'irure', node: three.nodes[0] }
+					]
+				);
+				expect(annotator._annotateNode.calls.argsFor(1)[0]).toEqual(
+					[
+						{ begin: 0, end: 5, form: 'dolor', node: three.nodes[1] },
+						{ begin: 6, end: 8, form: 'in', node: three.nodes[1] },
+						{ begin: 9, end: 22, form: 'reprehenderit', node: three.nodes[1] },
+					]
+				);
+			})
 		});
 	});
 
-	describe('annotateNodes function', () => {
-
-		var two, annotator;
-		beforeEach(() => {
-
-			two = fixtures.twoTextNodes();
-			annotator = new emphasize.pool.Annotator(
-				document,
-				undefined, // not relevant for annotateNodes()
-				42,
-				'emphasize-face-1'
-			);
-		});
-
-		it('should annotate multiple nodes given multiple batches of tokens',
-			() => {
-
-			var tokenBatches = [
-				[
-					{ begin: 0, end: 2, form: 'ut', node: two.nodes[0] }
-				],
-				[
-					{ begin: 0, end: 4, form: 'quis', node: two.nodes[1] },
-					{ begin: 5, end: 12, form: 'nostrud', node: two.nodes[1] }	
-				]
-			];
-
-			var after = '<div><span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-face-1">ut</emphasize-wrapper>';
-			after +=	' enim ad minim veniam'
-			after +=	'</span><span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-face-1">quis</emphasize-wrapper>';
-			after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
-			after +=	' class="emphasize-face-1">nostrud</emphasize-wrapper>';
-			after +=	' exercitation</span></div>'
-
-			annotator.annotateNodes(tokenBatches);
-			expect(two.element.outerHTML).toEqual(after);
-		});
-	})
 
 	describe('removeAnnotation function', () => {
 
 		var single, annotator;
 		beforeEach(() => {
-
 			single = fixtures.singleTextNode();
-			annotator = new emphasize.pool.Annotator(
-				document,
-				single.element,
-				42,
-				'emphasize-face-1'
-			);
+			annotator = new emphasize.pool.Annotator({
+					document: document,
+					rootElement: single.element,
+					markerId: 42,
+					styleClass: 'emphasize-face-1'
+				});
 		});
 
 		it('should remove the annotation within the given element that was \
@@ -197,7 +239,7 @@ describe('---------- Annotator class ----------', () => {
 			after +=	'</emphasize-wrapper>';
 			after += 	' ipsum dolor sit amet consectetur</span>';
 			
-			annotator.annotateNode(tokens);
+			annotator.annotate(tokens);
 			expect(single.element.outerHTML).toEqual(after);
 
 			annotator.removeAnnotation();

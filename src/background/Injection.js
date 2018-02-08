@@ -19,6 +19,7 @@
 		'src/common/Errors.js',
 		'src/common/Sequencer.js',
 
+		'src/webpage/Token.js',
 		'src/webpage/Tokenizer.js',
 		'src/webpage/WebScraper.js',
 		'src/webpage/MarkupCompiler.js',

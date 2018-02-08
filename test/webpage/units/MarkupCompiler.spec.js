@@ -3,19 +3,19 @@ describe('---------- MarkupCompiler Class ----------', () => {
 
 	'use strict';
 
-	describe('compileRemoteMarkup function', () => {
+	describe('compileMarkup function', () => {
 
-		function compileRemoteMarkup(markup, tokens) {
+		function compileMarkup(markup, webPageTokens) {
 			var compiler = new emphasize.pool.MarkupCompiler();
-			return Array.from(compiler.compileRemoteMarkup(markup, tokens));
+			return compiler.compileMarkup(markup, webPageTokens);
 		}
 
 		describe('when only a single text node is involved', () => {
 
-			var tokens, node;
+			var webPageTokens, node;
 			beforeEach(() => {
-				tokens = fixtures.singleTextNode().tokens;
-				node = tokens[0].node;
+				webPageTokens = fixtures.singleTextNode().tokens;
+				node = webPageTokens[0].node;
 			});
 
 			it('should compile a single token', () => {
@@ -23,9 +23,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ token: 2 }
 				];
 
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node }
 					]
@@ -38,9 +38,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ token: 3}
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node },
 						{ begin: 18, end: 21, form: 'sit', node: node }	
@@ -53,9 +53,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ tokens: [2,3] }
 				];
 
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[ 
 						{ begin: 12, end: 17, form: 'dolor', node: node },
 						{ begin: 18, end: 21, form: 'sit', node: node }
@@ -68,9 +68,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ group: { first: 0, last: 2} }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor',	
 							node: node }
@@ -84,9 +84,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ group: { first: 3, last: 5} }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor', 
 							node: node },
@@ -101,9 +101,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ groups: [ { first: 0, last: 2}, { first: 3, last: 5} ] }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 17, form: 'lorem ipsum dolor', 
 							node: node },
@@ -120,9 +120,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ tokens: [4, 5] },
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 5, form: 'lorem', node: node },
 						{ begin: 6, end: 21, form: 'ipsum dolor sit', 
@@ -140,9 +140,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 11, form: 'lorem ipsum', node: node },
 						{ begin: 12, end: 21, form: 'dolor sit', node: node },
@@ -161,9 +161,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ groups: [ { first: 4, last: 5 } ], mark: true }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 5, form: 'lorem', node: node,
 							mark: true, gloss: 'a pretty nice token' },
@@ -182,9 +182,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ tokens: [1, 6] }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 6, end: 11, form: 'ipsum', node: node }
 					]
@@ -197,9 +197,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ group: { first: 3, last: 42000 } }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 18, end: 38, form: 'sit amet consectetur',
 							node: node }
@@ -210,11 +210,11 @@ describe('---------- MarkupCompiler Class ----------', () => {
 
 		describe('when two text nodes are involved', () => {
 
-			var tokens, nodes;
+			var webPageTokens, nodes;
 			beforeEach(() => {
 				var two = fixtures.twoTextNodes();
-				tokens = two.tokens;
-				nodes =two.nodes;
+				webPageTokens = two.tokens;
+				nodes = two.nodes;
 			});
 
 			it('should compile properly when each markup items refers to \
@@ -228,9 +228,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ token: 7, mark: false }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 0, end: 2, form: 'ut', node: nodes[0],
 							mark: true, gloss: 'a pretty nice token' },
@@ -248,14 +248,15 @@ describe('---------- MarkupCompiler Class ----------', () => {
 				);
 			});
 
-			it('should compile properly with tokens shorthand notation', () => {
+			it('should compile properly with tokens shorthand notation', 
+			() => {
 				var markup = [
 					{ tokens: [4, 5] }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 17, end: 23, form: 'veniam', node: nodes[0] },
 						{ begin: 0, end: 4, form: 'quis', node: nodes[1] }
@@ -269,9 +270,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 				var markup = [
 					{ group: { first: 3, last: 6}, gloss: 'a nice gloss' }
 				];
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 11, end: 23, form: 'minim veniam', 
 							node: nodes[0], gloss: 'a nice gloss' },
@@ -284,10 +285,10 @@ describe('---------- MarkupCompiler Class ----------', () => {
 
 		describe('when three text nodes are involed', () => {
 
-			var tokens, nodes;
+			var webPageTokens, nodes;
 			beforeEach(() => {
 				var three = fixtures.threeTextNodes();
-				tokens = three.tokens;
+				webPageTokens = three.tokens;
 				nodes = three.nodes;
 			});
 
@@ -298,9 +299,9 @@ describe('---------- MarkupCompiler Class ----------', () => {
 					{ group: {first: 1, last: 7 } }
 				];
 				
-				var compiledMarkup = compileRemoteMarkup(markup, tokens);
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
 				
-				expect(compiledMarkup).toEqual(
+				expect(annotatedTokens).toEqual(
 					[
 						{ begin: 5, end: 15, form: 'aute irure', node: nodes[0] },
 						{ begin: 0, end: 22, form: 'dolor in reprehenderit',
@@ -310,47 +311,41 @@ describe('---------- MarkupCompiler Class ----------', () => {
 				);
 			});
 		});
-	});
 
-	describe('compileRemoteMarkupAndSegment function', () => {
+		describe('order of annotated tokens', () => {
 
-		function compileRemoteMarkupAndSegment(markup, tokens) {
-			var compiler = new emphasize.pool.MarkupCompiler();
-			return Array.from(
-				compiler.compileRemoteMarkupAndSegment(markup, tokens)
-			);
-		}
-
-		var tokens, nodes;
+			var webPageTokens, nodes;
 			beforeEach(() => {
 				var three = fixtures.threeTextNodes();
-				tokens = three.tokens;
+				webPageTokens = three.tokens;
 				nodes = three.nodes;
 			});
 
-		it('should yield the compiled markup tokens node by node', () => {
-			var markup = [
-				{ tokens: [0, 1, 3, 4, 6, 7] }
-			];
-			
-			var compiledMarkup = compileRemoteMarkupAndSegment(markup, tokens);
-			
-			expect(compiledMarkup).toEqual(
-				[
+			it('should not take care of the order of the resulting\
+				annotated tokens', () => {
+				
+				var markup = [
+					{ token: 8 },
+					{ token: 0 },
+					{ groups: [
+						{ first: 4, last: 7 },
+						{ first: 1, last: 3 }
+					]} 
+				];
+
+				var annotatedTokens = compileMarkup(markup, webPageTokens);
+
+				expect(annotatedTokens).toEqual(
 					[
+						{ begin: 13, end: 18, form: 'velit', node: nodes[2] },
 						{ begin: 0, end: 4, form: 'duis', node: nodes[0] },
-						{ begin: 5, end: 9, form: 'aute', node: nodes[0] }
-					],
-					[
-						{ begin: 0, end: 5, form: 'dolor', node: nodes[1] },
-						{ begin: 6, end: 8, form: 'in', node: nodes[1] }
-					],
-					[
-						{ begin: 0, end: 2, form: 'in', node: nodes[2] },
-						{ begin: 3, end: 12, form: 'voluptate', node: nodes[2] },
-					],
-				]
-			);
+						{ begin: 6, end: 22, form: 'in reprehenderit', node: nodes[1] },
+						{ begin: 0, end: 12, form: 'in voluptate', node: nodes[2] },
+						{ begin: 5, end: 15, form: 'aute irure', node: nodes[0] },
+						{ begin: 0, end: 5, form: 'dolor', node: nodes[1] }
+					]
+				);
+			})
 		});
 	});
 });

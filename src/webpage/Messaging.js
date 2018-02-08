@@ -5,10 +5,10 @@
 
 	class Messaging {
 
-		constructor(browser, baseObject, ChannelError) {
-			this.browser = browser;
-			this.baseObject = baseObject;
-			this.ChannelError = ChannelError;
+		constructor(props = {}) {
+			this._browser = props.browser;
+			this._baseObject = props.baseObject;
+			this._createChannelError = props.createChannelError;
 		}
 
 		/**
@@ -16,7 +16,7 @@
 		* with the proxi of the extension context.
 		*/
 		createMessageChannel() {
-			this.browser.runtime.onMessage.addListener(
+			this._browser.runtime.onMessage.addListener(
 				this._handleMessage.bind(this));
 		}
 
@@ -48,7 +48,7 @@
 		*/
 		async _invoke(path, args, callback) {
 			var object;
-			var target = this.baseObject;
+			var target = this._baseObject;
 
 			for (var name of path.split('.')) {
 				if (target) {
@@ -59,7 +59,7 @@
 
 			if (!(target instanceof Function)) {
 				var msg = path + ' is not a function.';
-				var err = this.ChannelError(msg);
+				var err = this._createChannelError(msg);
 				err = this._makeErrorJsonable(err);
 				if (callback) {
 					callback({ err: err, data: null });

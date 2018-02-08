@@ -1,18 +1,28 @@
-// Some tests depend on dom `document` and `NodeFilter`
 
-describe('---------- WebScraper class ----------', () => {
+describe('---------- WebScraper class (integration test) ----------', () => {
 
 	'use strict';
 
 	var webScraper;
 	beforeEach(() => {
-		webScraper = new emphasize.pool.WebScraper();
+		webScraper = new emphasize.pool.WebScraper({
+			document: document,
+			tokenizer: new emphasize.pool.Tokenizer(),
+			NodeFilter: NodeFilter,
+			createToken: (form, node, begin, end) => {
+				return new emphasize.pool.Token({
+					form: form,
+					node: node, 
+					begin: begin,
+					end: end
+				});
+			}
+		});
 	});
 
 	describe('getUrl function', () => {
 
 		it('should return the full url of the page', () => {
-			webScraper.document = document;
 			expect(webScraper.getUrl()).toEqual(document.location.href);
 		});
 	});
@@ -20,9 +30,7 @@ describe('---------- WebScraper class ----------', () => {
 	describe('getTextNodes function', () => {
 
 		it('should return all non-empty text nodes of an element', () => {
-			webScraper.document = document;
-			webScraper.NodeFilter = NodeFilter;
-			webScraper.rootElement = fixtures.complexTextNodes().element;
+			webScraper._rootElement = fixtures.complexTextNodes().element;
 
 			var nodes = webScraper.getTextNodes();
 
@@ -34,9 +42,7 @@ describe('---------- WebScraper class ----------', () => {
 		});
 
 		it('should ignore text nodes of script elements', () => {
-			webScraper.document = document;
-			webScraper.NodeFilter = NodeFilter;
-			webScraper.rootElement = fixtures.withScript().element;
+			webScraper._rootElement = fixtures.withScript().element;
 			
 			var nodes = webScraper.getTextNodes();
 			
@@ -46,9 +52,7 @@ describe('---------- WebScraper class ----------', () => {
 		});
 
 		it('should ignore text nodes of noscript elements', () => {
-			webScraper.document = document;
-			webScraper.NodeFilter = NodeFilter;
-			webScraper.rootElement = fixtures.withNoscript().element;
+			webScraper._rootElement = fixtures.withNoscript().element;
 
 			var nodes = webScraper.getTextNodes();
 			
@@ -58,9 +62,7 @@ describe('---------- WebScraper class ----------', () => {
 		});
 
 		it('should ignore text nodes of style elements', () => {
-			webScraper.document = document;
-			webScraper.NodeFilter = NodeFilter;
-			webScraper.rootElement = fixtures.withStyle().element;
+			webScraper._rootElement = fixtures.withStyle().element;
 
 			var nodes = webScraper.getTextNodes();
 			
@@ -73,30 +75,15 @@ describe('---------- WebScraper class ----------', () => {
 	describe('getTokens function', () => {
 
 		it('should return the tokens of a web page in order', () => {
-			webScraper.document = document;
-			webScraper.NodeFilter = NodeFilter;
-
 			var twoTextNodes = fixtures.twoTextNodes();
-			webScraper.rootElement = twoTextNodes.element;
-			
-			var tokenize = jasmine.createSpy();
-			tokenize.and.returnValues(
-				[
-					{ begin: 0, end: 2, form: 'ut' },
-					{ begin: 3, end: 7, form: 'enim' },
-					{ begin: 8, end: 10, form: 'ad' },
-					{ begin: 11, end: 16, form: 'minim' },
-					{ begin: 17, end: 23, form: 'veniam' }
-				],
-				[
-					{ begin: 0, end: 4, form: 'quis' },
-					{ begin: 5, end: 12, form: 'nostrud' },
-					{ begin: 13, end: 25, form: 'exercitation' }
-				]
-			);
-			webScraper.tokenize = tokenize;
+
+			webScraper._rootElement = twoTextNodes.element;
 
 			var tokens = webScraper.getTokens();
+
+			// expect fails if Objects to test have a custom type
+			// as here Token
+			tokens = tokens.map(token => Object.assign({}, token));
 			expect(tokens).toEqual(twoTextNodes.tokens);
 		});
 	});

@@ -4,27 +4,28 @@
 
 	class Access {
 
-		constructor(Marker, AccessError) {
-			this.Marker = Marker;
-			this.AccessError = AccessError;
-			this.currentMarker;
+		constructor(props = {}) {
+			this._createMarker = props.createMarker;
+			this._createAccessError = props.createAccessError;
+			this._currentMarker;
 		}
 
 		createMarker(markerId, styleClass) {
-			if (!this.currentMarker) {
-				this.currentMarker = this.Marker(markerId, styleClass);
+			if (!this._currentMarker) {
+				this._currentMarker = this._createMarker(markerId, styleClass);
 			} else {
-				throw this.AccessError('There already exists a marker instance');
+				throw this._createAccessError(
+					'There already exists a marker instance');
 			}
 		}
 
 		deleteMarker(markerId) {
-			if (!this.currentMarker)
-				throw this.AccessError('No marker instance available.');
-			else if (this.currentMarker.id !== markerId)
-				throw this.AccessError('Marker id mismatch.');
+			if (!this._currentMarker)
+				throw this._createAccessError('No marker instance available.');
+			else if (this._currentMarker.id !== markerId)
+				throw this._createAccessError('Marker id mismatch.');
 			else
-				this.currentMarker = undefined;
+				this._currentMarker = undefined;
 		}
 
 		extractWebPageData(markerId, ...args) {
@@ -48,13 +49,13 @@
 		}
 
 		_callMarkerMethod(markerId, method, args) {
-			if (!this.currentMarker)
-				throw this.AccessError('No marker instance available.');
-			else if (this.currentMarker.id !== markerId)
-				throw this.AccessError('Marker id mismatch.');
+			if (!this._currentMarker)
+				throw this._createAccessError('No marker instance available.');
+			else if (this._currentMarker.id !== markerId)
+				throw this._createAccessError('Marker id mismatch.');
 			else
-				return this.currentMarker[method]
-					.apply(this.currentMarker, args);
+				return this._currentMarker[method]
+					.apply(this._currentMarker, args);
 		}
 	}
 

@@ -7,17 +7,17 @@
 		constructor(props = {}) {
 			
 			this.id = props.id;
-			this.styleClass = props.styleClass;
-			this.webScraper = props.webScraper;
-			this.annotator = props.annotator;
-			this.markupCompiler = props.markupCompiler;
+			this._styleClass = props.styleClass;
+			this._webScraper = props.webScraper;
+			this._annotator = props.annotator;
+			this._markupCompiler = props.markupCompiler;
 			
 			this._webPageData = {};
 		}
 
 		extractWebPageData() {
-			this._webPageData.url = this.webScraper.getUrl();
-			this._webPageData.tokens =  this.webScraper.getTokens();
+			this._webPageData.url = this._webScraper.getUrl();
+			this._webPageData.tokens =  this._webScraper.getTokens();
 		}
 
 		getWebPageDataForRemote() {
@@ -27,18 +27,14 @@
 			}
 		}
 
-		annotate(remoteMarkup) {
-			var batchedMarkupTokens = this.markupCompiler
-				.compileRemoteMarkupAndSegment(remoteMarkup, 
-					this._webPageData.tokens);
-
-			batchedMarkupTokens = Array.from(batchedMarkupTokens);
-			this.annotator.annotateNodes(batchedMarkupTokens);
-
+		annotate(markup) {
+			var annotatedTokens = this._markupCompiler.compileMarkup(
+				markup, this._webPageData.tokens);
+			this._annotator.annotate(annotatedTokens);
 		}
 
 		removeAnnotation() {
-			this.annotator.removeAnnotation();
+			this._annotator.removeAnnotation();
 		}
 	}
 

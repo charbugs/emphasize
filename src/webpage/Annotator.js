@@ -10,16 +10,16 @@
 
 	class Annotator {
 
-		constructor(document, rootElement, markerId, styleClass) {
-			this.document = document;
-			this.rootElement = rootElement;
-			this.markerId = markerId;
-			this.styleClass = styleClass;
+		constructor(props = {}) {
+			this._document = props.document;
+			this._rootElement = props.rootElement;
+			this._markerId = props.markerId;
+			this._styleClass = props.styleClass;
 		}
 
 		removeAnnotation() {
-			var wrappers = this.rootElement.querySelectorAll(
-				`[${ATTR_MARKER_ID}="${this.markerId}"]`);
+			var wrappers = this._rootElement.querySelectorAll(
+				`[${ATTR_MARKER_ID}="${this._markerId}"]`);
 			
 			for (var wrapper of wrappers) {
 				var gloss = wrapper.querySelector(TAG_GLOSS);
@@ -32,21 +32,30 @@
 			}
 		}
 
-		/**
-		 * @param {Array of Array of Token} tokenBatches - Tokens to be annotated. 
-		 *		Tokens of each inner array should belong to a single text node.
-		 */
-		 annotateNodes(tokenBatches) {
-			tokenBatches.forEach(tokens => {
-				this.annotateNode(tokens);
-			});
+		annotate(annotatedTokens) {
+			for (var bundle of this._bundleTokensByNode(annotatedTokens)) {
+				bundle.sort((a, b) => a.begin - b.begin);
+				this._annotateNode(bundle);
+			}
+		}
+
+		_bundleTokensByNode(tokens) {
+			var bundles = new Map();
+			for (var token of tokens) {
+				if (!bundles.has(token.node)){
+					bundles.set(token.node, []);
+				}
+				bundles.get(token.node).push(token);
+			}
+			return Array.from(bundles.values());
 		}
 
 		/**
-		 * @param {List of Token} tokens to annotated. 
-		 *			tokens should belong to a single text node.
+		 * @param {List of Token} tokens - annotated tokens
+		 *   - tokens should belong to a single text node.
+		 *	 - tokens should be ordered from first to last.
 		 */
-		annotateNode(tokens) {
+		_annotateNode(tokens) {
 			var newHtml = this._createNewInnerHtml(tokens);
 			var newNodes = this._htmlToElements(newHtml);
 			this._setEventHandlers(newNodes);
@@ -70,13 +79,13 @@
 			
 			var styleClass = token.mark === false 
 				? CLASS_UNMARKED
-				: this.styleClass
+				: this._styleClass
 
 			var glossElement = token.gloss
 				? `<${TAG_GLOSS}>${token.gloss}</${TAG_GLOSS}>`
 				: "";
 
-			var html = 	`<${TAG_WRAPPER} ${ATTR_MARKER_ID}="${this.markerId}"`;
+			var html = 	`<${TAG_WRAPPER} ${ATTR_MARKER_ID}="${this._markerId}"`;
 			html += 	` class="${styleClass}">`;
 			html += 	`${token.form}`;
 			html +=		`${glossElement}`;
@@ -98,7 +107,7 @@
 		}
 
 		_htmlToElements(html) {
-		    var template = this.document.createElement('template');
+		    var template = this._document.createElement('template');
 		    template.innerHTML = html;
 		    return Array.from(template.content.childNodes);
 		}
