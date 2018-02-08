@@ -24,7 +24,7 @@
 		'src/webpage/WebScraper.js',
 		'src/webpage/MarkupCompiler.js',
 		'src/webpage/Annotator.js',
-		'src/webpage/Marker.js',
+		'src/webpage/PageMarker.js',
 		'src/webpage/Access.js',
 		'src/webpage/Messaging.js',
 		'src/webpage/Init.js'

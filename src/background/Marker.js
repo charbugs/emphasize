@@ -42,11 +42,11 @@
 		async apply() {
 			try {
 				this.stateWorking();
-				await this._createWebPageMarker();
+				await this._createPageMarker();
 				await this._getInput();
 				await this._analyze();
 				await this._annotate();
-				await this._deleteWebPageMarker();
+				await this._deletePageMarker();
 				this.stateDone();
 			} 
 			catch(err) {
@@ -67,9 +67,9 @@
 				var userInput = this.input.inputs;
 
 			this.stateWorking();
-			await this._createWebPageMarker();
+			await this._createPageMarker();
 			await this._removeAnnotation();
-			await this._deleteWebPageMarker();
+			await this._deletePageMarker();
 			this._init();
 			this.stateReady();
 
@@ -86,14 +86,14 @@
 			this.request.abortRequest();
 		}
 
-		async _createWebPageMarker() {
+		async _createPageMarker() {
 			await this.messaging.invoke(
-				this.tabId, 'createMarker', this.id, this.setup.face);
+				this.tabId, 'createPageMarker', this.id, this.setup.face);
 		}
 
-		async _deleteWebPageMarker() {
+		async _deletePageMarker() {
 			await this.messaging.invoke(
-				this.tabId, 'deleteMarker', this.id);
+				this.tabId, 'deletePageMarker', this.id);
 		}
 
 		/**

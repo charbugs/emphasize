@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	class Marker {
+	class PageMarker {
 
 		constructor(props = {}) {
 			
@@ -38,6 +38,6 @@
 		}
 	}
 
-	pool.Marker = Marker;
+	pool.PageMarker = PageMarker;
 
 })(emphasize.pool);

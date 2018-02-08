@@ -4,7 +4,7 @@ describe('---------- Access class ----------', () => {
 	var access, marker;
 	beforeEach(() => {
 
-		createMarker = function(markerId, styleClass) { 
+		createPageMarker = function(markerId, styleClass) { 
 
 			var marker = jasmine.createSpyObj([
 				'extractWebPageData',
@@ -24,7 +24,7 @@ describe('---------- Access class ----------', () => {
 		};
 
 		access = new emphasize.pool.Access({ 
-			createMarker: createMarker,
+			createPageMarker: createPageMarker,
 			createAccessError: msg => new fixtures.MockError(msg)
 		});
 	});
@@ -32,36 +32,36 @@ describe('---------- Access class ----------', () => {
 	describe('createMarker function', () => {
 
 		it('should create and store a new marker instance', () => {
-			access.createMarker(42, 'style');
+			access.createPageMarker(42, 'style');
 			expect(access._currentMarker.id).toEqual(42);
 			expect(access._currentMarker.styleClass).toEqual('style');
 		});
 
 		it('should throw error if there already is a current marker', () => {
 			access._currentMarker = {};
-			expect(() => access.createMarker(42, 'style'))
+			expect(() => access.createPageMarker(42, 'style'))
 				.toThrowError(fixtures.MockError);
 		});
 	});
 
-	describe('deleteMarker function', () => {
+	describe('deletePageMarker function', () => {
 
 		it('should throw an error if there is no marker instance to delete', 
 		() => {		
 			access._currentMarker = undefined;
-			expect(() => access.deleteMarker(42))
+			expect(() => access.deletePageMarker(42))
 				.toThrowError(fixtures.MockError);
 		});
 
 		it('should throw an error if there is a marker id mismatch', () => {
 			access._currentMarker = { id: 55 };
-			expect(() => access.deleteMarker(42))
+			expect(() => access.deletePageMarker(42))
 				.toThrowError(fixtures.MockError);
 		});
 
 		it('should delete the current marker if id matches', () => {
 			access._currentMarker ={ id: 42 };
-			access.deleteMarker(42);
+			access.deletePageMarker(42);
 			expect(typeof access._currentMarker).toBe('undefined');
 		});
 	});
@@ -103,7 +103,7 @@ describe('---------- Access class ----------', () => {
 		it('should pass arguments which follows the marker id to the \
 			respective marker method', () => {
 
-			access.createMarker(42, 'style');
+			access.createPageMarker(42, 'style');
 			var marker = access._currentMarker;
 
 			access.extractWebPageData(42, 'foo', 'bar');
@@ -126,7 +126,7 @@ describe('---------- Access class ----------', () => {
 		it('should return the return values of the respective marker methods', 
 		() => {
 			
-			access.createMarker(42, 'style');
+			access.createPageMarker(42, 'style');
 			var marker = access._currentMarker;
 
 			expect(access.extractWebPageData(42)).toEqual(7);

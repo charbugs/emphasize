@@ -35,13 +35,13 @@
 		});
 	};
 
-	var createMarker = function(markerId, styleClass) {
+	var createPageMarker = function(markerId, styleClass) {
 		var order = [
 			'extractWebPageData',
 			'getWebPageDataForRemote',
 			'annotate',
 		];
-		var marker = new pool.Marker({
+		var marker = new pool.PageMarker({
 			id: 			markerId,
 			styleClass: 	styleClass,
 			webScraper: 	webScraper,
@@ -52,7 +52,7 @@
 	};
 
 	var access = new pool.Access({
-		createMarker: 		createMarker,
+		createPageMarker:	createPageMarker,
 		createAccessError: 	createAccessError
 	});
 

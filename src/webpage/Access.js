@@ -5,21 +5,21 @@
 	class Access {
 
 		constructor(props = {}) {
-			this._createMarker = props.createMarker;
+			this._createPageMarker = props.createPageMarker;
 			this._createAccessError = props.createAccessError;
 			this._currentMarker;
 		}
 
-		createMarker(markerId, styleClass) {
+		createPageMarker(markerId, styleClass) {
 			if (!this._currentMarker) {
-				this._currentMarker = this._createMarker(markerId, styleClass);
+				this._currentMarker = this._createPageMarker(markerId, styleClass);
 			} else {
 				throw this._createAccessError(
 					'There already exists a marker instance');
 			}
 		}
 
-		deleteMarker(markerId) {
+		deletePageMarker(markerId) {
 			if (!this._currentMarker)
 				throw this._createAccessError('No marker instance available.');
 			else if (this._currentMarker.id !== markerId)
