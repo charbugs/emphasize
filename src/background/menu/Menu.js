@@ -11,6 +11,7 @@
 			this.registration = props.registration,
 			this._setupStore = props.setupStore;
 			this._createMarker = props.createMarker;
+			this._prome = props.prome;
 			
 			this.markers;
 			this.curMarker = null;
@@ -25,7 +26,7 @@
 			this._setupStore.setupRemoved.register(
 				this._handleSetupRemoved.bind(this));
 			
-			chrome.tabs.onUpdated.addListener(
+			this._prome.tabs.onUpdated.addListener(
 				this._handleWebPageReloaded.bind(this));
 
 			var setups = await this._setupStore.getSetup(null);
@@ -36,7 +37,7 @@
 		}
 
 		openWebPage(url) {
-			chrome.tabs.create({ url: url });
+			this._prome.tabs.create({ url: url });
 		}
 
 		///////////////////////////////////////////////
@@ -116,6 +117,7 @@
 		}
 
 		_handleWebPageReloaded(tabId, info, tab) {
+			console.log('in _handleWebPageReloaded');
 			if (tabId === this.tabId && info.status === 'loading') {
 				this.markers.forEach(m => m.reset(true));
 			}

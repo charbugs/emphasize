@@ -75,7 +75,8 @@
 			tabId: 			tabId,
 			setupStore: 	setupStore,
 			registration: 	createRegistration(),
-			createMarker: 	createMarker
+			createMarker: 	createMarker,
+			prome:  		prome
 		});
 	};
 

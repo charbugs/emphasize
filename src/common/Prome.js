@@ -29,6 +29,32 @@
 			});
 		};
 	
+		self.tabs.create = function(createProperties) {
+			return new Promise(function(resolve, reject) {
+				chrome.tabs.create(createProperties, function(tab) {
+					resolve(tab);
+				})
+			});
+		};
+
+		self.tabs.executeScript = function(tabId, details) {
+			return new Promise(function(resolve, reject) {
+				chrome.tabs.executeScript(tabId, details, function(result) {
+					resolve(result);
+				})
+			});
+		};
+
+		self.tabs.insertCSS = function(tabId, details) {
+			return new Promise(function(resolve, reject) {
+				chrome.tabs.insertCSS(tabId, details, function() {
+					resolve();
+				})
+			});
+		};
+
+		self.tabs.onUpdated = chrome.tabs.onUpdated;
+
 		self.storage = {};
 		self.storage.local = {};
 
@@ -47,6 +73,9 @@
 				});
 			});
 		};
+
+		self.runtime = {};
+		self.runtime.lastError = chrome.runtime.lastError;
 
 		return self;
 	}

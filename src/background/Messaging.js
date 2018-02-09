@@ -37,8 +37,8 @@
 					return resp.data; 
 			} else {
 				// see: https://developer.chrome.com/extensions/tabs#method-sendMessage
-				if (chrome.runtime.lastError)
-					throw this._createChannelError(chrome.runtime.lastError.message);
+				if (this._prome.runtime.lastError)
+					throw this._createChannelError(this._prome.runtime.lastError.message);
 			}
 		}
 	}

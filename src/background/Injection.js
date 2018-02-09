@@ -45,8 +45,6 @@
 		 */
 		async connectWebPage() {
 
-			var that = this;
-
 			var tabs = await this._prome.tabs.query({
 				active: true, 
 				currentWindow: true
@@ -64,12 +62,8 @@
 			
 			if (isAlive) {
 				return tabId;
-			}
-			else {
-
-				return new Promise(function(resolve) {
-					that._executeScripts(tabId, () => resolve(tabId));
-				});
+			} else {
+				await this._executeScripts(tabId);
 			}
 		}
 
@@ -87,36 +81,18 @@
 		/**
 		 * Inject a list of content scripts in the current web page.
 		 *
-		 * With slight changes taken from:
-		 * http://stackoverflow.com/questions/21535234
-		 *
 		 * param: tabId (Number) - id of current tab
-		 * param: callback (Function)
 		*/
-		_executeScripts(tabId, callback) {
-
-			function createCallback(tabId, script, callback) {
-				if (script.endsWith('.js'))
-					return function () {
-						chrome.tabs.executeScript(tabId, {file: script}, callback);
-					};
-				else if (script.endsWith('.css'))
-					return function () {
-						chrome.tabs.insertCSS(tabId, {file: script}, callback);
-					};
-			}
-
-			for (var i = contentScripts.length - 1; i >= 0; --i) {
-				callback = createCallback(
-					tabId, 
-					contentScripts[i], 
-					callback
-				);
-			}
-
-			if (callback !== null)
-				callback();   // execute outermost function
+		async _executeScripts(tabId) {
+			for (var script of contentScripts) {
+				if (script.endsWith('.js')) {
+					await this._prome.tabs.executeScript(tabId, {file: script});
+				} else if (script.endsWith('.css')) {
+					await this._prome.tabs.insertCSS(tabId, {file: script});
+				}
+			}	
 		}
+
 	}
 
 	pool.Injection = Injection;

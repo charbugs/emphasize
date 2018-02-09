@@ -14,7 +14,18 @@ describe('---------- Prome API ----------', () => {
 					callFake(chromeApiFn),
 
 				query: jasmine.createSpy('query').and.
-					callFake(chromeApiFn)
+					callFake(chromeApiFn),
+
+				create: jasmine.createSpy('create').and.
+					callFake(chromeApiFn),
+
+				executeScript: jasmine.createSpy('executeScript').and.
+					callFake(chromeApiFn),
+
+				insertCSS: jasmine.createSpy('insertCSS').and.
+					callFake(chromeApiFn),
+
+				onUpdated: {}
 			},
 			storage: {
 				local: {
@@ -24,6 +35,10 @@ describe('---------- Prome API ----------', () => {
 					set: jasmine.createSpy('set').and.
 						callFake(chromeApiFn)
 				}
+			},
+
+			runtime: {
+				lastError: {}
 			}
 		};
 
@@ -68,6 +83,69 @@ describe('---------- Prome API ----------', () => {
 		});
 	});
 
+	describe('prome.tabs.create function', () => {
+
+		it('should call chrome.tabs.create properly', () => {
+			prome.tabs.create('PROPS');
+			var args = chromeMock.tabs.create.calls.argsFor(0);
+			expect(args[0]).toBe('PROPS');
+			expect(typeof args[1]).toBe('function');
+				
+		});
+
+		it('should return the result of chrome.tabs.create as promise ', 
+		() => {
+			return prome.tabs.create().then(res => {
+				expect(res).toBe('VAL');
+			});
+		});
+	});
+
+	describe('prome.tabs.executeScript function', () => {
+
+		it('should call chrome.tabs.executeScript properly', () => {
+			prome.tabs.executeScript('TABID', 'DETAILS');
+			var args = chromeMock.tabs.executeScript.calls.argsFor(0);
+			expect(args[0]).toBe('TABID');
+			expect(args[1]).toBe('DETAILS');
+			expect(typeof args[2]).toBe('function');
+				
+		});
+
+		it('should return the result of chrome.tabs.executeScript as promise ', 
+		() => {
+			return prome.tabs.executeScript().then(res => {
+				expect(res).toBe('VAL');
+			});
+		});
+	});
+
+	describe('prome.tabs.insertCSS function', () => {
+
+		it('should call chrome.tabs.insertCSS properly', () => {
+			prome.tabs.insertCSS('TABID', 'DETAILS');
+			var args = chromeMock.tabs.insertCSS.calls.argsFor(0);
+			expect(args[0]).toBe('TABID');
+			expect(args[1]).toBe('DETAILS');
+			expect(typeof args[2]).toBe('function');
+				
+		});
+
+		it('should return the result of chrome.tabs.insertCSS as promise ', 
+		() => {
+			return prome.tabs.insertCSS().then(res => {
+				expect(res).toBe();
+			});
+		});
+	});
+
+	describe('prome.tabs.onUpdated propertie', () => {
+
+		it('should return chrome.tabs.onUpdated', () => {
+			expect(prome.tabs.onUpdated).toBe(chromeMock.tabs.onUpdated);
+		});
+	});
+
 	describe('prome.storage.local.get function', () => {
 
 		it('should call chrome.storage.local.get properly', () => {
@@ -103,4 +181,12 @@ describe('---------- Prome API ----------', () => {
 			});
 		});
 	});
+
+	describe('prome.runtime.lastError propertie', () => {
+
+		it('should return chrome.runtime.lastError', () => {
+			expect(prome.runtime.lastError).toBe(chromeMock.runtime.lastError);
+		});
+	});
+
 });
