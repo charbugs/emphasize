@@ -4,7 +4,7 @@
 
 	const TAG_WRAPPER = 'emphasize-wrapper'; 
 	const TAG_GLOSS = 'emphasize-gloss';
-	const ATTR_MARKER_ID = 'data-emphasize-marker-id';
+	const ATTR_JOB_ID = 'data-emphasize-job-id';
 	const CLASS_MARKED = 'emphasize-marked';
 	const CLASS_UNMARKED = 'emphasize-unmarked';
 
@@ -13,13 +13,13 @@
 		constructor(props = {}) {
 			this._document = props.document;
 			this._rootElement = props.rootElement;
-			this._markerId = props.markerId;
+			this._jobId = props.jobId;
 			this._styleClass = props.styleClass;
 		}
 
 		removeAnnotation() {
 			var wrappers = this._rootElement.querySelectorAll(
-				`[${ATTR_MARKER_ID}="${this._markerId}"]`);
+				`[${ATTR_JOB_ID}="${this._jobId}"]`);
 			
 			for (var wrapper of wrappers) {
 				var gloss = wrapper.querySelector(TAG_GLOSS);
@@ -85,7 +85,7 @@
 				? `<${TAG_GLOSS}>${token.gloss}</${TAG_GLOSS}>`
 				: "";
 
-			var html = 	`<${TAG_WRAPPER} ${ATTR_MARKER_ID}="${this._markerId}"`;
+			var html = 	`<${TAG_WRAPPER} ${ATTR_JOB_ID}="${this._jobId}"`;
 			html += 	` class="${styleClass}">`;
 			html += 	`${token.form}`;
 			html +=		`${glossElement}`;

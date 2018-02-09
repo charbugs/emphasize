@@ -84,12 +84,12 @@
 
 		async _createPageMarker() {
 			await this._messaging.invoke(
-				this.tabId, 'createPageMarker', this.id, this.setup.face);
+				this.tabId, 'createPageMarker', this.jobId, this.setup.face);
 		}
 
 		async _deletePageMarker() {
 			await this._messaging.invoke(
-				this.tabId, 'deletePageMarker', this.id);
+				this.tabId, 'deletePageMarker', this.jobId);
 		}
 
 		/**
@@ -101,10 +101,10 @@
 		async _collectInput() {
 
 			await this._messaging.invoke(
-				this.tabId, 'extractWebPageData', this.id);
+				this.tabId, 'extractWebPageData', this.jobId);
 
 			var wpData = await this._messaging.invoke(
-				this.tabId, 'getWebPageDataForRemote', this.id);
+				this.tabId, 'getWebPageDataForRemote', this.jobId);
 
 			this.input.tokens = wpData.tokens;
 			this.input.url = wpData.url;
@@ -129,7 +129,7 @@
 				this.setup.url, this.input);
 
 			if (this.output.hasOwnProperty('error')) {
-				throw this.MarkerError(output.error); 
+				throw this._createMarkerError(this.output.error); 
 			}
 		}
 
@@ -139,7 +139,7 @@
 		 */
 		async _annotate() {
 			await this._messaging.invoke(
-				this.tabId, 'annotate',	this.id, this.output.markup);
+				this.tabId, 'annotate',	this.jobId, this.output.markup);
 		}
 
 		/**
@@ -147,7 +147,7 @@
 		 */
 		async _removeAnnotation() {
 			await this._messaging.invoke(
-				this.tabId, 'removeAnnotation', this.id);
+				this.tabId, 'removeAnnotation', this.jobId);
 		}
 	}
 

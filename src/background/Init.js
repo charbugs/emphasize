@@ -3,7 +3,7 @@
 
 	var createProtocolError = msg => new pool.ProtocolError(msg);
 	var createRequestError = msg => new pool.RequestError(msg);
-	var createMarkerError = msg => new pool.MakerError(msg);
+	var createMarkerError = msg => new pool.MarkerError(msg);
 	var createStorageError = msg => new pool.StorageError(msg);
 	var createChannelError = msg => new pool.ChannelError(msg);
 	var createInjectionError = msg => new pool.InjectionError(msg);

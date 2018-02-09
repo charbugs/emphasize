@@ -26,26 +26,26 @@
 		createToken: 	createToken
 	});
 
-	var createAnnotator = function(markerId, styleClass) {
+	var createAnnotator = function(jobId, styleClass) {
 		return new pool.Annotator({
 			document: 		document,
 			rootElement: 	document.body,
-			markerId: 		markerId,
+			markerId: 		jobId,
 			styleClass: 	styleClass
 		});
 	};
 
-	var createPageMarker = function(markerId, styleClass) {
+	var createPageMarker = function(jobId, styleClass) {
 		var order = [
 			'extractWebPageData',
 			'getWebPageDataForRemote',
 			'annotate',
 		];
 		var marker = new pool.PageMarker({
-			id: 			markerId,
+			jobId: 			jobId,
 			styleClass: 	styleClass,
 			webScraper: 	webScraper,
-			annotator: 		createAnnotator(markerId, styleClass),
+			annotator: 		createAnnotator(jobId, styleClass),
 			markupCompiler:	markupCompiler 
 		});
 		return sequencer.sequenceSyncMethodExecution(marker, order);
@@ -63,8 +63,5 @@
 	});
 
 	messaging.createMessageChannel();
-
-	// debug
-	console.log(chrome.tabs);
 
 })(emphasize.pool, emphasize.app);

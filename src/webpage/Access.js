@@ -10,48 +10,48 @@
 			this._currentMarker;
 		}
 
-		createPageMarker(markerId, styleClass) {
+		createPageMarker(jobId, styleClass) {
 			if (!this._currentMarker) {
-				this._currentMarker = this._createPageMarker(markerId, styleClass);
+				this._currentMarker = this._createPageMarker(jobId, styleClass);
 			} else {
 				throw this._createAccessError(
 					'There already exists a marker instance');
 			}
 		}
 
-		deletePageMarker(markerId) {
+		deletePageMarker(jobId) {
 			if (!this._currentMarker)
 				throw this._createAccessError('No marker instance available.');
-			else if (this._currentMarker.id !== markerId)
+			else if (this._currentMarker.jobId !== jobId)
 				throw this._createAccessError('Marker id mismatch.');
 			else
 				this._currentMarker = undefined;
 		}
 
-		extractWebPageData(markerId, ...args) {
+		extractWebPageData(jobId, ...args) {
 			return this._callMarkerMethod(
-				markerId, "extractWebPageData", args);
+				jobId, "extractWebPageData", args);
 		}
 
-		getWebPageDataForRemote(markerId, ...args) {
+		getWebPageDataForRemote(jobId, ...args) {
 			return this._callMarkerMethod(
-				markerId, "getWebPageDataForRemote", args);
+				jobId, "getWebPageDataForRemote", args);
 		}
 
-		annotate(markerId, ...args) {
+		annotate(jobId, ...args) {
 			return this._callMarkerMethod(
-				markerId, "annotate", args);
+				jobId, "annotate", args);
 		}
 
-		removeAnnotation(markerId, ...args) {
+		removeAnnotation(jobId, ...args) {
 			return this._callMarkerMethod(
-				markerId, "removeAnnotation", args);
+				jobId, "removeAnnotation", args);
 		}
 
-		_callMarkerMethod(markerId, method, args) {
+		_callMarkerMethod(jobId, method, args) {
 			if (!this._currentMarker)
 				throw this._createAccessError('No marker instance available.');
-			else if (this._currentMarker.id !== markerId)
+			else if (this._currentMarker.jobId !== jobId)
 				throw this._createAccessError('Marker id mismatch.');
 			else
 				return this._currentMarker[method]

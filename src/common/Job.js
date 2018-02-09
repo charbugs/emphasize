@@ -9,7 +9,7 @@
 
 		return {
 
-			id: ++instanceCounter,
+			jobId: ++instanceCounter,
 			READY: 0,
 			WORKING: 1,
 			DONE: 2,

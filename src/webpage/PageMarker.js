@@ -6,7 +6,7 @@
 
 		constructor(props = {}) {
 			
-			this.id = props.id;
+			this.jobId = props.jobId;
 			this._styleClass = props.styleClass;
 			this._webScraper = props.webScraper;
 			this._annotator = props.annotator;
