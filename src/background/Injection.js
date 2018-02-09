@@ -64,6 +64,7 @@
 				return tabId;
 			} else {
 				await this._executeScripts(tabId);
+				return tabId;
 			}
 		}
 

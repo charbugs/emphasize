@@ -27,22 +27,20 @@
 			this.stateReady();
 		}
 
-		_init() {
+		_init(keepUserInput) {
 			this.error = null;
 			this.output = null;
-			this.input = {
-				tokens: null,
-				// user inputs: is bound to some html input elements.
-				inputs: {},
-				webpageUrl: null
-			}
+			this.input = {};
+			if (!keepUserInput)
+				this.userInputs = {};
 		}
 
 		async apply() {
+
 			try {
 				this.stateWorking();
 				await this._createPageMarker();
-				await this._getInput();
+				await this._collectInput();
 				await this._analyze();
 				await this._annotate();
 				await this._deletePageMarker();
@@ -53,6 +51,7 @@
 					err.name === 'ProtocolError' ||
 					err.name === 'MarkerError') {
 					this.error = err;
+					await this._deletePageMarker();
 					this.stateError();
 				} 
 				else {
@@ -62,18 +61,16 @@
 		}
 
 		async reset(keepUserInput) {
-			if (keepUserInput)
-				var userInput = this.input.inputs;
+			// do we have annotations in web page?
+			if (this.state === this.DONE) {
+				this.stateWorking();
+				await this._createPageMarker();
+				await this._removeAnnotation();
+				await this._deletePageMarker();
+			}
 
-			this.stateWorking();
-			await this._createPageMarker();
-			await this._removeAnnotation();
-			await this._deletePageMarker();
-			this._init();
+			this._init(keepUserInput);
 			this.stateReady();
-
-			if (keepUserInput)
-				this.input.inputs = userInput;
 		}
 
 		/**
@@ -101,7 +98,7 @@
 		 * User input from form elements should already be present
 		 * in `this.input.inputs`.
 		 */
-		async _getInput() {
+		async _collectInput() {
 
 			await this._messaging.invoke(
 				this.tabId, 'extractWebPageData', this.id);
@@ -110,7 +107,17 @@
 				this.tabId, 'getWebPageDataForRemote', this.id);
 
 			this.input.tokens = wpData.tokens;
-			this.input.webpageUrl = wpData.url;
+			this.input.url = wpData.url;
+			this.input.inputs = this._createInputContainer();
+			Object.assign(this.input.inputs, this.userInputs);
+		}
+
+		_createInputContainer() {
+			var container = {};
+			this.setup.inputs.forEach(input => {
+				container[input.id] = null;
+			});
+			return container;
 		}
 
 		/**

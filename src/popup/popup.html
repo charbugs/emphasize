@@ -99,13 +99,13 @@
 					v-on:keyup.enter="menu.applyMarker()"
 					class="w3-input w3-border"
 					type="text"
-					v-model="menu.curMarker.input.inputs[input.id]">
+					v-model="menu.curMarker.userInputs[input.id]">
 
 				<!-- select input -->
 
 				<select v-if="input.type=='select'"
 					class="w3-input w3-border w3-white"
-					v-model="menu.curMarker.input.inputs[input.id]">
+					v-model="menu.curMarker.userInputs[input.id]">
 					<option v-for="val of input.values">
 						{{ val }}
 					</option>

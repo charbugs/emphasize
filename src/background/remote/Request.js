@@ -61,7 +61,7 @@
 		 * return: (Object) parsed analysis response.
 		 */
 		async requestMarkup(url, data) {
-
+			
 			data.call = 'markup',
 			data = this._parser.parseMarkupRequest(data) // debug
 			var response = await this._post(url, data);

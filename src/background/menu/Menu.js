@@ -117,7 +117,6 @@
 		}
 
 		_handleWebPageReloaded(tabId, info, tab) {
-			console.log('in _handleWebPageReloaded');
 			if (tabId === this.tabId && info.status === 'loading') {
 				this.markers.forEach(m => m.reset(true));
 			}
