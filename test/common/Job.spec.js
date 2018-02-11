@@ -8,9 +8,9 @@ describe('---------- Job class ----------', () => {
 	describe('id property', () => {
 
 		it('each instance has an unique id', () => {
-			expect((new Job).id).toEqual(1);
-			expect((new Job).id).toEqual(2);
-			expect((new Job).id).toEqual(3);
+			expect((new Job).jobId).toEqual(1);
+			expect((new Job).jobId).toEqual(2);
+			expect((new Job).jobId).toEqual(3);
 		});
 	});
 

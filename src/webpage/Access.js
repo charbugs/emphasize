@@ -23,7 +23,7 @@
 			if (!this._currentMarker)
 				throw this._createAccessError('No marker instance available.');
 			else if (this._currentMarker.jobId !== jobId)
-				throw this._createAccessError('Marker id mismatch.');
+				throw this._createAccessError('Job id mismatch.');
 			else
 				this._currentMarker = undefined;
 		}
@@ -52,7 +52,7 @@
 			if (!this._currentMarker)
 				throw this._createAccessError('No marker instance available.');
 			else if (this._currentMarker.jobId !== jobId)
-				throw this._createAccessError('Marker id mismatch.');
+				throw this._createAccessError('Job id mismatch.');
 			else
 				return this._currentMarker[method]
 					.apply(this._currentMarker, args);

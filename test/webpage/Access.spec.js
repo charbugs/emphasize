@@ -4,7 +4,7 @@ describe('---------- Access class ----------', () => {
 	var access, marker;
 	beforeEach(() => {
 
-		createPageMarker = function(markerId, styleClass) { 
+		createPageMarker = function(jobId, styleClass) { 
 
 			var marker = jasmine.createSpyObj([
 				'extractWebPageData',
@@ -18,7 +18,7 @@ describe('---------- Access class ----------', () => {
 			marker.annotate.and.returnValue(7);
 			marker.removeAnnotation.and.returnValue(7);
 
-			marker.id = markerId;
+			marker.jobId = jobId;
 			marker.styleClass = styleClass;
 			return marker;
 		};
@@ -33,7 +33,7 @@ describe('---------- Access class ----------', () => {
 
 		it('should create and store a new marker instance', () => {
 			access.createPageMarker(42, 'style');
-			expect(access._currentMarker.id).toEqual(42);
+			expect(access._currentMarker.jobId).toEqual(42);
 			expect(access._currentMarker.styleClass).toEqual('style');
 		});
 
@@ -53,14 +53,14 @@ describe('---------- Access class ----------', () => {
 				.toThrowError(fixtures.MockError);
 		});
 
-		it('should throw an error if there is a marker id mismatch', () => {
-			access._currentMarker = { id: 55 };
+		it('should throw an error if there is a job id mismatch', () => {
+			access._currentMarker = { jobId: 55 };
 			expect(() => access.deletePageMarker(42))
 				.toThrowError(fixtures.MockError);
 		});
 
 		it('should delete the current marker if id matches', () => {
-			access._currentMarker ={ id: 42 };
+			access._currentMarker ={ jobId: 42 };
 			access.deletePageMarker(42);
 			expect(typeof access._currentMarker).toBe('undefined');
 		});
@@ -84,8 +84,8 @@ describe('---------- Access class ----------', () => {
 
 		});		
 
-		it('should throw an error if there is an marker id mismatch', () => {
-			access._currentMarker = { id: 55 };
+		it('should throw an error if there is an job id mismatch', () => {
+			access._currentMarker = { jobId: 55 };
 			
 			expect(() => access.extractWebPageData(42))
 				.toThrowError(fixtures.MockError);
@@ -100,7 +100,7 @@ describe('---------- Access class ----------', () => {
 				.toThrowError(fixtures.MockError);
 		});
 
-		it('should pass arguments which follows the marker id to the \
+		it('should pass arguments which follows the job id to the \
 			respective marker method', () => {
 
 			access.createPageMarker(42, 'style');

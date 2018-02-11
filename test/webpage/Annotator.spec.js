@@ -14,7 +14,7 @@ describe('---------- Annotator class ----------', () => {
 				annotator = new emphasize.pool.Annotator({
 					document: document,
 					rootElement: single.element,
-					markerId: 42,
+					jobId: 42,
 					styleClass: 'emphasize-face-1'
 				});
 			});
@@ -26,7 +26,7 @@ describe('---------- Annotator class ----------', () => {
 				]);
 				
 				var after = '<span>';
-				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	'<emphasize-wrapper data-emphasize-job-id="42"';
 				after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
 				after += 	' ipsum dolor sit amet consectetur</span>';
 				
@@ -42,9 +42,9 @@ describe('---------- Annotator class ----------', () => {
 				]);
 				
 				var after = '<span>';
-				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	'<emphasize-wrapper data-emphasize-job-id="42"';
 				after +=	' class="emphasize-face-1">lorem</emphasize-wrapper>';
-				after += 	' <emphasize-wrapper data-emphasize-marker-id="42"';
+				after += 	' <emphasize-wrapper data-emphasize-job-id="42"';
 				after +=	' class="emphasize-face-1">ipsum</emphasize-wrapper>';
 				after += 	' dolor sit amet consectetur</span>';
 				
@@ -60,10 +60,10 @@ describe('---------- Annotator class ----------', () => {
 				]);
 
 				var after = '<span>';
-				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	'<emphasize-wrapper data-emphasize-job-id="42"';
 				after += 	' class="emphasize-face-1">lorem</emphasize-wrapper>';
 				after += 	' ipsum';
-				after +=	' <emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	' <emphasize-wrapper data-emphasize-job-id="42"';
 				after +=	' class="emphasize-face-1">dolor</emphasize-wrapper>';
 				after +=	' sit amet consectetur</span>';
 
@@ -80,7 +80,7 @@ describe('---------- Annotator class ----------', () => {
 				]);
 
 				var after = '<span>';
-				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	'<emphasize-wrapper data-emphasize-job-id="42"';
 				after += 	' class="emphasize-unmarked">'
 				after += 	'lorem</emphasize-wrapper>';
 				after += 	' ipsum dolor sit amet consectetur</span>';
@@ -97,7 +97,7 @@ describe('---------- Annotator class ----------', () => {
 				]);
 
 				var after = '<span>';
-				after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+				after +=	'<emphasize-wrapper data-emphasize-job-id="42"';
 				after += 	' class="emphasize-face-1">lorem';
 				after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
 				after +=	'</emphasize-wrapper>';
@@ -219,7 +219,7 @@ describe('---------- Annotator class ----------', () => {
 			annotator = new emphasize.pool.Annotator({
 					document: document,
 					rootElement: single.element,
-					markerId: 42,
+					jobId: 42,
 					styleClass: 'emphasize-face-1'
 				});
 		});
@@ -233,7 +233,7 @@ describe('---------- Annotator class ----------', () => {
 			]);
 
 			var after = '<span>';
-			after +=	'<emphasize-wrapper data-emphasize-marker-id="42"';
+			after +=	'<emphasize-wrapper data-emphasize-job-id="42"';
 			after += 	' class="emphasize-face-1">lorem';
 			after += 	'<emphasize-gloss>a nice gloss</emphasize-gloss>';
 			after +=	'</emphasize-wrapper>';

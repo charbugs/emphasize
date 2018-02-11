@@ -30,7 +30,7 @@
 		return new pool.Annotator({
 			document: 		document,
 			rootElement: 	document.body,
-			markerId: 		jobId,
+			jobId: 			jobId,
 			styleClass: 	styleClass
 		});
 	};
