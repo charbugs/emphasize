@@ -21,7 +21,8 @@
         }
 
         getTextNodes() {
-            var textNodes = [];
+            this._rootElement.normalize();
+            var textNodes = [];           
             var walker = this._createTreeWalker();
             while(walker.nextNode())
                 textNodes.push(walker.currentNode);
