@@ -40,15 +40,25 @@
         }
 
          _createTreeWalker() {
+
+            var filter = function(node) {
+                if (node.nodeType === Node.ELEMENT_NODE && 
+                    window.getComputedStyle(node).display === 'none') {
+                    
+                    return NodeFilter.FILTER_REJECT;
+                } else if (node.nodeType === Node.TEXT_NODE && 
+                    node.data.trim().length > 0 ) {
+                    return NodeFilter.FILTER_ACCEPT;
+                } else {
+                    return NodeFilter.FILTER_SKIP;
+                }
+            }
+
             return this._document.createTreeWalker(
                 this._rootElement,
-                this._NodeFilter.SHOW_TEXT,
-                { acceptNode: function (node) {
-                    return node.data.trim().length > 0 &&
-                        node.parentElement.nodeName != 'SCRIPT' &&
-                        node.parentElement.nodeName != 'NOSCRIPT' &&
-                        node.parentElement.nodeName != 'STYLE';
-            }});
+                this._NodeFilter.SHOW_ALL,
+                { acceptNode: filter }
+            );
         }
     }
 
