@@ -117,7 +117,6 @@
 	        for (var newNode of newNodes)
 	            parentNode.insertBefore(newNode, oldNode)
 	        parentNode.removeChild(oldNode);
-	        parentNode.normalize();
 	    }
 	}
 
