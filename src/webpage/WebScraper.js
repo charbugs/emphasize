@@ -2,6 +2,10 @@
 
 	'use strict';
 
+    var elementBlacklist = [
+        'TEXTAREA', 'OPTION', 'SCRIPT', 'STYLE'
+    ];
+
     class WebScraper {
 
         constructor(props = {}) {
@@ -42,14 +46,14 @@
          _createTreeWalker() {
 
             var filter = function(node) {
-                if (node.nodeType === Node.ELEMENT_NODE && 
-                    window.getComputedStyle(node).display === 'none') {
-                    
+                if (this._isHiddenElement(node) || 
+                    this._isInBlacklistElement(node)) {
                     return NodeFilter.FILTER_REJECT;
-                } else if (node.nodeType === Node.TEXT_NODE && 
-                    node.data.trim().length > 0 ) {
+                } 
+                else if (this._isNoneEmptyTextNode(node)) {
                     return NodeFilter.FILTER_ACCEPT;
-                } else {
+                } 
+                else {
                     return NodeFilter.FILTER_SKIP;
                 }
             }
@@ -57,8 +61,26 @@
             return this._document.createTreeWalker(
                 this._rootElement,
                 this._NodeFilter.SHOW_ALL,
-                { acceptNode: filter }
+                { acceptNode: filter.bind(this) }
             );
+        }
+
+        _isHiddenElement(node) {
+            return node.nodeType === Node.ELEMENT_NODE &&
+                window.getComputedStyle(node).display === 'none'
+                    ? true : false;
+        }
+
+        _isInBlacklistElement(node) {
+            return node.nodeType === Node.ELEMENT_NODE &&
+                elementBlacklist.indexOf(node.tagName) > -1
+                    ? true : false;
+        }
+
+        _isNoneEmptyTextNode(node) {
+            return node.nodeType === Node.TEXT_NODE && 
+                node.data.trim().length > 0
+                    ? true : false; 
         }
     }
 
