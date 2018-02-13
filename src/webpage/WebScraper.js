@@ -2,7 +2,7 @@
 
 	'use strict';
 
-    var elementBlacklist = [
+    var blacklistElements = [
         'TEXTAREA', 'OPTION', 'SCRIPT', 'STYLE'
     ];
 
@@ -48,7 +48,7 @@
 
             var filter = function(node) {
                 if (this._isHiddenElement(node) || 
-                    this._isInBlacklistElement(node)) {
+                    this._isBlacklistElement(node)) {
                     return NodeFilter.FILTER_REJECT;
                 } 
                 else if (this._isNoneEmptyTextNode(node)) {
@@ -72,9 +72,9 @@
                     ? true : false;
         }
 
-        _isInBlacklistElement(node) {
+        _isBlacklistElement(node) {
             return node.nodeType === Node.ELEMENT_NODE &&
-                elementBlacklist.indexOf(node.tagName) > -1
+                blacklistElements.indexOf(node.tagName) > -1
                     ? true : false;
         }
 
