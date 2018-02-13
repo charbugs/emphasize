@@ -42,3 +42,13 @@
 	color: #000000;
 	background: #CDDC39;
 }
+
+emphasize-gloss {
+	all: initial;
+	color: red !important;
+	background-color: #cccccc;
+	border: 1px solid black;
+	padding: 10px;
+	display: none;
+	position: absolute;
+}
