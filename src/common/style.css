@@ -43,12 +43,30 @@
 	background: #CDDC39;
 }
 
-emphasize-gloss {
+emphasize-wrapper {
+	position: relative;
+}
+
+emphasize-wrapper emphasize-gloss {
 	all: initial;
-	color: red !important;
-	background-color: #cccccc;
-	border: 1px solid black;
-	padding: 10px;
-	display: none;
+	/* look */
+	background: black;
+	color: white;
+	padding: 5px;
+	border-radius: 3px;
+	/* position */
 	position: absolute;
+	left: 0px;
+	top: 20px;
+	z-index: 100 !important;
+	overflow: visible !important;
+	/* show and hide */
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.5s, visibility 0.5s;
+}
+
+emphasize-wrapper:hover emphasize-gloss {
+	visibility: visible;
+	opacity: 1;
 }

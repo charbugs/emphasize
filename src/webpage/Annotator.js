@@ -58,7 +58,6 @@
 		_annotateNode(tokens) {
 			var newHtml = this._createNewInnerHtml(tokens);
 			var newNodes = this._htmlToElements(newHtml);
-			this._setEventHandlers(newNodes);
 			this._replaceNodeWithMultiples(tokens[0].node, newNodes);
 		}
 
@@ -92,18 +91,6 @@
 			html +=		`</${TAG_WRAPPER}>`;	
 			
 			return html;
-		}
-
-		_setEventHandlers(nodes) {
-			nodes.forEach(node => {
-				if (node.tagName === TAG_WRAPPER.toUpperCase()) {
-					var gloss = node.querySelector(TAG_GLOSS);
-					if (gloss) {
-						node.onmouseover = () => gloss.style.display = 'block';
-						node.onmouseout = () => gloss.style.display = 'none';
-					}
-				} 
-			});
 		}
 
 		_htmlToElements(html) {
