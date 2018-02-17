@@ -42,31 +42,3 @@
 	color: #000000;
 	background: #CDDC39;
 }
-
-emphasize-wrapper {
-	position: relative;
-}
-
-emphasize-wrapper emphasize-gloss {
-	all: initial;
-	/* look */
-	background: black;
-	color: white;
-	padding: 5px;
-	border-radius: 3px;
-	/* position */
-	position: absolute;
-	left: 0px;
-	top: 20px;
-	z-index: 100 !important;
-	overflow: visible !important;
-	/* show and hide */
-	visibility: hidden;
-	opacity: 0;
-	transition: opacity 0.5s, visibility 0.5s;
-}
-
-emphasize-wrapper:hover emphasize-gloss {
-	visibility: visible;
-	opacity: 1;
-}

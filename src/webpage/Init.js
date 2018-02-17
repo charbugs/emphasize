@@ -26,12 +26,14 @@
 		createToken: 	createToken
 	});
 
+
 	var createAnnotator = function(jobId, styleClass) {
 		return new pool.Annotator({
 			document: 		document,
 			rootElement: 	document.body,
 			jobId: 			jobId,
-			styleClass: 	styleClass
+			styleClass: 	styleClass,
+			tippy:  		tippy
 		});
 	};
 

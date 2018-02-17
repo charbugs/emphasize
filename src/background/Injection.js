@@ -14,6 +14,9 @@
 
 	/* content scripts to inject in web page in given order */
 	var contentScripts = [
+
+		'lib/tippy.all.min.js',
+
 		'src/common/style.css',
 		'src/common/Namespace.js',
 		'src/common/Errors.js',

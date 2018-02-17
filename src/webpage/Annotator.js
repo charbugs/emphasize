@@ -2,11 +2,7 @@
 
 	'use strict';
 
-	const TAG_WRAPPER = 'emphasize-wrapper'; 
-	const TAG_GLOSS = 'emphasize-gloss';
 	const ATTR_JOB_ID = 'data-emphasize-job-id';
-	const CLASS_MARKED = 'emphasize-marked';
-	const CLASS_UNMARKED = 'emphasize-unmarked';
 
 	class Annotator {
 
@@ -15,21 +11,25 @@
 			this._rootElement = props.rootElement;
 			this._jobId = props.jobId;
 			this._styleClass = props.styleClass;
+			this._tippy = props.tippy;
 		}
 
 		removeAnnotation() {
 			var wrappers = this._rootElement.querySelectorAll(
 				`[${ATTR_JOB_ID}="${this._jobId}"]`);
 			
-			for (var wrapper of wrappers) {
-				var gloss = wrapper.querySelector(TAG_GLOSS);
-				if (gloss) {
-					wrapper.removeChild(gloss);
-				}
-				var parent = wrapper.parentNode;
-	            wrapper.outerHTML = wrapper.innerHTML;
-	            parent.normalize();
+			for (var wrapper of wrappers)
+				this._unwrap(wrapper);
+
+			this._rootElement.normalize();
+		}
+
+		_unwrap(element) {
+			var parent = element.parentElement;
+			while(element.firstChild) {
+				parent.insertBefore(element.firstChild, element);
 			}
+			parent.removeChild(element);
 		}
 
 		annotate(annotatedTokens) {
@@ -56,47 +56,45 @@
 		 *	 - tokens should be ordered from first to last.
 		 */
 		_annotateNode(tokens) {
-			var newHtml = this._createNewInnerHtml(tokens);
-			var newNodes = this._htmlToElements(newHtml);
+			var newNodes = this._createNewNodes(tokens);
 			this._replaceNodeWithMultiples(tokens[0].node, newNodes);
 		}
 
-		_createNewInnerHtml(tokens) {
+		_createNewNodes(tokens) {
 			var text = tokens[0].node.data;
-			var html = "";
+			var newNodes = [];
 			var offset = 0;
 			tokens.forEach(token => {
-				html += text.slice(offset, token.begin);
-				html += this._createTokenAnnotation(token);
+				newNodes.push(
+					this._document.createTextNode(
+						text.slice(offset, token.begin)
+				));
+				newNodes.push(
+					this._createAnnotatedToken(token)
+				);
 				offset = token.end;
 			});
-			html += text.slice(tokens[tokens.length-1].end);
-			return html;
+
+			newNodes.push(
+				this._document.createTextNode(
+					text.slice(tokens[tokens.length-1].end)
+			));
+
+			return newNodes;
 		}
 
-		_createTokenAnnotation(token) {
+		_createAnnotatedToken(token) {
 			
-			var styleClass = token.mark === false 
-				? CLASS_UNMARKED
-				: this._styleClass
-
-			var glossElement = token.gloss
-				? `<${TAG_GLOSS}>${token.gloss}</${TAG_GLOSS}>`
-				: "";
-
-			var html = 	`<${TAG_WRAPPER} ${ATTR_JOB_ID}="${this._jobId}"`;
-			html += 	` class="${styleClass}">`;
-			html += 	`${token.form}`;
-			html +=		`${glossElement}`;
-			html +=		`</${TAG_WRAPPER}>`;	
+			var text = this._document.createTextNode(token.form);
+			var wrapper = this._document.createElement('span');
 			
-			return html;
-		}
-
-		_htmlToElements(html) {
-		    var template = this._document.createElement('template');
-		    template.innerHTML = html;
-		    return Array.from(template.content.childNodes);
+			wrapper.setAttribute(ATTR_JOB_ID, this._jobId);
+			wrapper.setAttribute('title', token.gloss);
+			wrapper.appendChild(text);
+			wrapper.classList.add(this._styleClass);
+				
+			this._tippy(wrapper)
+			return wrapper;
 		}
 
 		_replaceNodeWithMultiples(oldNode, newNodes) {
