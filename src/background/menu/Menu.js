@@ -74,6 +74,10 @@
 			this.curMarker.abortAnalysis();
 		}
 
+		toggleAnnotation() {
+			this.curMarker.toggleAnnotation();
+		}
+
 		resetMarker() {
 			this.curMarker.reset(true);
 		}

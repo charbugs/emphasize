@@ -33,6 +33,10 @@
 			this._annotator.annotate(annotatedTokens);
 		}
 
+		toggleAnnotation() {
+			this._annotator.toggleAnnotation();
+		}
+
 		removeAnnotation() {
 			this._annotator.removeAnnotation();
 		}

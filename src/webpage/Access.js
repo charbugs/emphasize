@@ -43,6 +43,11 @@
 				jobId, "annotate", args);
 		}
 
+		toggleAnnotation(jobId, ...args) {
+			return this._callMarkerMethod(
+				jobId, 'toggleAnnotation', args);
+		}
+
 		removeAnnotation(jobId, ...args) {
 			return this._callMarkerMethod(
 				jobId, "removeAnnotation", args);

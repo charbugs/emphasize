@@ -91,5 +91,7 @@
 
 	app.menuContainer = menuContainer;
 	app.injection = injection;
+	// debug
+	app.messaging = messaging;
 
 })(emphasize.pool, emphasize.app);

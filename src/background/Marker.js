@@ -63,7 +63,6 @@
 		async reset(keepUserInput) {
 			// do we have annotations in web page?
 			if (this.state === this.DONE) {
-				this.stateWorking();
 				await this._createPageMarker();
 				await this._removeAnnotation();
 				await this._deletePageMarker();
@@ -71,6 +70,13 @@
 
 			this._init(keepUserInput);
 			this.stateReady();
+		}
+
+		async toggleAnnotation() {
+			await this._createPageMarker();
+			await this._messaging.invoke(this.tabId, 
+				'toggleAnnotation', this.jobId);
+			await this._deletePageMarker();
 		}
 
 		/**

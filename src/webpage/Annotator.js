@@ -14,29 +14,43 @@
 			this._tippy = props.tippy;
 		}
 
-		removeAnnotation() {
-			var wrappers = this._rootElement.querySelectorAll(
-				`[${ATTR_JOB_ID}="${this._jobId}"]`);
-			
-			for (var wrapper of wrappers)
-				this._unwrap(wrapper);
+		annotate(annotatedTokens) {
+			for (var bundle of this._bundleTokensByNode(annotatedTokens)) {
+				bundle.sort((a, b) => a.begin - b.begin);
+				this._annotateNode(bundle);
+			}
+		}
 
+		toggleAnnotation() {
+			this._getWrapper().forEach(wrapper => {
+				if (wrapper.classList.contains(this._styleClass)) {
+					wrapper.classList.remove(this._styleClass);
+					if (wrapper._tippy)
+						wrapper._tippy.disable();
+				} else {
+					wrapper.classList.add(this._styleClass);
+					if (wrapper._tippy)
+						wrapper._tippy.enable();
+				}
+			});
+		}
+
+		removeAnnotation() {
+			this._getWrapper().forEach(wrapper => this._unwrap(wrapper));
 			this._rootElement.normalize();
 		}
 
+		_getWrapper() {
+			return this._rootElement.querySelectorAll(
+				`[${ATTR_JOB_ID}="${this._jobId}"]`);
+		}
+		
 		_unwrap(element) {
 			var parent = element.parentElement;
 			while(element.firstChild) {
 				parent.insertBefore(element.firstChild, element);
 			}
 			parent.removeChild(element);
-		}
-
-		annotate(annotatedTokens) {
-			for (var bundle of this._bundleTokensByNode(annotatedTokens)) {
-				bundle.sort((a, b) => a.begin - b.begin);
-				this._annotateNode(bundle);
-			}
 		}
 
 		_bundleTokensByNode(tokens) {
