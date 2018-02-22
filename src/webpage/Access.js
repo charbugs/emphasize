@@ -10,9 +10,9 @@
 			this._currentMarker;
 		}
 
-		createPageMarker(jobId, styleClass) {
+		createPageMarker(jobId, markerSetup) {
 			if (!this._currentMarker) {
-				this._currentMarker = this._createPageMarker(jobId, styleClass);
+				this._currentMarker = this._createPageMarker(jobId, markerSetup);
 			} else {
 				throw this._createAccessError(
 					'There already exists a marker instance');

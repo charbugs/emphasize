@@ -226,7 +226,10 @@
 	 * Will be passed to the html sanitizer.
 	 */
 	var htmlRules = {
-		allowedTags: ['a', 'b', 'i', 'em', 'strong', 'br', 'ul', 'li', 'ol',
+		allowedTags: [
+			'a', 'img',
+			'b', 'i', 'em', 'strong', 'br', 
+			'ul', 'li', 'ol',
 			'table', 'thead', 'tbody', 'tr', 'td', 'th'],
 		allowedAttributes: {
 			'a': ['href']

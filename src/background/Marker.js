@@ -90,7 +90,7 @@
 
 		async _createPageMarker() {
 			await this._messaging.invoke(
-				this.tabId, 'createPageMarker', this.jobId, this.setup.face);
+				this.tabId, 'createPageMarker', this.jobId, this.setup);
 		}
 
 		async _deletePageMarker() {

@@ -7,7 +7,7 @@
 		constructor(props = {}) {
 			
 			this.jobId = props.jobId;
-			this._styleClass = props.styleClass;
+			this._markerSetup = props.markerSetup;
 			this._webScraper = props.webScraper;
 			this._annotator = props.annotator;
 			this._markupCompiler = props.markupCompiler;

@@ -145,14 +145,14 @@
 					this._protocol.htmlRules);
 			}
 
-			if (response.markup) {
+			/*if (response.markup) {
 				response.markup.forEach(item => {
 					if (item.gloss) {
 						item.gloss = this._sanitizeHtml(item.gloss,
 							this._protocol.htmlRules);
 					}
 				});
-			}
+			}*/
 
 			return response;
 		}

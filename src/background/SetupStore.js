@@ -6,15 +6,15 @@
 	'use strict';
 
 	var supportedFaces = [
-		'emphasize-face-1',
-		'emphasize-face-2',
-		'emphasize-face-3',
-		'emphasize-face-4',
-		'emphasize-face-5',
-		'emphasize-face-6',
-		'emphasize-face-7',
-		'emphasize-face-8',
-		'emphasize-face-9'
+		'emphasize-face-10',
+		'emphasize-face-11',
+		'emphasize-face-12',
+		'emphasize-face-13',
+		'emphasize-face-14',
+		'emphasize-face-15',
+		'emphasize-face-16',
+		'emphasize-face-17',
+		'emphasize-face-18'
 	];
 
 	/**

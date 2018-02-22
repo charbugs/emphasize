@@ -27,17 +27,17 @@
 	});
 
 
-	var createAnnotator = function(jobId, styleClass) {
+	var createAnnotator = function(jobId, markerSetup) {
 		return new pool.Annotator({
 			document: 		document,
 			rootElement: 	document.body,
 			jobId: 			jobId,
-			styleClass: 	styleClass,
+			markerSetup: 	markerSetup,
 			tippy:  		tippy
 		});
 	};
 
-	var createPageMarker = function(jobId, styleClass) {
+	var createPageMarker = function(jobId, markerSetup) {
 		var order = [
 			'extractWebPageData',
 			'getWebPageDataForRemote',
@@ -45,9 +45,9 @@
 		];
 		var marker = new pool.PageMarker({
 			jobId: 			jobId,
-			styleClass: 	styleClass,
+			markerSetup: 	markerSetup,
 			webScraper: 	webScraper,
-			annotator: 		createAnnotator(jobId, styleClass),
+			annotator: 		createAnnotator(jobId, markerSetup),
 			markupCompiler:	markupCompiler 
 		});
 		return sequencer.sequenceSyncMethodExecution(marker, order);
