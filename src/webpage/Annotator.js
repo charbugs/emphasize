@@ -161,7 +161,6 @@
 				.textContent = this._trimMarkerTitle();
 			
 			var glossContent = this._htmlToElement(glossString);
-			console.log(glossContent);
 
 			if (glossContent.nodeType === Node.TEXT_NODE) {
 				var textNode = glossContent;
