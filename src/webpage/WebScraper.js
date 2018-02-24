@@ -3,7 +3,7 @@
 	'use strict';
 
     var blacklistElements = [
-        'TEXTAREA', 'OPTION', 'SCRIPT', 'STYLE'
+        'TEXTAREA', 'OPTION', 'SCRIPT', 'STYLE', 'OBJECT'
     ];
 
     class WebScraper {
