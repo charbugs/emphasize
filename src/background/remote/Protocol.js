@@ -221,20 +221,119 @@
 			]
 		};
 
+	///////////////////////////////////////////////////////
+	// HTML Rules
+	///////////////////////////////////////////////////////
+
+	var spl = string => string.match(/\S+/g);
+
 	/**
-	 * Declares which html elements are allowed in the marker report.
-	 * Will be passed to the html sanitizer.
+	 * Declares which html content is allowed in marker description.
 	 */
-	var htmlRules = {
-		allowedTags: [
-			'a', 'img',
-			'b', 'i', 'em', 'strong', 'br', 
-			'ul', 'li', 'ol',
-			'table', 'thead', 'tbody', 'tr', 'td', 'th'],
-		allowedAttributes: {
-			'a': ['href']
-		}
+	var descriptionHtmlRules = {
+		allowedTags: spl(`
+			a abbr address article aside
+			b bdi bdo br blockquote
+			caption cite code col colgroup
+			dd details dfn dialog div dl dt
+			em
+			figcaption figure footer
+			header hr
+			i
+			kbd
+			li
+			main mark meter
+			nav
+			ol
+			p picture pre progress
+			q
+			rp rt ruby
+			s samp section small span strong sub summary sup
+			table tbody td tfoot thead time th
+			u ul
+			var
+			wbr`),
+		allowedAttributes : {
+			'*': 		spl(`title`),
+			a: 			spl(`href target type rel media hreflang download`),
+			bdo: 		spl(`dir`),
+			blockquote: spl(`cite`),
+			details: 	spl(`open`),
+			dialog: 	spl(`open`),
+			li: 		spl(`type value`),
+			meter: 		spl(`form high low max min optimum value`),
+			ol: 		spl(`reversed start type`),
+			progress:   spl(`max value`),
+			td: 		spl(`colspan headers rowspan`),
+			time:  		spl(`datetime`),
+			th: 		spl(`abbr rowspan scope sorted`),
+		},
+		allowedSchemes: spl(`http https`),
+		allowedSchemesAppliedToAttributes: spl(`href cite`)
+	};	 
+
+	/**
+	 * Declares which html content is allowed in gloss strings.
+	 */
+	 var glossHtmlRules = {
+		allowedTags: spl(`
+			a abbr address area article aside audio
+			b bdi bdo br blockquote
+			caption cite code col colgroup
+			data dd details dfn dialog div dl dt
+			em embed
+			figcaption figure footer
+			h1 h2 h3 h4 h5 h6 header hr
+			i img
+			kbd
+			li
+			main mark map meter
+			nav
+			object ol
+			p param picture pre progress
+			q
+			rp rt ruby
+			s samp section small source span strong sub summary sup
+			table tbody td tfoot thead time th track
+			u ul
+			var video
+			wbr`),
+		allowedAttributes : {
+			'*': 		spl(`style title`),
+			a: 			spl(`href target type rel media hreflang download`),
+			area: 		spl(`shape coords href alt`),
+			audio: 		spl(`autoplay controls loop muted preload src`),
+			bdo: 		spl(`dir`),
+			blockquote: spl(`cite`),
+			data: 		spl(`value`),
+			details: 	spl(`open`),
+			dialog: 	spl(`open`),
+			embed: 		spl(`height src type width`),
+			img: 		spl(`src alt height width usemap ismap`),
+			li: 		spl(`type value`),
+			map: 		spl(`name`),
+			meter: 		spl(`form high low max min optimum value`),
+			object: 	spl(`data name height width usemap type`),
+			ol: 		spl(`reversed start type`),
+			param: 		spl(`name value`),
+			progress:   spl(`max value`),
+			source: 	spl(`src media type`),
+			td: 		spl(`colspan headers rowspan`),
+			time:  		spl(`datetime`),
+			th: 		spl(`abbr rowspan scope sorted`),
+			track: 		spl(`default kind label src srclang`),
+			video: 		spl(`src autoplay controls height width loop muted
+							poster preload`)
+		},
+		allowedSchemes: spl(`http https`),
+		allowedSchemesAppliedToAttributes: spl(`
+			href src cite poster data`)
 	};
+
+	/**
+	 * Declares which html content is allowed in marker report.
+	 */
+	var reportHtmlRules = glossHtmlRules;
 
 	/* exports */
 	pool.protocol = {
@@ -242,7 +341,9 @@
 		setupResponseSchema,
 		markupRequestSchema,
 		markupResponseSchema,
-		htmlRules,
+		descriptionHtmlRules,
+		reportHtmlRules,
+		glossHtmlRules
 	};
 
  })(emphasize.pool);

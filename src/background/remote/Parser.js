@@ -78,7 +78,7 @@
 			}
 
 			response.description = this._sanitizeHtml(
-				response.description, this._protocol.htmlRules);
+				response.description, this._protocol.descriptionHtmlRules);
 
 			return response;
 		}
@@ -135,24 +135,19 @@
 				throw this._createProtocolError(error.message);
 			}
 
-			if (response.error) {
-				response.error = this._sanitizeHtml(response.error, 
-					this._protocol.htmlRules);
-			}
-
 			if (response.report) {
 				response.report = this._sanitizeHtml(response.report, 
 					this._protocol.htmlRules);
 			}
 
-			/*if (response.markup) {
+			if (response.markup) {
 				response.markup.forEach(item => {
 					if (item.gloss) {
 						item.gloss = this._sanitizeHtml(item.gloss,
-							this._protocol.htmlRules);
+							this._protocol.glossHtmlRules);
 					}
 				});
-			}*/
+			}
 
 			return response;
 		}
