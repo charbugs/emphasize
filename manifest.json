@@ -41,8 +41,8 @@
      },
 
     "browser_action": {
-        "default_icon": "src/popup/popup.png",
-        "default_popup": "src/popup/popup.html"
+        "default_icon": "src/popup/menu.png",
+        "default_popup": "src/popup/menu.html"
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
