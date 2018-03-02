@@ -70,18 +70,18 @@
 		});
 	};
 
-	var createMenu = function(tabId) {
-		return new pool.Menu({
+	var createMenuData = function(tabId) {
+		return new pool.MenuData({
 			tabId: 			tabId,
+			createMarker: 	createMarker,
 			setupStore: 	setupStore,
 			registration: 	createRegistration(),
-			createMarker: 	createMarker,
-			prome:  		prome
+			prome: 			prome
 		});
 	};
 
-	var menuContainer = new pool.MenuContainer({
-		createMenu: createMenu
+	var menuDataContainer = new pool.MenuDataContainer({
+		createMenuData: createMenuData
 	});
 
 	var injection = new pool.Injection({
@@ -89,7 +89,7 @@
 		createInjectionError: 	createInjectionError
 	});
 
-	app.menuContainer = menuContainer;
+	app.menuDataContainer = menuDataContainer;
 	app.injection = injection;
 	// debug
 	app.messaging = messaging;

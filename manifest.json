@@ -32,8 +32,8 @@
             "src/background/Registration.js",
             "src/background/Marker.js",
 
-            "src/background/menu/Menu.js",
-            "src/background/menu/MenuContainer.js",
+            "src/background/menu/MenuData.js",
+            "src/background/menu/MenuDataContainer.js",
 
             "src/background/Init.js"
         ],
