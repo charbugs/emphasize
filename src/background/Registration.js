@@ -18,7 +18,7 @@
 			this._createStorageError = props.createStorageError;
 			this._createRegistrationError = props.createRegistrationError;
 			
-			this.report = "Marker successfully added.";
+			this.successMessage = "Marker successfully added.";
 			this._init();
 		}
 

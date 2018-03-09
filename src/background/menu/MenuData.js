@@ -12,15 +12,17 @@
 			
 			this.tabId = props.tabId;
 			this.registration = props.registration;
-			
+
 			this.markers;
-			this.view = 'MARKER_LIST';
-			this.currentMarker = null;
+			this.view;
+			this.currentMarker;
 		}
 
 		async init() {
+
 			var setups = await this._setupStore.getSetup(null);
 			this.markers = setups.map(s => this._createMarker(s, this.tabId));
+
 			return this;
 		}
 

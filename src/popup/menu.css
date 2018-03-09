@@ -24,6 +24,124 @@
 }
 
 body {
-    font-family: Roboto-Light;
+    margin: 0px;
+    padding: 0px;
     width: 430px;
+}
+
+/************************************************
+    GlobalNavbar Component
+************************************************/
+
+.global-navbar {
+    margin: 0px;
+    padding: 0px;
+    border-bottom: 1px solid #ccc;
+}
+
+.global-navbar .button {
+    display: inline-block;
+    margin: 0px;
+    padding: 14px 16px;
+    color: #444;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.global-navbar .button.active {
+    border-bottom: 3px solid dodgerblue;
+}
+
+.global-navbar .button.nonactive:hover {
+    border-bottom: 3px solid #ccc;   
+}
+
+/************************************************
+    Content Component
+************************************************/
+
+.content {
+    padding: 24px 16px;
+    line-height: 1.5;
+    color: #444;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+}
+
+/************************************************
+    ControlBar Component
+************************************************/
+
+.control-bar {
+    padding: 0px;
+    margin: 0px;
+    border-top: 1px solid #ccc;
+}
+
+/************************************************
+    TextInput Component
+************************************************/
+
+.text-input label {
+    font-family: 'Roboto-Medium'
+}
+
+.text-input input[type=text] {
+    width: 95%;
+    padding: 10px 6px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    font-family: 'Roboto-Regular';
+    font-size: 14px;
+    color: #444;
+    margin: 8px 0px;
+}
+
+.text-input input[type=text]:focus {
+    box-shadow: 0px 0px 1px 1px dodgerblue;   
+}
+
+/************************************************
+    Button Component
+************************************************/
+
+.button {
+    display: inline-block;
+    margin: 8px 16px;
+    padding: 8px;
+    border-radius: 3px;
+    font-family: 'Roboto-Regular';
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.button.primary {
+    background: dodgerblue;
+    color: white;
+}
+
+.button.secondary {
+    border: 1px solid #aaa;
+    color: #444;
+}
+
+/************************************************
+    Loader Component
+************************************************/
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader {
+  display: inline-block;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  border-top: 2px solid #444;
+  width: 14px;
+  height: 14px;
+  animation: spin 1s linear infinite;
+  margin: 16px;
 }

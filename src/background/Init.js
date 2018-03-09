@@ -9,9 +9,9 @@
 	var createInjectionError = msg => new pool.InjectionError(msg);
 	var createRegistrationError = msg => new pool.RegistrationError(msg);
 
-	var createEvent = msg => new pool.Event();
+	var createEvent = () => new pool.Event();
 	var createXHR = () => new XMLHttpRequest();
-	var createJob = () => pool.Job();
+	var createJob = () => pool.Job(createEvent());
 
 	var prome = pool.Prome(
 		chrome
