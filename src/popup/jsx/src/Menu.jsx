@@ -9,6 +9,14 @@ class Menu extends React.Component {
 		this.setState(Object.assign({}, this.menuData));
 	}
 
+	openProjectWebsite() {
+
+	}
+
+	///////////////////////////////////////////////////////
+	// Init
+	///////////////////////////////////////////////////////
+
 	async componentDidMount() {
 
 		var bg = chrome.extension.getBackgroundPage();
@@ -26,17 +34,59 @@ class Menu extends React.Component {
 		}
 
 		this.menuData = await menuDataContainer.get(tabId);
-		this.menuData.view = 'REGISTRATION';
+		this.menuData.view =  this.menuData.view || 'MARKERLIST';
+
 		this.menuData.registration.onStateChange.empty();	
 		this.menuData.registration.onStateChange
 			.register(this.syncState.bind(this));
 
-		this.syncState();
+		this.menuData.markers.forEach(marker => {
+			marker.onStateChange.empty();	
+			marker.onStateChange.register(this.syncState.bind(this));
+		});
 
+		this.syncState();
 	}
 
+	///////////////////////////////////////////////////////
+	// Marker stuff
+	///////////////////////////////////////////////////////
+
 	showMarkerList() {
-		console.log('user wants to see the marker list');
+		this.menuData.view = 'MARKERLIST';
+		this.menuData.currentMarker = null;
+		this.syncState();
+	}
+
+	showMarker(marker) {
+		this.menuData.currentMarker = marker;
+		this.menuData.view = 'MARKER';
+		this.syncState();
+	}
+
+	showMarkerMore() {
+		this.menuData.view = 'MARKERMORE';
+		this.syncState();
+	}
+
+	saveMarkerInput(inputId, value) {
+		this.menuData.currentMarker.userInputs[inputId] = value;
+	} 
+
+	applyMarker() {
+		this.menuData.currentMarker.apply();
+	}
+
+	abortMarker() {
+		this.menuData.currentMarker.abortAnalysis();
+	}
+
+	resetMarker() {
+		this.menuData.currentMarker.reset(true);
+	}
+
+	toggleAnnotation(marker) {
+		marker.toggleAnnotation();
 	}
 
 	///////////////////////////////////////////////////////
@@ -44,7 +94,8 @@ class Menu extends React.Component {
 	///////////////////////////////////////////////////////
 
 	showRegistration() {
-
+		this.menuData.view = 'REGISTRATION';
+		this.syncState();	
 	}
 
 	registerMarker() {
@@ -63,6 +114,10 @@ class Menu extends React.Component {
 		this.menuData.registration.inputUrl = url;
 	}
 
+	///////////////////////////////////////////////////////
+	// Rendering
+	///////////////////////////////////////////////////////
+
 	render () {
 
 		if (!this.state)
@@ -73,13 +128,64 @@ class Menu extends React.Component {
 		
 		var registration = this.state.registration;
 		var currentMarker = this.state.currentMarker;
-		var view = this.state.view;
+		var view =  this.state.view;
 
-		console.log(registration.inputUrl);
+		if (view === 'MARKERLIST') {
+			return <MarkerList
+				version={ this.state.version }
+				markers={ this.state.markers }
+				onMarkerClick={ this.showMarker.bind(this) }
+				onToggleClick={ this.toggleAnnotation.bind(this) }
+				onShowRegistration={ this.showRegistration.bind(this) } 
+				onHomeClick={ this.openProjectWebsite.bind(this) } />
+		}
+
+		if (view === 'MARKERMORE') {
+			return <MarkerMore
+				marker={ currentMarker }
+				onGlobalBackClick={ this.showMarkerList.bind(this) }
+				onLocalBackClick={ this.showMarker.bind(this, currentMarker) } />
+		}
+
+		if (view === 'MARKER' &&
+			currentMarker.state === currentMarker.READY) {
+			return <MarkerReady
+				marker={ currentMarker } 
+				onApplyClick= { this.applyMarker.bind(this) }
+				onGlobalBackClick={ this.showMarkerList.bind(this) } 
+				onMarkerInputChange={ this.saveMarkerInput.bind(this) } 
+				onMoreClick={ this.showMarkerMore.bind(this) } />
+		}
+
+		if (view === 'MARKER' &&
+			currentMarker.state === currentMarker.WORKING) {
+			return <MarkerWorking
+				marker={ currentMarker }
+				onGlobalBackClick={ this.showMarkerList.bind(this) }
+				onAbortClick={ this.abortMarker.bind(this) } />
+		}
+
+		if (view === 'MARKER' &&
+			currentMarker.state === currentMarker.DONE) {
+			return <MarkerDone
+				marker={ currentMarker }
+				onGlobalBackClick={ this.showMarkerList.bind(this) }
+				onResetClick={ this.resetMarker.bind(this) } 
+				onToggleClick={ this.toggleAnnotation.bind(this) } 
+				togglerOn={ !currentMarker.annotationHidden } 
+				onMoreClick={ this.showMarkerMore.bind(this) } />
+		}
+
+		if (view === 'MARKER' &&
+			currentMarker.state === currentMarker.ERROR) {
+			return <MarkerError
+				marker={ currentMarker }
+				onGlobalBackClick={ this.showMarkerList.bind(this) }
+				onLocalBackClick={ this.resetMarker.bind(this) } />
+		}
 
 		if (view === 'REGISTRATION' && 
 			registration.state === registration.READY) {
-			
 			return <RegistrationReady 
 				inputUrl={ registration.inputUrl || '' }
 				onUrlChange={ this.saveUrl.bind(this) }
@@ -89,7 +195,6 @@ class Menu extends React.Component {
 
 		if (view === 'REGISTRATION' && 
 			registration.state === registration.WORKING) {
-			
 			return <RegistrationWorking 
 				onShowMarkerList={ this.showMarkerList.bind(this) }
 				onAbortRegistration={ this.abortRegistration.bind(this) } />
@@ -97,7 +202,6 @@ class Menu extends React.Component {
 
 		if (view === 'REGISTRATION' && 
 			registration.state === registration.DONE) {
-			
 			return <RegistrationDone
 				successMessage={ registration.successMessage }
 				onShowMarkerList={ this.showMarkerList.bind(this) }
@@ -106,7 +210,6 @@ class Menu extends React.Component {
 
 		if (view === 'REGISTRATION' && 
 			registration.state === registration.ERROR) {
-			
 			return <RegistrationError 
 				errorMessage={ registration.error.message }
 				onShowMarkerList={ this.showMarkerList.bind(this) }

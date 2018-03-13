@@ -11,13 +11,14 @@ function RegistrationReady(props) {
 				</div>
 				<br/>
 				<TextInput label="URL"
-					input={ props.inputUrl }
+					default={ props.inputUrl }
 					onChange={ props.onUrlChange }
 					onEnter= { props.onRegisterMarker }
 				/>
 			</Content>
 			<ControlBar>
-				<Button primary
+				<Button
+					classes={ ['primary', 'left'] }
 					onClick={ props.onRegisterMarker }
 					label="Register"
 				/>
@@ -34,11 +35,12 @@ function RegistrationWorking(props) {
 				Requesting marker for setup ...
 			</Content>
 			<ControlBar>
-				<Button secondary 
+				<Button 
+					classes={ ['secondary', 'left'] }
 					label="Abort"
 					onClick={ props.onAbortRegistration }
 				/>
-				<Loader style={ { float: 'right' } }/>
+				<Loader classes={ ['right'] }/>
 			</ControlBar>
 		</div>
 	);
@@ -52,7 +54,8 @@ function RegistrationDone(props) {
 				{ props.successMessage }
 			</Content>
 			<ControlBar>
-				<Button secondary 
+				<Button
+					classes={ ['secondary', 'left'] } 
 					label="Back"
 					onClick={ props.onResetRegistration }
 				/>
@@ -69,7 +72,8 @@ function RegistrationError(props) {
 				{ props.errorMessage }
 			</Content>
 			<ControlBar>
-				<Button secondary 
+				<Button
+					classes={ ['secondary', 'left'] }
 					label="Back"
 					onClick={ props.onResetRegistration }
 				/>

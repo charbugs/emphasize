@@ -12,10 +12,12 @@
 			
 			this.tabId = props.tabId;
 			this.registration = props.registration;
+			this.version = chrome.runtime.getManifest().version;
 
 			this.markers;
 			this.view;
 			this.currentMarker;
+
 		}
 
 		async init() {

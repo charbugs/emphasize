@@ -30,9 +30,18 @@
 		_init(keepUserInput) {
 			this.error = null;
 			this.output = null;
-			this.input = {};
+			this.input = null;
 			if (!keepUserInput)
-				this.userInputs = {};
+				this.userInputs = this._createInputContainer();
+			this.annotationHidden = false;
+		}
+
+		_createInputContainer() {
+			var container = {};
+			this.setup.inputs.forEach(input => {
+				container[input.id] = '';
+			});
+			return container;
 		}
 
 		async apply() {
@@ -77,6 +86,7 @@
 			await this._messaging.invoke(this.tabId, 
 				'toggleAnnotation', this.jobId);
 			await this._deletePageMarker();
+			this.annotationHidden = !this.annotationHidden;
 		}
 
 		/**
@@ -112,18 +122,10 @@
 			var wpData = await this._messaging.invoke(
 				this.tabId, 'getWebPageDataForRemote', this.jobId);
 
+			this.input = {};
 			this.input.tokens = wpData.tokens;
 			this.input.url = wpData.url;
-			this.input.inputs = this._createInputContainer();
-			Object.assign(this.input.inputs, this.userInputs);
-		}
-
-		_createInputContainer() {
-			var container = {};
-			this.setup.inputs.forEach(input => {
-				container[input.id] = null;
-			});
-			return container;
+			this.input.inputs = this.userInputs;
 		}
 
 		/**

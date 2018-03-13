@@ -1,0 +1,180 @@
+
+function MarkerList(props) {
+	return (
+		<div>
+			<GlobalNavbar active="0"
+				onShowRegistration={ props.onShowRegistration}
+			/>
+			<div>
+			{
+				props.markers.map((marker, idx) => 
+					<ListItem key={idx}
+						item={ marker }
+						text={ marker.setup.title }
+						onItemClick={ props.onMarkerClick }
+					> 
+						{
+							marker.state === marker.DONE &&
+								<Toggler small
+									face={ marker.setup.face }
+									on={ !marker.annotationHidden }
+									onChange={ () => props.onToggleClick(marker) }
+								/>
+						}
+
+					</ListItem>
+				)
+			}
+			</div>
+			<AppInfoBar version={ props.version} 
+				onHomeClick={ props.onHomeClick }
+			/>
+		</div>
+	);
+}
+
+function MarkerReady(props) {
+
+	var marker = props.marker;
+	var setup = props.marker.setup;
+	
+	return (
+		<div>
+			<MarkerNavbar title={ setup.title } 
+				onGlobalBackClick={ props.onGlobalBackClick }
+			/>
+			<Content>
+				{ setup.description }
+				<br/><br/><br/>
+				{
+					setup.inputs.map((input, idx) => {
+						
+						if (input.type === 'text') {
+							return <TextInput 
+								key={idx} 
+								label={ input.label || input.id } 
+								default={ marker.userInputs[input.id] }
+								onChange={ (str) => 
+									props.onMarkerInputChange(input.id, str) } />
+						} 
+						
+						else if (input.type === 'select') {
+							return <SelectInput 
+								key={idx}
+								label={ input.label || input.id }
+								default= { marker.userInputs[input.id] }
+								options={ input.values } 
+								onChange= { (pos) => 
+									props.onMarkerInputChange(input.id, pos) } />
+						}
+					})
+				}
+			</Content>
+			<ControlBar>
+				<Button label="Apply"
+					classes={ [setup.face, 'left'] }
+					onClick= { props.onApplyClick }
+				/>
+				<Button label="More"
+					classes={ ['secondary', 'right'] }
+					onClick= { props.onMoreClick }
+				/>
+			</ControlBar>
+		</div>
+	)
+}
+
+function MarkerWorking(props) {
+	return (
+		<div>
+			<MarkerNavbar title={ props.marker.setup.title } 
+				onGlobalBackClick={ props.onGlobalBackClick }
+			/>
+			<Content>
+				Requesting {props.marker.setup.url} for setup ...
+			</Content>
+			<ControlBar>
+				<Button
+					classes={ ['secondary', 'left'] }
+					label="Abort"
+					onClick={ props.onAbortClick }
+				/>
+				<Loader classes={ ['right'] }/>
+			</ControlBar>
+		</div>
+	);
+}
+
+function MarkerError(props) {
+	return (
+		<div>
+			<MarkerNavbar title={ props.marker.setup.title } 
+				onGlobalBackClick={ props.onGlobalBackClick }
+			/>
+			<Content>
+				Error: { props.marker.error.message }
+			</Content>
+			<ControlBar>
+				<Button
+					classes={ ['secondary', 'left'] } 
+					label="Back"
+					onClick={ props.onLocalBackClick }
+				/>
+			</ControlBar>
+		</div>
+	);
+}
+
+function MarkerDone(props) {
+	return (
+		<div>
+			<MarkerNavbar title={ props.marker.setup.title } 
+				onGlobalBackClick={ props.onGlobalBackClick }
+			/>
+			<Content>
+				Report: { props.marker.output.report }
+			</Content>
+			<ControlBar>
+				<Button 
+					classes={ ['secondary', 'left'] }
+					label="Reset"
+					onClick={ props.onResetClick }
+				/>
+				<Toggler 
+					face={ props.marker.setup.face }
+					on={ props.togglerOn }
+					onChange={ () => props.onToggleClick(props.marker) }
+				/> 
+				<Button
+					classes={ ['secondary', 'right'] }					
+					label="More"
+					onClick={ props.onMoreClick }
+				/>
+			</ControlBar>
+		</div>
+	);
+}
+
+function MarkerMore(props) {
+
+	var setup = props.marker.setup;
+
+	return (
+		<div>
+			<MarkerNavbar title={ setup.title } 
+				onGlobalBackClick={ props.onGlobalBackClick }
+			/>
+			<Content>
+				URL:<br/>
+				{ setup.url }
+			</Content>
+			<ControlBar>
+				<Button
+					classes={ ['secondary', 'left'] } 
+					label="Back"
+					onClick={ props.onLocalBackClick }
+				/>
+			</ControlBar>
+		</div>
+	);
+}

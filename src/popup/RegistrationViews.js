@@ -15,7 +15,7 @@ function RegistrationReady(props) {
 			),
 			React.createElement("br", null),
 			React.createElement(TextInput, { label: "URL",
-				input: props.inputUrl,
+				"default": props.inputUrl,
 				onChange: props.onUrlChange,
 				onEnter: props.onRegisterMarker
 			})
@@ -23,7 +23,8 @@ function RegistrationReady(props) {
 		React.createElement(
 			ControlBar,
 			null,
-			React.createElement(Button, { primary: true,
+			React.createElement(Button, {
+				classes: ['primary', 'left'],
 				onClick: props.onRegisterMarker,
 				label: "Register"
 			})
@@ -44,11 +45,12 @@ function RegistrationWorking(props) {
 		React.createElement(
 			ControlBar,
 			null,
-			React.createElement(Button, { secondary: true,
+			React.createElement(Button, {
+				classes: ['secondary', 'left'],
 				label: "Abort",
 				onClick: props.onAbortRegistration
 			}),
-			React.createElement(Loader, { style: { float: 'right' } })
+			React.createElement(Loader, { classes: ['right'] })
 		)
 	);
 }
@@ -66,7 +68,8 @@ function RegistrationDone(props) {
 		React.createElement(
 			ControlBar,
 			null,
-			React.createElement(Button, { secondary: true,
+			React.createElement(Button, {
+				classes: ['secondary', 'left'],
 				label: "Back",
 				onClick: props.onResetRegistration
 			})
@@ -87,7 +90,8 @@ function RegistrationError(props) {
 		React.createElement(
 			ControlBar,
 			null,
-			React.createElement(Button, { secondary: true,
+			React.createElement(Button, {
+				classes: ['secondary', 'left'],
 				label: "Back",
 				onClick: props.onResetRegistration
 			})

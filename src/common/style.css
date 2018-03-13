@@ -14,8 +14,8 @@
 }
 
 .emphasize-face-2 { /* teal */
-	color: #FFFFFF;
-	background: #009688;
+	color: #FFFFFF !important;
+	background: #009688 !important;
 }
 
 .emphasize-face-3 { /* indigo */

@@ -29,6 +29,14 @@ body {
     width: 430px;
 }
 
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
 /************************************************
     GlobalNavbar Component
 ************************************************/
@@ -39,21 +47,21 @@ body {
     border-bottom: 1px solid #ccc;
 }
 
-.global-navbar .button {
+.global-navbar .tab {
     display: inline-block;
     margin: 0px;
-    padding: 14px 16px;
+    padding: 16px 16px;
     color: #444;
     font-family: Roboto-Regular;
     font-size: 14px;
     cursor: pointer;
 }
 
-.global-navbar .button.active {
+.global-navbar .tab.active {
     border-bottom: 3px solid dodgerblue;
 }
 
-.global-navbar .button.nonactive:hover {
+.global-navbar .tab.nonactive:hover {
     border-bottom: 3px solid #ccc;   
 }
 
@@ -74,6 +82,7 @@ body {
 ************************************************/
 
 .control-bar {
+    text-align: center;
     padding: 0px;
     margin: 0px;
     border-top: 1px solid #ccc;
@@ -88,7 +97,7 @@ body {
 }
 
 .text-input input[type=text] {
-    width: 95%;
+    width: 96%;
     padding: 10px 6px;
     border-radius: 3px;
     border: 1px solid #ccc;
@@ -99,6 +108,30 @@ body {
 }
 
 .text-input input[type=text]:focus {
+    box-shadow: 0px 0px 1px 1px dodgerblue;   
+}
+
+/************************************************
+    SelectInput Component
+************************************************/
+
+.select-input label {
+    font-family: 'Roboto-Medium'
+}
+
+.select-input select {
+    background: white;
+    width: 100%;
+    padding: 10px 6px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    font-family: 'Roboto-Regular';
+    font-size: 14px;
+    color: #444;
+    margin: 8px 0px;
+}
+
+.select-input select:focus {
     box-shadow: 0px 0px 1px 1px dodgerblue;   
 }
 
@@ -144,4 +177,139 @@ body {
   height: 14px;
   animation: spin 1s linear infinite;
   margin: 16px;
+}
+
+/************************************************
+    ListItem Component
+************************************************/
+
+.list-item {
+    font-family: 'Roboto-Regular';
+    font-size: 13px;
+    color: #444;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;   
+}
+
+.list-item:last-child {
+    border: none;
+}
+
+.list-item .text {
+    display: inline-block;
+    margin: 16px;
+}
+
+.list-item .label {
+    display: inline-block;
+    float: right;
+}
+
+/************************************************
+    AppInfoBar Component
+************************************************/
+
+.app-info-bar {
+    border-top: 1px solid #ccc;
+    color: #444;
+    font-family: 'Roboto-Regular';
+}
+
+.app-info-bar .label {
+    padding: 14px;
+    display: inline-block;
+    font-family: 'Roboto-Bold';
+    font-size: 16px;
+}
+
+.app-info-bar .version {
+    padding: 14px;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.app-info-bar .home {
+    padding: 14px;
+    float: right;
+    display: inline-block;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/************************************************
+    MarkerNavbar Component
+************************************************/
+
+.marker-navbar {
+    color: #444;
+    font-family: 'Roboto-Regular';
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+}
+
+.marker-navbar .global-back {
+    padding: 16px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.marker-navbar .title {
+    padding: 16px;
+    display: inline-block;
+}
+
+/************************************************
+    Toggler Component
+************************************************/
+
+.toggler {
+    display: inline-block;
+    position: relative;
+    background: #ccc;
+    border-radius: 34px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.toggler:before {
+    content: "";
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.toggler.large {
+    height: 24px;
+    width: 44px;
+    margin: 14px;
+}
+
+.toggler.large:before {
+    left: 2px;
+    top: 2px;
+    height: 20px;
+    width: 20px;
+}
+
+.toggler.large.on:before {
+    left: 22px;
+}
+
+.toggler.small {
+    height: 16px;
+    width: 28px;
+    border: 7px solid white;
+    margin: 10px;
+}
+
+.toggler.small:before {
+    left: 2px;
+    top: 2px;
+    height: 12px;
+    width: 12px;
+}
+
+.toggler.small.on:before {
+    left: 14px;
 }
