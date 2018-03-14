@@ -2,7 +2,7 @@ function RegistrationReady(props) {
 	return (
 		<div>
 			<GlobalNavbar active="1" 
-				onShowMarkerList={ props.onShowMarkerList }
+				onMarkersTabClick={ props.onMarkersTabClick }
 			/>
 			<Content>
 				<div>
@@ -30,7 +30,9 @@ function RegistrationReady(props) {
 function RegistrationWorking(props) {
 	return (
 		<div>
-			<GlobalNavbar active="1" onShowMarkerList={ props.onShowMarkerList }/>
+			<GlobalNavbar active="1" 
+				onMarkersTabClick={ props.onMarkersTabClick }
+			/>
 			<Content>
 				Requesting marker for setup ...
 			</Content>
@@ -49,7 +51,9 @@ function RegistrationWorking(props) {
 function RegistrationDone(props) {
 	return (
 		<div>
-			<GlobalNavbar active="1" onShowMarkerList={ props.onShowMarkerList }/>
+			<GlobalNavbar active="1" 
+				onMarkersTabClick={ props.onMarkersTabClick }
+			/>
 			<Content>
 				{ props.successMessage }
 			</Content>
@@ -67,7 +71,9 @@ function RegistrationDone(props) {
 function RegistrationError(props) {
 	return (
 		<div>
-			<GlobalNavbar active="1" onShowMarkerList={ props.onShowMarkerList }/>
+			<GlobalNavbar active="1" 
+				onMarkersTabClick={ props.onMarkersTabClick }
+			/>
 			<Content>
 				{ props.errorMessage }
 			</Content>

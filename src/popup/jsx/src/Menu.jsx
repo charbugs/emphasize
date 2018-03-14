@@ -53,8 +53,8 @@ class Menu extends React.Component {
 	///////////////////////////////////////////////////////
 
 	showMarkerList() {
-		this.menuData.view = 'MARKERLIST';
 		this.menuData.currentMarker = null;
+		this.menuData.view = 'MARKERLIST';
 		this.syncState();
 	}
 
@@ -64,25 +64,26 @@ class Menu extends React.Component {
 		this.syncState();
 	}
 
-	showMarkerMore() {
+	showMarkerMore(marker) {
+		this.menuData.currentMarker = marker;
 		this.menuData.view = 'MARKERMORE';
 		this.syncState();
 	}
 
-	saveMarkerInput(inputId, value) {
-		this.menuData.currentMarker.userInputs[inputId] = value;
+	saveMarkerInput(marker, inputId, value) {
+		marker.userInputs[inputId] = value;
 	} 
 
-	applyMarker() {
-		this.menuData.currentMarker.apply();
+	applyMarker(marker) {
+		marker.apply();
 	}
 
-	abortMarker() {
-		this.menuData.currentMarker.abortAnalysis();
+	abortMarker(marker) {
+		marker.abortAnalysis();
 	}
 
-	resetMarker() {
-		this.menuData.currentMarker.reset(true);
+	resetMarker(marker) {
+		marker.reset(true);
 	}
 
 	toggleAnnotation(marker) {
@@ -114,6 +115,11 @@ class Menu extends React.Component {
 		this.menuData.registration.inputUrl = url;
 	}
 
+	async removeMarkerFromSystem(marker) {
+		await this.menuData.registration.removeMarkerFromSystem(marker.setup.url);
+		this.showMarkerList();	
+	}
+
 	///////////////////////////////////////////////////////
 	// Rendering
 	///////////////////////////////////////////////////////
@@ -136,7 +142,7 @@ class Menu extends React.Component {
 				markers={ this.state.markers }
 				onMarkerClick={ this.showMarker.bind(this) }
 				onToggleClick={ this.toggleAnnotation.bind(this) }
-				onShowRegistration={ this.showRegistration.bind(this) } 
+				onRegistrationTabClick={ this.showRegistration.bind(this) } 
 				onHomeClick={ this.openProjectWebsite.bind(this) } />
 		}
 
@@ -144,7 +150,8 @@ class Menu extends React.Component {
 			return <MarkerMore
 				marker={ currentMarker }
 				onGlobalBackClick={ this.showMarkerList.bind(this) }
-				onLocalBackClick={ this.showMarker.bind(this, currentMarker) } />
+				onLocalBackClick={ this.showMarker.bind(this) } 
+				onRemoveClick={ this.removeMarkerFromSystem.bind(this) } />
 		}
 
 		if (view === 'MARKER' &&
@@ -153,7 +160,7 @@ class Menu extends React.Component {
 				marker={ currentMarker } 
 				onApplyClick= { this.applyMarker.bind(this) }
 				onGlobalBackClick={ this.showMarkerList.bind(this) } 
-				onMarkerInputChange={ this.saveMarkerInput.bind(this) } 
+				onMarkerInputChange={ this.saveMarkerInput.bind(this) }
 				onMoreClick={ this.showMarkerMore.bind(this) } />
 		}
 
@@ -170,9 +177,9 @@ class Menu extends React.Component {
 			return <MarkerDone
 				marker={ currentMarker }
 				onGlobalBackClick={ this.showMarkerList.bind(this) }
-				onResetClick={ this.resetMarker.bind(this) } 
-				onToggleClick={ this.toggleAnnotation.bind(this) } 
-				togglerOn={ !currentMarker.annotationHidden } 
+				onResetClick={ this.resetMarker.bind(this) }
+				onToggleClick={ this.toggleAnnotation.bind(this) }
+				togglerOn={ !currentMarker.annotationHidden }
 				onMoreClick={ this.showMarkerMore.bind(this) } />
 		}
 
@@ -189,14 +196,14 @@ class Menu extends React.Component {
 			return <RegistrationReady 
 				inputUrl={ registration.inputUrl || '' }
 				onUrlChange={ this.saveUrl.bind(this) }
-				onShowMarkerList={ this.showMarkerList.bind(this) }
+				onMarkersTabClick={ this.showMarkerList.bind(this) }
 				onRegisterMarker={ this.registerMarker.bind(this) } />
 		}
 
 		if (view === 'REGISTRATION' && 
 			registration.state === registration.WORKING) {
 			return <RegistrationWorking 
-				onShowMarkerList={ this.showMarkerList.bind(this) }
+				onMarkersTabClick={ this.showMarkerList.bind(this) }
 				onAbortRegistration={ this.abortRegistration.bind(this) } />
 		}
 
@@ -204,7 +211,7 @@ class Menu extends React.Component {
 			registration.state === registration.DONE) {
 			return <RegistrationDone
 				successMessage={ registration.successMessage }
-				onShowMarkerList={ this.showMarkerList.bind(this) }
+				onMarkersTabClick={ this.showMarkerList.bind(this) }
 				onResetRegistration={ this.resetRegistration.bind(this) } />
 		}
 
@@ -212,7 +219,7 @@ class Menu extends React.Component {
 			registration.state === registration.ERROR) {
 			return <RegistrationError 
 				errorMessage={ registration.error.message }
-				onShowMarkerList={ this.showMarkerList.bind(this) }
+				onMarkersTabClick={ this.showMarkerList.bind(this) }
 				onResetRegistration={ this.resetRegistration.bind(this) } />
 		}
 	}

@@ -3,7 +3,7 @@ function RegistrationReady(props) {
 		"div",
 		null,
 		React.createElement(GlobalNavbar, { active: "1",
-			onShowMarkerList: props.onShowMarkerList
+			onMarkersTabClick: props.onMarkersTabClick
 		}),
 		React.createElement(
 			Content,
@@ -36,7 +36,9 @@ function RegistrationWorking(props) {
 	return React.createElement(
 		"div",
 		null,
-		React.createElement(GlobalNavbar, { active: "1", onShowMarkerList: props.onShowMarkerList }),
+		React.createElement(GlobalNavbar, { active: "1",
+			onMarkersTabClick: props.onMarkersTabClick
+		}),
 		React.createElement(
 			Content,
 			null,
@@ -59,7 +61,9 @@ function RegistrationDone(props) {
 	return React.createElement(
 		"div",
 		null,
-		React.createElement(GlobalNavbar, { active: "1", onShowMarkerList: props.onShowMarkerList }),
+		React.createElement(GlobalNavbar, { active: "1",
+			onMarkersTabClick: props.onMarkersTabClick
+		}),
 		React.createElement(
 			Content,
 			null,
@@ -81,7 +85,9 @@ function RegistrationError(props) {
 	return React.createElement(
 		"div",
 		null,
-		React.createElement(GlobalNavbar, { active: "1", onShowMarkerList: props.onShowMarkerList }),
+		React.createElement(GlobalNavbar, { active: "1",
+			onMarkersTabClick: props.onMarkersTabClick
+		}),
 		React.createElement(
 			Content,
 			null,

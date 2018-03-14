@@ -4,7 +4,7 @@ function MarkerList(props) {
 		'div',
 		null,
 		React.createElement(GlobalNavbar, { active: '0',
-			onShowRegistration: props.onShowRegistration
+			onRegistrationTabClick: props.onRegistrationTabClick
 		}),
 		React.createElement(
 			'div',
@@ -14,7 +14,7 @@ function MarkerList(props) {
 				{ key: idx,
 					item: marker,
 					text: marker.setup.title,
-					onItemClick: props.onMarkerClick
+					onItemClick: () => props.onMarkerClick(marker)
 				},
 				marker.state === marker.DONE && React.createElement(Toggler, { small: true,
 					face: marker.setup.face,
@@ -54,14 +54,14 @@ function MarkerReady(props) {
 						key: idx,
 						label: input.label || input.id,
 						'default': marker.userInputs[input.id],
-						onChange: str => props.onMarkerInputChange(input.id, str) });
+						onChange: str => props.onMarkerInputChange(marker, input.id, str) });
 				} else if (input.type === 'select') {
 					return React.createElement(SelectInput, {
 						key: idx,
 						label: input.label || input.id,
 						'default': marker.userInputs[input.id],
 						options: input.values,
-						onChange: pos => props.onMarkerInputChange(input.id, pos) });
+						onChange: pos => props.onMarkerInputChange(marker, input.id, pos) });
 				}
 			})
 		),
@@ -70,11 +70,11 @@ function MarkerReady(props) {
 			null,
 			React.createElement(Button, { label: 'Apply',
 				classes: [setup.face, 'left'],
-				onClick: props.onApplyClick
+				onClick: () => props.onApplyClick(marker)
 			}),
 			React.createElement(Button, { label: 'More',
 				classes: ['secondary', 'right'],
-				onClick: props.onMoreClick
+				onClick: () => props.onMoreClick(marker)
 			})
 		)
 	);
@@ -100,7 +100,7 @@ function MarkerWorking(props) {
 			React.createElement(Button, {
 				classes: ['secondary', 'left'],
 				label: 'Abort',
-				onClick: props.onAbortClick
+				onClick: () => props.onAbortClick(props.marker)
 			}),
 			React.createElement(Loader, { classes: ['right'] })
 		)
@@ -126,7 +126,7 @@ function MarkerError(props) {
 			React.createElement(Button, {
 				classes: ['secondary', 'left'],
 				label: 'Back',
-				onClick: props.onLocalBackClick
+				onClick: () => props.onLocalBackClick(props.marker)
 			})
 		)
 	);
@@ -151,7 +151,7 @@ function MarkerDone(props) {
 			React.createElement(Button, {
 				classes: ['secondary', 'left'],
 				label: 'Reset',
-				onClick: props.onResetClick
+				onClick: () => props.onResetClick(props.marker)
 			}),
 			React.createElement(Toggler, {
 				face: props.marker.setup.face,
@@ -161,7 +161,7 @@ function MarkerDone(props) {
 			React.createElement(Button, {
 				classes: ['secondary', 'right'],
 				label: 'More',
-				onClick: props.onMoreClick
+				onClick: () => props.onMoreClick(props.marker)
 			})
 		)
 	);
@@ -190,7 +190,12 @@ function MarkerMore(props) {
 			React.createElement(Button, {
 				classes: ['secondary', 'left'],
 				label: 'Back',
-				onClick: props.onLocalBackClick
+				onClick: () => props.onLocalBackClick(props.marker)
+			}),
+			React.createElement(Button, {
+				classes: ['secondary', 'right'],
+				label: 'Remove',
+				onClick: () => props.onRemoveClick(props.marker)
 			})
 		)
 	);

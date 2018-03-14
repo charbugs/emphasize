@@ -39,13 +39,13 @@ function GlobalNavbar(props) {
 		React.createElement(
 			"li",
 			{ className: getClassString(0),
-				onClick: props.onShowMarkerList },
+				onClick: props.onMarkersTabClick },
 			"Markers"
 		),
 		React.createElement(
 			"li",
 			{ className: getClassString(1),
-				onClick: props.onShowRegistration },
+				onClick: props.onRegistrationTabClick },
 			"Register"
 		)
 	);

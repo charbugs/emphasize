@@ -86,6 +86,10 @@
 		abortRegistration() {
 			this._request.abortRequest();
 		}
+
+		async removeMarkerFromSystem(url) {
+			await this._setupStore.removeSetup(url);
+		}
 	}
 
 	pool.Registration = Registration;

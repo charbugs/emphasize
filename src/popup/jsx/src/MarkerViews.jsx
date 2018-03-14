@@ -3,7 +3,7 @@ function MarkerList(props) {
 	return (
 		<div>
 			<GlobalNavbar active="0"
-				onShowRegistration={ props.onShowRegistration}
+				onRegistrationTabClick={ props.onRegistrationTabClick }
 			/>
 			<div>
 			{
@@ -11,7 +11,7 @@ function MarkerList(props) {
 					<ListItem key={idx}
 						item={ marker }
 						text={ marker.setup.title }
-						onItemClick={ props.onMarkerClick }
+						onItemClick={ () => props.onMarkerClick(marker) }
 					> 
 						{
 							marker.state === marker.DONE &&
@@ -55,7 +55,7 @@ function MarkerReady(props) {
 								label={ input.label || input.id } 
 								default={ marker.userInputs[input.id] }
 								onChange={ (str) => 
-									props.onMarkerInputChange(input.id, str) } />
+									props.onMarkerInputChange(marker, input.id, str) } />
 						} 
 						
 						else if (input.type === 'select') {
@@ -65,7 +65,7 @@ function MarkerReady(props) {
 								default= { marker.userInputs[input.id] }
 								options={ input.values } 
 								onChange= { (pos) => 
-									props.onMarkerInputChange(input.id, pos) } />
+									props.onMarkerInputChange(marker, input.id, pos) } />
 						}
 					})
 				}
@@ -73,11 +73,11 @@ function MarkerReady(props) {
 			<ControlBar>
 				<Button label="Apply"
 					classes={ [setup.face, 'left'] }
-					onClick= { props.onApplyClick }
+					onClick= { () => props.onApplyClick(marker) }
 				/>
 				<Button label="More"
 					classes={ ['secondary', 'right'] }
-					onClick= { props.onMoreClick }
+					onClick= { () => props.onMoreClick(marker) }
 				/>
 			</ControlBar>
 		</div>
@@ -97,7 +97,7 @@ function MarkerWorking(props) {
 				<Button
 					classes={ ['secondary', 'left'] }
 					label="Abort"
-					onClick={ props.onAbortClick }
+					onClick={ () => props.onAbortClick(props.marker) }
 				/>
 				<Loader classes={ ['right'] }/>
 			</ControlBar>
@@ -118,7 +118,7 @@ function MarkerError(props) {
 				<Button
 					classes={ ['secondary', 'left'] } 
 					label="Back"
-					onClick={ props.onLocalBackClick }
+					onClick={ () => props.onLocalBackClick(props.marker) }
 				/>
 			</ControlBar>
 		</div>
@@ -138,7 +138,7 @@ function MarkerDone(props) {
 				<Button 
 					classes={ ['secondary', 'left'] }
 					label="Reset"
-					onClick={ props.onResetClick }
+					onClick={ () => props.onResetClick(props.marker) }
 				/>
 				<Toggler 
 					face={ props.marker.setup.face }
@@ -148,7 +148,7 @@ function MarkerDone(props) {
 				<Button
 					classes={ ['secondary', 'right'] }					
 					label="More"
-					onClick={ props.onMoreClick }
+					onClick={ () => props.onMoreClick(props.marker) }
 				/>
 			</ControlBar>
 		</div>
@@ -172,7 +172,12 @@ function MarkerMore(props) {
 				<Button
 					classes={ ['secondary', 'left'] } 
 					label="Back"
-					onClick={ props.onLocalBackClick }
+					onClick={ () => props.onLocalBackClick(props.marker) }
+				/>
+				<Button
+					classes={ ['secondary', 'right'] } 
+					label="Remove"
+					onClick={ () => props.onRemoveClick(props.marker) }
 				/>
 			</ControlBar>
 		</div>

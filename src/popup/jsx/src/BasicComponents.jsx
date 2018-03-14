@@ -39,12 +39,12 @@ function GlobalNavbar(props) {
 	return (
 		<ul className="global-navbar">
 			<li className={ getClassString(0) }	
-				onClick={ props.onShowMarkerList }>
+				onClick={ props.onMarkersTabClick }>
 				Markers
 			</li>
 
 			<li className={ getClassString(1) }	
-				onClick={ props.onShowRegistration }>
+				onClick={ props.onRegistrationTabClick }>
 				Register
 			</li>				
 		</ul>
