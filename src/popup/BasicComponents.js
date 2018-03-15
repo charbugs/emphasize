@@ -218,6 +218,12 @@ class Toggler extends React.Component {
 
 function UserHtmlContent(props) {
 
+	const htmlToFirstElement = html => {
+		var template = document.createElement('template');
+		template.innerHTML = html.trim();
+		return template.content.firstChild;
+	};
+
 	var element = htmlToFirstElement(props.html);
 
 	if (element.nodeType === Node.TEXT_NODE) {
