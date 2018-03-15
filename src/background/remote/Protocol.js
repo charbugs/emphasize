@@ -249,7 +249,7 @@
 			q
 			rp rt ruby
 			s samp section small span strong sub summary sup
-			table tbody td tfoot thead time th
+			time
 			u ul
 			var
 			wbr`),
@@ -264,9 +264,7 @@
 			meter: 		spl(`form high low max min optimum value`),
 			ol: 		spl(`reversed start type`),
 			progress:   spl(`max value`),
-			td: 		spl(`colspan headers rowspan`),
 			time:  		spl(`datetime`),
-			th: 		spl(`abbr rowspan scope sorted`),
 		},
 		allowedSchemes: spl(`http https`),
 		allowedSchemesAppliedToAttributes: spl(`href cite`)

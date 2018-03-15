@@ -215,3 +215,19 @@ class Toggler extends React.Component {
 		});
 	}
 }
+
+function UserHtmlContent(props) {
+
+	var element = htmlToFirstElement(props.html);
+
+	if (element.nodeType === Node.TEXT_NODE) {
+		var textNode = element;
+		element = document.createElement('div');
+		element.appendChild(textNode);
+	}
+
+	return React.createElement("div", {
+		dangerouslySetInnerHTML: { __html: element.outerHTML },
+		className: props.setDefaultMarginIfNotProvidedByUser && !element.style.margin ? 'user-html-content default-margin' : 'user-html-content'
+	});
+}

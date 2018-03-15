@@ -137,7 +137,7 @@
 
 			if (response.report) {
 				response.report = this._sanitizeHtml(response.report, 
-					this._protocol.htmlRules);
+					this._protocol.reportHtmlRules);
 			}
 
 			if (response.markup) {

@@ -43,9 +43,10 @@ function MarkerReady(props) {
 		React.createElement(
 			Content,
 			null,
-			setup.description,
-			React.createElement('br', null),
-			React.createElement('br', null),
+			React.createElement(UserHtmlContent, {
+				html: setup.description,
+				setDefaultMarginIfNotProvidedByUser: false
+			}),
 			React.createElement('br', null),
 			setup.inputs.map((input, idx) => {
 
@@ -136,15 +137,14 @@ function MarkerDone(props) {
 	return React.createElement(
 		'div',
 		null,
-		React.createElement(MarkerNavbar, { title: props.marker.setup.title,
+		React.createElement(MarkerNavbar, {
+			title: props.marker.setup.title,
 			onGlobalBackClick: props.onGlobalBackClick
 		}),
-		React.createElement(
-			Content,
-			null,
-			'Report: ',
-			props.marker.output.report
-		),
+		React.createElement(UserHtmlContent, {
+			html: props.marker.output.report,
+			setDefaultMarginIfNotProvidedByUser: true
+		}),
 		React.createElement(
 			ControlBar,
 			null,

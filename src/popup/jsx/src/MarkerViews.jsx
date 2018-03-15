@@ -44,8 +44,11 @@ function MarkerReady(props) {
 				onGlobalBackClick={ props.onGlobalBackClick }
 			/>
 			<Content>
-				{ setup.description }
-				<br/><br/><br/>
+				<UserHtmlContent 
+					html={ setup.description }	
+					setDefaultMarginIfNotProvidedByUser={ false }
+				/>
+				<br/>
 				{
 					setup.inputs.map((input, idx) => {
 						
@@ -128,12 +131,14 @@ function MarkerError(props) {
 function MarkerDone(props) {
 	return (
 		<div>
-			<MarkerNavbar title={ props.marker.setup.title } 
+			<MarkerNavbar 
+				title={ props.marker.setup.title } 
 				onGlobalBackClick={ props.onGlobalBackClick }
 			/>
-			<Content>
-				Report: { props.marker.output.report }
-			</Content>
+			<UserHtmlContent 
+				html={ props.marker.output.report }
+				setDefaultMarginIfNotProvidedByUser={ true }
+			/>
 			<ControlBar>
 				<Button 
 					classes={ ['secondary', 'left'] }

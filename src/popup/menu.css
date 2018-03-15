@@ -37,6 +37,10 @@ body {
     float: right;
 }
 
+.default-margin {
+    margin: 24px 16px;
+}
+
 /************************************************
     GlobalNavbar Component
 ************************************************/
@@ -75,6 +79,17 @@ body {
     color: #444;
     font-family: Roboto-Regular;
     font-size: 14px;
+}
+
+/************************************************
+    UserHtmlContent Component
+************************************************/
+
+.user-html-content {
+    line-height: 1.5;
+    color: #444;
+    font-family: Roboto-Regular;
+    font-size: 14px;   
 }
 
 /************************************************
@@ -299,8 +314,7 @@ body {
 .toggler.small {
     height: 16px;
     width: 28px;
-    border: 7px solid white;
-    margin: 10px;
+    margin: 14px;
 }
 
 .toggler.small:before {
