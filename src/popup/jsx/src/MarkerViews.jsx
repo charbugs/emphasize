@@ -135,10 +135,12 @@ function MarkerDone(props) {
 				title={ props.marker.setup.title } 
 				onGlobalBackClick={ props.onGlobalBackClick }
 			/>
-			<UserHtmlContent 
-				html={ props.marker.output.report }
-				setDefaultMarginIfNotProvidedByUser={ true }
-			/>
+			{
+				props.marker.output.report
+					? <UserHtmlContent html={ props.marker.output.report }
+						setDefaultMarginIfNotProvidedByUser={ true } />
+					: <Content>Marker applied without a message</Content>
+			}
 			<ControlBar>
 				<Button 
 					classes={ ['secondary', 'left'] }

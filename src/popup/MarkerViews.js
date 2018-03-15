@@ -141,10 +141,12 @@ function MarkerDone(props) {
 			title: props.marker.setup.title,
 			onGlobalBackClick: props.onGlobalBackClick
 		}),
-		React.createElement(UserHtmlContent, {
-			html: props.marker.output.report,
-			setDefaultMarginIfNotProvidedByUser: true
-		}),
+		props.marker.output.report ? React.createElement(UserHtmlContent, { html: props.marker.output.report,
+			setDefaultMarginIfNotProvidedByUser: true }) : React.createElement(
+			Content,
+			null,
+			'Marker applied without a message'
+		),
 		React.createElement(
 			ControlBar,
 			null,
