@@ -15,34 +15,49 @@ class Menu extends React.Component {
 	// Init
 	///////////////////////////////////////////////////////
 
-	async componentDidMount() {
+	componentDidMount() {
 
 		var that = this;
 
-		var bg = chrome.runtime.getBackgroundPage(async function (bg) {
-
-			var injection = bg.emphasize.app.injection;
-			var menuDataContainer = bg.emphasize.app.menuDataContainer;
+		chrome.runtime.getBackgroundPage(async function (bg) {
 
 			try {
+
+				var injection = bg.emphasize.app.injection;
+				var menuDataContainer = bg.emphasize.app.menuDataContainer;
+
 				var tabId = await injection.connectWebPage();
+
+				that.menuData = await menuDataContainer.get(tabId);
+				that.menuData.view = that.menuData.view || 'MARKERLIST';
+
+				that.menuData.registration.onStateChange.empty();
+				that.menuData.registration.onStateChange.register(that.syncState.bind(that));
+
+				that.menuData.markers.forEach(marker => {
+					marker.onStateChange.empty();
+					marker.onStateChange.register(that.syncState.bind(that));
+				});
+
+				that.syncState();
 			} catch (err) {
 				if (err.name === 'InjectionError') that.setState({ injectionError: true });else throw err;
 			}
-
-			that.menuData = await menuDataContainer.get(tabId);
-			that.menuData.view = that.menuData.view || 'MARKERLIST';
-
-			that.menuData.registration.onStateChange.empty();
-			that.menuData.registration.onStateChange.register(that.syncState.bind(that));
-
-			that.menuData.markers.forEach(marker => {
-				marker.onStateChange.empty();
-				marker.onStateChange.register(that.syncState.bind(that));
-			});
-
-			that.syncState();
 		});
+	}
+
+	async injectContentScriptsInWebPage(bg) {
+
+		var injection = bg.emphasize.app.injection;
+
+		try {
+			var tabId = await injection.connectWebPage();
+		} catch (err) {
+			if (err.name === 'InjectionError') {
+				that.setState({ injectionError: true });
+			}
+			throw err;
+		}
 	}
 
 	///////////////////////////////////////////////////////
