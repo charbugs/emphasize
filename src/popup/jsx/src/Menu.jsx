@@ -10,7 +10,7 @@ class Menu extends React.Component {
 	}
 
 	openProjectWebsite() {
-
+		chrome.tabs.create({ url: "https://github.com/charbugs/emphasize" });	
 	}
 
 	///////////////////////////////////////////////////////

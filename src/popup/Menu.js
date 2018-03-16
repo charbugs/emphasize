@@ -9,7 +9,9 @@ class Menu extends React.Component {
 		this.setState(Object.assign({}, this.menuData));
 	}
 
-	openProjectWebsite() {}
+	openProjectWebsite() {
+		chrome.tabs.create({ url: "https://github.com/charbugs/emphasize" });
+	}
 
 	///////////////////////////////////////////////////////
 	// Init
