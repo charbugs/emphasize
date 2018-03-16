@@ -9,6 +9,11 @@ function MarkerList(props) {
 		React.createElement(
 			'div',
 			null,
+			props.markers.length === 0 && React.createElement(
+				Content,
+				null,
+				' No markers registered '
+			),
 			props.markers.map((marker, idx) => React.createElement(
 				ListItem,
 				{ key: idx,

@@ -7,6 +7,10 @@ function MarkerList(props) {
 			/>
 			<div>
 			{
+				props.markers.length === 0 && 
+					<Content> No markers registered </Content>
+			}
+			{
 				props.markers.map((marker, idx) => 
 					<ListItem key={idx}
 						item={ marker }
