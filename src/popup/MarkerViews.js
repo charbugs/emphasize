@@ -85,8 +85,9 @@ function MarkerWorking(props) {
 	return React.createElement(
 		'div',
 		null,
-		React.createElement(MarkerNavbar, { title: props.marker.setup.title,
-			onGlobalBackClick: props.onGlobalBackClick
+		React.createElement(MarkerNavbar, {
+			title: props.marker.setup.title,
+			loading: true
 		}),
 		React.createElement(
 			Content,
@@ -102,8 +103,7 @@ function MarkerWorking(props) {
 				classes: ['secondary', 'left'],
 				label: 'Abort',
 				onClick: () => props.onAbortClick(props.marker)
-			}),
-			React.createElement(Loader, { classes: ['right'] })
+			})
 		)
 	);
 }

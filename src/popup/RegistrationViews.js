@@ -37,7 +37,7 @@ function RegistrationWorking(props) {
 		"div",
 		null,
 		React.createElement(GlobalNavbar, { active: "1",
-			onMarkersTabClick: props.onMarkersTabClick
+			loading: true
 		}),
 		React.createElement(
 			Content,
@@ -51,8 +51,7 @@ function RegistrationWorking(props) {
 				classes: ['secondary', 'left'],
 				label: "Abort",
 				onClick: props.onAbortRegistration
-			}),
-			React.createElement(Loader, { classes: ['right'] })
+			})
 		)
 	);
 }

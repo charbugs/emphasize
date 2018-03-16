@@ -90,8 +90,9 @@ function MarkerReady(props) {
 function MarkerWorking(props) {
 	return (
 		<div>
-			<MarkerNavbar title={ props.marker.setup.title } 
-				onGlobalBackClick={ props.onGlobalBackClick }
+			<MarkerNavbar 
+				title={ props.marker.setup.title } 
+				loading={ true }
 			/>
 			<Content>
 				Requesting {props.marker.setup.url} for setup ...
@@ -102,7 +103,6 @@ function MarkerWorking(props) {
 					label="Abort"
 					onClick={ () => props.onAbortClick(props.marker) }
 				/>
-				<Loader classes={ ['right'] }/>
 			</ControlBar>
 		</div>
 	);

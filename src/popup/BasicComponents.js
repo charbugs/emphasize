@@ -33,22 +33,40 @@ function GlobalNavbar(props) {
 
 	var getClassString = pos => String(pos) === props.active ? 'tab active' : 'tab nonactive';
 
-	return React.createElement(
-		"ul",
-		{ className: "global-navbar" },
-		React.createElement(
-			"li",
-			{ className: getClassString(0),
-				onClick: props.onMarkersTabClick },
-			"Markers"
-		),
-		React.createElement(
-			"li",
-			{ className: getClassString(1),
-				onClick: props.onRegistrationTabClick },
-			"Register"
-		)
-	);
+	if (props.loading) {
+		return React.createElement(
+			"ul",
+			{ className: "global-navbar loading" },
+			React.createElement(
+				"li",
+				{ className: getClassString(0) },
+				"Markers"
+			),
+			React.createElement(
+				"li",
+				{ className: getClassString(1) },
+				"Register"
+			),
+			React.createElement(Loader, { classes: ['right'] })
+		);
+	} else {
+		return React.createElement(
+			"ul",
+			{ className: "global-navbar" },
+			React.createElement(
+				"li",
+				{ className: getClassString(0),
+					onClick: props.onMarkersTabClick },
+				"Markers"
+			),
+			React.createElement(
+				"li",
+				{ className: getClassString(1),
+					onClick: props.onRegistrationTabClick },
+				"Register"
+			)
+		);
+	}
 }
 
 class TextInput extends React.Component {
@@ -172,21 +190,41 @@ function AppInfoBar(props) {
 }
 
 function MarkerNavbar(props) {
-	return React.createElement(
-		"div",
-		{ className: "marker-navbar" },
-		React.createElement(
+
+	if (props.loading) {
+		return React.createElement(
 			"div",
-			{ className: "global-back",
-				onClick: props.onGlobalBackClick },
-			React.createElement("i", { className: "fa fa-chevron-left" })
-		),
-		React.createElement(
+			{ className: "marker-navbar loading" },
+			React.createElement(
+				"div",
+				{ className: "global-back" },
+				React.createElement("i", { className: "fa fa-chevron-left" })
+			),
+			React.createElement(
+				"div",
+				{ className: "title" },
+				props.title
+			),
+			React.createElement(Loader, { classes: ['right'] })
+		);
+	} else {
+		return React.createElement(
 			"div",
-			{ className: "title" },
-			props.title
-		)
-	);
+			{ className: "marker-navbar" },
+			React.createElement(
+				"div",
+				{ className: "global-back",
+					onClick: props.onGlobalBackClick
+				},
+				React.createElement("i", { className: "fa fa-chevron-left" })
+			),
+			React.createElement(
+				"div",
+				{ className: "title" },
+				props.title
+			)
+		);
+	}
 }
 
 class Toggler extends React.Component {

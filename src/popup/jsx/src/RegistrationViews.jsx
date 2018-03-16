@@ -31,7 +31,7 @@ function RegistrationWorking(props) {
 	return (
 		<div>
 			<GlobalNavbar active="1" 
-				onMarkersTabClick={ props.onMarkersTabClick }
+				loading={ true }
 			/>
 			<Content>
 				Requesting marker for setup ...
@@ -42,7 +42,6 @@ function RegistrationWorking(props) {
 					label="Abort"
 					onClick={ props.onAbortRegistration }
 				/>
-				<Loader classes={ ['right'] }/>
 			</ControlBar>
 		</div>
 	);

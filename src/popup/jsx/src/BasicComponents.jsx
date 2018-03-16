@@ -36,19 +36,35 @@ function GlobalNavbar(props) {
 			? 'tab active'
 			: 'tab nonactive';
 
-	return (
-		<ul className="global-navbar">
-			<li className={ getClassString(0) }	
-				onClick={ props.onMarkersTabClick }>
-				Markers
-			</li>
+	if (props.loading) {
+		return (
+			<ul className="global-navbar loading">
+				<li className={ getClassString(0) }	>
+					Markers
+				</li>
 
-			<li className={ getClassString(1) }	
-				onClick={ props.onRegistrationTabClick }>
-				Register
-			</li>				
-		</ul>
-	);
+				<li className={ getClassString(1) } >
+					Register
+				</li>
+				<Loader classes={ ['right'] }/>
+			</ul>
+		);
+	} 
+	else {
+		return (
+			<ul className="global-navbar">
+				<li className={ getClassString(0) }	
+					onClick={ props.onMarkersTabClick }>
+					Markers
+				</li>
+
+				<li className={ getClassString(1) }	
+					onClick={ props.onRegistrationTabClick }>
+					Register
+				</li>				
+			</ul>
+		);
+	}
 }
 
 
@@ -154,17 +170,34 @@ function AppInfoBar(props) {
 }
 
 function MarkerNavbar(props) {
-	return (
-		<div className="marker-navbar">
-			<div className="global-back"
-				onClick={ props.onGlobalBackClick }>
-				<i className="fa fa-chevron-left"></i>
+	
+	if (props.loading) {
+		return (
+			<div className='marker-navbar loading'>
+				<div className='global-back'>
+					<i className="fa fa-chevron-left"></i>
+				</div>
+				<div className="title">
+					{props.title}
+				</div>
+				<Loader classes={ ['right'] }/>
 			</div>
-			<div className="title">
-				{props.title}
+		);
+	} 
+	else {
+		return (
+			<div className='marker-navbar'>
+				<div className='global-back'
+					onClick={ props.onGlobalBackClick }
+				>
+					<i className="fa fa-chevron-left"></i>
+				</div>
+				<div className="title">
+					{props.title}
+				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 }
 
 class Toggler extends React.Component {

@@ -49,24 +49,40 @@ body {
     margin: 0px;
     padding: 0px;
     border-bottom: 1px solid #ccc;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    color: #444;
+}
+
+.global-navbar.loading {
+    color: #999;
 }
 
 .global-navbar .tab {
     display: inline-block;
     margin: 0px;
     padding: 16px 16px;
-    color: #444;
-    font-family: Roboto-Regular;
-    font-size: 14px;
     cursor: pointer;
+}
+
+.global-navbar.loading .tab {
+    cursor: default;
 }
 
 .global-navbar .tab.active {
     border-bottom: 3px solid dodgerblue;
 }
 
+.global-navbar.loading .tab.active {
+    border-bottom: 3px solid #ccc;
+}
+
 .global-navbar .tab.nonactive:hover {
     border-bottom: 3px solid #ccc;   
+}
+
+.global-navbar.loading .tab.nonactive:hover {
+    border-bottom: none;
 }
 
 /************************************************
@@ -262,10 +278,18 @@ body {
     border-bottom: 1px solid #ccc;
 }
 
+.marker-navbar.loading {
+    color: #999;
+}
+
 .marker-navbar .global-back {
     padding: 16px;
     display: inline-block;
     cursor: pointer;
+}
+
+.marker-navbar.loading .global-back {
+    cursor: default;
 }
 
 .marker-navbar .title {
