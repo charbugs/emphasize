@@ -26,7 +26,7 @@
 body {
     margin: 0px;
     padding: 0px;
-    width: 430px;
+    width: 450px;
 }
 
 .left {
@@ -92,9 +92,11 @@ body {
 .content {
     padding: 24px 16px;
     line-height: 1.5;
+    max-height: 430px;
     color: #444;
     font-family: Roboto-Regular;
     font-size: 14px;
+    overflow: auto;
 }
 
 /************************************************
