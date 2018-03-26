@@ -1,4 +1,0 @@
-var emphasize = {
-	pool : {},
-	app: {}
-};

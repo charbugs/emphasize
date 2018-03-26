@@ -1,0 +1,96 @@
+/**
+ * face 1 to 9: deep colors
+ */
+
+.emphasize-face-1 { /* red */
+	color: #FFFFFF;
+	background: #F44336;
+}
+
+.emphasize-face-2 { /* teal */
+	color: #FFFFFF !important;
+	background: #009688 !important;
+}
+
+.emphasize-face-3 { /* indigo */
+	color: #FFFFFF;
+	background: #3F51B5;
+}
+
+.emphasize-face-4 { /* pink */
+	color: #FFFFFF;
+	background: #E91E63;
+}
+
+.emphasize-face-5 { /* green */
+	color: #FFFFFF;
+	background: #4CAF50;
+}
+
+.emphasize-face-6 { /* orange */
+	color: #000000;
+	background: #FF9800;
+}
+
+.emphasize-face-7 { /* blue */
+	color: #FFFFFF;
+	background: #2196F3;
+}
+
+.emphasize-face-8 { /* purple */
+	color: #FFFFFF;
+	background: #9C27B0;
+}
+
+.emphasize-face-9 { /* lime */
+	color: #000000;
+	background: #CDDC39;
+}
+
+/**
+ * face 10 to 18: light colors
+ */
+.emphasize-face-10 {
+	border-radius: 2px;
+	background: #aad356;
+}
+
+.emphasize-face-11 {
+	border-radius: 2px;
+	background: #f9c908;
+}
+
+.emphasize-face-12 {
+	border-radius: 2px;
+	background: #b7e1f3;
+}
+
+.emphasize-face-13 {
+	border-radius: 2px;
+	background: #f79487;
+}
+
+.emphasize-face-14 {
+	border-radius: 2px;
+	background: #bdd6d1;
+}
+
+.emphasize-face-15 {
+	border-radius: 2px;
+	background: #c7c4e9;
+}
+
+.emphasize-face-16 {
+	border-radius: 2px;
+	background: #f0d3a8;
+}
+
+.emphasize-face-17 {
+	border-radius: 2px;
+	background: #f6a7d1;
+}
+
+.emphasize-face-18 {
+	border-radius: 2px;
+	background: #72dab2;
+}

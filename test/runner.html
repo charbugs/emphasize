@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" 
+		href="../node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+
+	<script src="../node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+	<script src="../node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+	<script src="../node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+
+	<script src="main.spec.js"></script>
+	
+</head>
+<body>
+
+	<div id="fixtures" hidden>
+
+		<div id="basic-node-extraction">
+			str1
+			<div>
+				str2
+			</div>
+			<div>
+				str3
+				<div>
+					str4
+				</div>
+				<div>
+			
+				</div>
+			</div>
+			str5
+	  	</div>
+
+	  	<!-- ///////////////////////////////////////////// -->
+
+	  	<div id="blacklist-elements">
+	  		str1
+	  		<div>
+	  			<textarea>
+	  				str2
+	  			</textarea>
+	  			str3
+	  			<div>
+	  				<select>
+	  					str4
+	  					<option>str5</option>
+	  					<option>str6</option>
+	  				</select>
+	  			</div>
+	  			<style type="text/css">
+	  				str7
+	  			</style>
+	  			<script type="text/javascript">
+	  				var str8;
+	  			</script>
+	  			str9
+	  		</div>
+	  	</div>
+
+		<!-- ///////////////////////////////////////////// -->
+
+		<div id="hidden-elements">
+			<div hidden>
+				str1
+				<div>str2</div>
+			</div>
+			<div>
+				<div>str3</div>
+				<div hidden>str4</div>
+				<div>str5</div>
+			</div>
+		</div>	  	
+
+		<!-- ///////////////////////////////////////////// -->
+
+		<div id="nodes-to-tokenize">
+			<div id="sent1">  lorem ipsum dolor</div>
+			<div id="sent2">sit amet consectetur  </div>
+		</div>
+
+	</div>
+
+</body>
+</html>
