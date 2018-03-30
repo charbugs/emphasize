@@ -24,8 +24,7 @@ body {
     margin: 0px;
     padding: 0px;
     border-bottom: 1px solid #ccc;
-    font-family: Roboto;
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;
     color: #444;
 }
@@ -70,8 +69,7 @@ body {
     line-height: 1.5;
     max-height: 430px;
     color: #444;
-    font-family: Roboto;
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;
     overflow: auto;
 }
@@ -83,8 +81,7 @@ body {
 .user-html-content {
     line-height: 1.5;
     color: #444;
-    font-family: Roboto;
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;   
 }
 
@@ -104,8 +101,7 @@ body {
 ************************************************/
 
 .text-input label {
-    font-family: 'Roboto';
-    font-weight: 500;
+    font-family: 'Roboto-Medium';
 }
 
 .text-input input[type=text] {
@@ -113,8 +109,7 @@ body {
     padding: 10px 6px;
     border-radius: 3px;
     border: 1px solid #ccc;
-    font-family: 'Roboto';
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;
     color: #444;
     margin: 8px 0px;
@@ -129,8 +124,7 @@ body {
 ************************************************/
 
 .select-input label {
-    font-family: 'Roboto';
-    font-weight: 500;
+    font-family: 'Roboto-Medium';
 }
 
 .select-input select {
@@ -139,8 +133,7 @@ body {
     padding: 10px 6px;
     border-radius: 3px;
     border: 1px solid #ccc;
-    font-family: 'Roboto';
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;
     color: #444;
     margin: 8px 0px;
@@ -159,8 +152,7 @@ body {
     margin: 8px 16px;
     padding: 8px;
     border-radius: 3px;
-    font-family: 'Roboto';
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;
     cursor: pointer;
 }
@@ -210,8 +202,7 @@ body {
 }
 
 .list-item {
-    font-family: 'Roboto';
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 13px;
     color: #444;
     cursor: pointer;
@@ -244,15 +235,13 @@ body {
 .app-info-bar {
     border-top: 1px solid #ccc;
     color: #444;
-    font-family: 'Roboto';
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
 }
 
 .app-info-bar .label {
     padding: 14px;
     display: inline-block;
-    font-family: 'Roboto';
-    font-weight: 500;
+    font-family: 'Roboto-Medium';
     font-size: 16px;
 }
 
@@ -276,8 +265,7 @@ body {
 
 .marker-navbar {
     color: #444;
-    font-family: 'Roboto';
-    font-weight: 400;
+    font-family: 'Roboto-Regular';
     font-size: 14px;
     border-bottom: 1px solid #ccc;
 }

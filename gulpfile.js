@@ -67,6 +67,7 @@ gulp.task('build', function(cb) {
 			'build-popup-js',
 			'build-popup-html',
 			'build-popup-css',
+			'build-fonts'
 		], cb);
 });
 
@@ -94,7 +95,11 @@ gulp.task('build-content-js', function() {
 });
 
 gulp.task('build-content-css', function() {
-	return gulp.src(['src/content/gloss.css', 'src/common/faces.css'])
+	return gulp.src([ // order matters
+			'src/common/fonts.css',
+			'src/content/gloss.css', 
+			'src/common/faces.css'
+		])
 		.pipe(concat('content.css'))
 		.pipe(gulp.dest(path.join(BUILD_DIR, 'content')));
 });
@@ -113,9 +118,21 @@ gulp.task('build-popup-html', function() {
 });
 
 gulp.task('build-popup-css', function() {
-	return gulp.src(['src/popup/menu.css', 'src/common/faces.css'])
+	return gulp.src([ // order matters
+			'src/common/fonts.css', 
+			'src/popup/menu.css', 
+			'src/common/faces.css',
+		])
 		.pipe(concat('popup.css'))
 		.pipe(gulp.dest(path.join(BUILD_DIR, 'popup')));
+});
+
+gulp.task('build-fonts', function() {
+	return gulp.src([
+			'node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff',
+			'node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff'
+		])
+		.pipe(gulp.dest(path.join(BUILD_DIR, 'fonts')));
 });
 
 

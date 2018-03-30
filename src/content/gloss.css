@@ -21,7 +21,7 @@
 .emphasize-gloss-header {
 	/*background: #eee;*/
 	padding: 10px;
-	font-family: Roboto-Regular;
+	font-family: 'Roboto-Regular';
 	font-size: small;
 	border-bottom: 1px solid #ccc;
 }

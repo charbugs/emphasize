@@ -26,6 +26,6 @@
     },
 
     "web_accessible_resources": [
-        "lib/fonts/roboto/*"
+        "fonts/*"
     ]
 }
