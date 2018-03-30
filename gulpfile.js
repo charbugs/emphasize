@@ -123,8 +123,8 @@ gulp.task('build-popup-css', function() {
 // default
 ///////////////////////////////////////////////////////////
 
-gulp.task('default', ['build-test', 'build'], function() {
-	gulp.watch('src/**/*', ['build-test', 'build']);
-	gulp.watch('test/**/*', ['build-test']);
+gulp.task('default', ['build'], function() {
+	gulp.watch('src/**/*', ['build']);
+	//gulp.watch('test/**/*', ['build-test']);
 });
 
