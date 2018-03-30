@@ -12,46 +12,50 @@ var { MarkerError } = require('../common/errors.js');
  */
 class Marker {
 
-	constructor({ setup, tabId, job, messaging, request }) {
+	constructor({ setup, tabId, jobId, createStateManager, messaging, request }) {
 
-		Object.assign(this, job);
+		Object.assign(this, createStateManager([
+			'READY', 'WORKING', 'ERROR', 'MARKED']));
 		
+		this.jobId = jobId;
 		this.setup = setup;
 		this.tabId = tabId;
 		this._messaging = messaging;
 		this._request = request;
 		
-		this._init();
-		this.stateReady();
+		this.reset(false, false);
 	}
 
-	_init(keepUserInput) {
+	async reset(keepUserInput, fire) {
+		// do we have annotations in web page?
+		if (this.state === this.MARKED) {
+			await this._createPageMarker();
+			await this._removeAnnotation();
+			await this._deletePageMarker();
+		}
+
 		this.error = null;
 		this.output = null;
 		this.input = null;
+		this.annotationHidden = false;
+
 		if (!keepUserInput)
 			this.userInputs = this._createInputContainer();
-		this.annotationHidden = false;
-	}
-
-	_createInputContainer() {
-		var container = {};
-		this.setup.inputs.forEach(input => {
-			container[input.id] = '';
-		});
-		return container;
+		
+		this.changeState(this.READY, fire);
+		
 	}
 
 	async apply() {
 
 		try {
-			this.stateWorking();
+			this.changeState(this.WORKING);
 			await this._createPageMarker();
 			await this._collectInput();
 			await this._analyze();
 			await this._annotate();
 			await this._deletePageMarker();
-			this.stateDone();
+			this.changeState(this.MARKED);
 		} 
 		catch(err) {
 			if (err.name === 'RequestError' ||
@@ -59,7 +63,7 @@ class Marker {
 				err.name === 'MarkerError') {
 				this.error = err;
 				await this._deletePageMarker();
-				this.stateError();
+				this.changeState(this.ERROR);
 			} 
 			else {
 				throw err;
@@ -67,19 +71,6 @@ class Marker {
 		}
 	}
 
-	async reset(keepUserInput = true , fire = true) {
-		// do we have annotations in web page?
-		if (this.state === this.DONE) {
-			await this._createPageMarker();
-			await this._removeAnnotation();
-			await this._deletePageMarker();
-		}
-
-		this._init(keepUserInput);
-		
-		if (fire)
-			this.stateReady();
-	}
 
 	async toggleAnnotation() {
 		await this._createPageMarker();
@@ -96,6 +87,14 @@ class Marker {
 	 	 */ 
 	abortAnalysis() {
 		this._request.abortRequest();
+	}
+
+	_createInputContainer() {
+		var container = {};
+		this.setup.inputs.forEach(input => {
+			container[input.id] = '';
+		});
+		return container;
 	}
 
 	async _createPageMarker() {

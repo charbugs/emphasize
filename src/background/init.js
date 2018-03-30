@@ -3,7 +3,8 @@ var sanitizeHtml = require('sanitize-html');
 
 var { Prome } = require('../common/prome.js');
 var { Event } = require('../common/event.js');
-var { Job } = require('../common/job.js');
+var { getUid } = require('../common/uid.js');
+var { StateManager } = require('../common/state-manager.js');
 
 var { Injection } = require('./injection.js');
 var { Messaging } = require('./messaging');
@@ -16,10 +17,9 @@ var { Marker } = require('./marker.js');
 var { MenuData } = require('./menu-data.js');
 var { MenuContainer} = require('./menu-container.js');
 
+var prome = Prome({ chrome });
 var createXHR = () => new XMLHttpRequest();
 var createEvent = () => new Event();
-var createJob = () => new Job({ createEvent });
-var prome = Prome({ chrome });
 
 var injection = new Injection({ prome });
 var messaging = new Messaging({ prome });
@@ -37,23 +37,30 @@ var parser = new Parser({
 	sanitizeHtml 
 });
 
+var createStateManager = (states) => new StateManager({
+	states: states,
+	onStateChange: createEvent()
+});
+
 var createRequest = () => new Request({ 
 	parser, 
 	createXHR
 });
 
 var createRegistration = () => new Registration({
-	job: 		createJob(),
+	jobId: getUid(),
+	createStateManager: createStateManager,
 	request:	createRequest(),
 	setupStore:	setupStore,
 });
 
 var createMarker = (setup, tabId) => new Marker({
-	setup: 		setup,
-	tabId: 		tabId,
-	job: 		createJob(),
-	messaging: 	messaging,
-	request: 	createRequest()
+	setup: 				setup,
+	tabId: 				tabId,
+	jobId: 				getUid(),
+	createStateManager: createStateManager,
+	messaging: 			messaging,
+	request: 			createRequest()
 });
 
 var createMenuData = (tabId) => new MenuData({

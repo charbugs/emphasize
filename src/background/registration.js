@@ -8,28 +8,24 @@ var { RegistrationError } = require('../common/errors.js');
 
 class Registration {
 
-	constructor({ job, request, setupStore }) {
-		Object.assign(this, job);
+	constructor({ jobId, request, setupStore, createStateManager }) {
+		
+		Object.assign(this, createStateManager([
+			'READY', 'WORKING', 'ERROR', 'ADDED', 'REMOVED']));
+
+		this.jobId = jobId;
 		this._request = request;
 		this._setupStore = setupStore;
-		this.successMessage = "Marker successfully added.";
-		this._init();
+
+		this.reset(false, false);
 	}
 
-	_init() {
+	reset(keepUserInput, fire) {
 		this.error = null;
-		this.inputUrl = null; // bound to an html input element
-		this.stateReady();
-	}
-
-	reset(keepUserInput) {
-		if (keepUserInput) {
-			var userInput = this.inputUrl;
-			this._init();
-			this.inputUrl = userInput;
-		} else {
-			this._init();
-		}
+		this.successMessage = null;
+		if (!keepUserInput)
+			this.inputUrl = null; // bound to an html input element
+		this.changeState(this.READY, fire)
 	}
 
 	/**
@@ -37,14 +33,15 @@ class Registration {
  	*/
 	async registerMarker() {
 
-		this.stateWorking();
+		this.changeState(this.WORKING);
 
 		try {
 			await this._checkUrl(this.inputUrl);
 			var setup = await this._request.requestSetup(this.inputUrl);
 			setup.url = this.inputUrl;
 			await this._setupStore.addSetup(setup);
-			this.stateDone();
+			this.successMessage = "Marker successfully added.";
+			this.changeState(this.ADDED);
 		}
 		catch (err) {
 			if (err.name === 'RequestError' ||
@@ -52,7 +49,7 @@ class Registration {
 				err.name === 'StorageError' ||
 				err.name === 'RegistrationError') {
 				this.error = err;
-				this.stateError();
+				this.changeState(this.ERROR);
 			} 
 			else {
 				throw err;
@@ -82,7 +79,9 @@ class Registration {
 	}
 
 	async removeMarkerFromSystem(url) {
+		console.log('in registration, removing')
 		await this._setupStore.removeSetup(url);
+		this.changeState(this.REMOVED);
 	}
 }
 
