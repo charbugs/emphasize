@@ -141,8 +141,11 @@ exports.SelectInput = class SelectInput extends React.Component {
 }
 
 exports.ListItem = function(props) {
+
+	var classes = 'list-item ' + (props.blink ? ('blink ' + props.blinkClass) : '');
+
 	return (
-		<div className="list-item"
+		<div className={ classes }
 			onClick={ () => props.onItemClick(props.item) }
 		>
 			<div className="text">

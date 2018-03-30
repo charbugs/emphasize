@@ -199,6 +199,16 @@ body {
     ListItem Component
 ************************************************/
 
+@keyframes blink {
+    from {
+        color: #444;
+        opacity: 0.5;
+    } to {
+        background: white;
+        color: #444;
+    } 
+}
+
 .list-item {
     font-family: 'Roboto';
     font-weight: 400;
@@ -206,6 +216,11 @@ body {
     color: #444;
     cursor: pointer;
     border-bottom: 1px solid #ccc;   
+}
+
+.list-item.blink {
+    animation: blink 0.7s 0s 2 ease-out alternate-reverse;
+    animation-fill-mode: forwards;
 }
 
 .list-item:last-child {

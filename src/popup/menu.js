@@ -41,7 +41,8 @@ class Menu extends React.Component {
 				var tabId = await bg.injection.connectWebPage();
 				that.menuData = await bg.menuContainer.get(tabId);
 				that.determineView();
-				that.setMenuDataHandlers();
+				that.setRegistrationEventHandlers();
+				that.setMarkerEventHandlers();
 				that.syncState();
 			} 
 			catch(err) {
@@ -54,20 +55,16 @@ class Menu extends React.Component {
 	}
 
 	determineView() {
-		// may be the case if the marker was removed by another tab 
-		var isMarkerViewAbandoned = () => 
-			this.menuData.view === 'MARKER' && 
-			!this.menuData.currentMarker;
-
-		if (!this.menuData.view || isMarkerViewAbandoned())
-			this.menuData.view = 'MARKERLIST';
+		this.menuData.view = this.menuData.view || 'MARKERLIST';
 	}
 
-	setMenuDataHandlers() {
+	setRegistrationEventHandlers() {
 		this.menuData.registration.onStateChange.empty();	
 		this.menuData.registration.onStateChange
-			.register(this.syncState.bind(this));
+			.register(this.handleRegistrationStateChange.bind(this));
+	}
 
+	setMarkerEventHandlers() {
 		this.menuData.markers.forEach(marker => {
 			marker.onStateChange.empty();	
 			marker.onStateChange.register(this.syncState.bind(this));
@@ -75,7 +72,7 @@ class Menu extends React.Component {
 	}
 
 	///////////////////////////////////////////////////////
-	// Marker stuff
+	// View switch
 	///////////////////////////////////////////////////////
 
 	showMarkerList() {
@@ -95,6 +92,15 @@ class Menu extends React.Component {
 		this.menuData.view = 'MARKERMORE';
 		this.syncState();
 	}
+
+	showRegistration() {
+		this.menuData.view = 'REGISTRATION';
+		this.syncState();	
+	}
+
+	///////////////////////////////////////////////////////
+	// Marker stuff
+	///////////////////////////////////////////////////////
 
 	saveMarkerInput(marker, inputId, value) {
 		marker.userInputs[inputId] = value;
@@ -120,13 +126,30 @@ class Menu extends React.Component {
 	// Registration stuff
 	///////////////////////////////////////////////////////
 
-	showRegistration() {
-		this.menuData.view = 'REGISTRATION';
-		this.syncState();	
+	handleRegistrationStateChange(state) {
+		
+		var registration = this.menuData.registration;
+		
+		if (state === registration.REMOVED) {
+			registration.reset(true, false);
+			this.showMarkerList();
+		} 
+		else if (state === registration.ADDED) {
+			this.setMarkerEventHandlers();
+			registration.reset(true, false);
+			this.showMarkerList();	
+		}
+		else {
+			this.syncState();
+		}
 	}
 
-	registerMarker() {
-		this.menuData.registration.registerMarker();		
+	saveUrl(url) {
+		this.menuData.registration.inputUrl = url;
+	}
+
+	async registerMarker() {
+		this.menuData.registration.registerMarker();
 	}
 
 	abortRegistration() {
@@ -134,16 +157,11 @@ class Menu extends React.Component {
 	}
 
 	resetRegistration() {
-		this.menuData.registration.reset(true);
+		this.menuData.registration.reset(true, true);
 	}
 
-	saveUrl(url) {
-		this.menuData.registration.inputUrl = url;
-	}
-
-	async removeMarkerFromSystem(marker) {
-		await this.menuData.registration.removeMarkerFromSystem(marker.setup.url);
-		this.showMarkerList();	
+	removeMarkerFromSystem(marker) {
+		this.menuData.registration.removeMarkerFromSystem(marker.setup.url);
 	}
 
 	///////////////////////////////////////////////////////
@@ -199,7 +217,7 @@ class Menu extends React.Component {
 		}
 
 		if (view === 'MARKER' &&
-			currentMarker.state === currentMarker.DONE) {
+			currentMarker.state === currentMarker.MARKED) {
 			return <MarkerDone
 				marker={ currentMarker }
 				onGlobalBackClick={ this.showMarkerList.bind(this) }
@@ -234,7 +252,7 @@ class Menu extends React.Component {
 		}
 
 		if (view === 'REGISTRATION' && 
-			registration.state === registration.DONE) {
+			registration.state === registration.ADDED) {
 			return <RegistrationDone
 				successMessage={ registration.successMessage }
 				onMarkersTabClick={ this.showMarkerList.bind(this) }

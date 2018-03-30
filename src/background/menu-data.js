@@ -34,12 +34,16 @@ class MenuData {
 	}
 
 	_handleSetupAdded(setup) {
-		this.markers.push(this._createMarker(setup, this.tabId));
+		var marker = this._createMarker(setup, this.tabId);
+		marker.isNew = true;
+		this.markers.push(marker);
+		setTimeout(() => marker.isNew = false, 1000);
 	}
 
 	_handleSetupRemoved(url) {
-		if (this.currentMarker.setup.url === url) {
+		if (this.currentMarker && this.currentMarker.setup.url === url) {
 			this.currentMarker = null;
+			this.view = undefined;
 		}
 		for (var i=0; i < this.markers.length; i++) {
 			if (this.markers[i].setup.url === url) {

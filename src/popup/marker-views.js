@@ -28,10 +28,12 @@ exports.MarkerList = function (props) {
 					<ListItem key={idx}
 						item={ marker }
 						text={ marker.setup.title }
+						blink={ marker.isNew }
+						blinkClass={ marker.setup.face }
 						onItemClick={ () => props.onMarkerClick(marker) }
 					> 
 						{
-							marker.state === marker.DONE &&
+							marker.state === marker.MARKED &&
 								<Toggler small
 									face={ marker.setup.face }
 									on={ !marker.annotationHidden }
