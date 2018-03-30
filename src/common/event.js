@@ -1,4 +1,4 @@
-exports.Event = class {
+class Event {
 		
 	constructor() {
 		this._listeners = [];
@@ -26,3 +26,5 @@ exports.Event = class {
 		this._listeners = [];
 	}
 }
+
+module.exports = { Event };
