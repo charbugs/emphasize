@@ -21,6 +21,7 @@
   "homepage": "https://github.com/charbugs/emphasize#readme",
   "dependencies": {
     "ajv": "^6.3.0",
+    "font-awesome": "^4.7.0",
     "roboto-fontface": "^0.9.0",
     "sanitize-html": "^1.18.2",
     "tippy.js": "^2.4.0"
