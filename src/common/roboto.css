@@ -1,0 +1,9 @@
+@font-face {
+	font-family: 'Roboto-Regular';
+	src: url('chrome-extension://__MSG_@@extension_id__/fonts/roboto/Roboto-Regular.woff'); 
+}
+
+@font-face {
+	font-family: 'Roboto-Medium';
+	src: url('chrome-extension://__MSG_@@extension_id__/fonts/roboto/Roboto-Medium.woff'); 
+}

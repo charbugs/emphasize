@@ -96,7 +96,7 @@ gulp.task('build-content-js', function() {
 
 gulp.task('build-content-css', function() {
 	return gulp.src([ // order matters
-			'src/common/fonts.css',
+			'src/common/roboto.css',
 			'src/content/gloss.css', 
 			'src/common/faces.css'
 		])
@@ -119,7 +119,7 @@ gulp.task('build-popup-html', function() {
 
 gulp.task('build-popup-css', function() {
 	return gulp.src([ // order matters
-			'src/common/fonts.css', 
+			'src/common/roboto.css', 
 			'src/popup/menu.css', 
 			'src/common/faces.css',
 		])
@@ -128,11 +128,17 @@ gulp.task('build-popup-css', function() {
 });
 
 gulp.task('build-fonts', function() {
-	return gulp.src([
+	gulp.src([
 			'node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff',
 			'node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff'
 		])
-		.pipe(gulp.dest(path.join(BUILD_DIR, 'fonts')));
+		.pipe(gulp.dest(path.join(BUILD_DIR, 'fonts', 'roboto')));
+
+	gulp.src(['node_modules/font-awesome/fonts/fontawesome-webfont.woff'])
+		.pipe(gulp.dest(path.join(BUILD_DIR, 'fonts', 'font-awesome', 'fonts')));
+
+	return gulp.src(['node_modules/font-awesome/css/font-awesome.min.css'])
+		.pipe(gulp.dest(path.join(BUILD_DIR, 'fonts', 'font-awesome', 'css')));
 });
 
 

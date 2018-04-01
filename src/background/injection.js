@@ -15,6 +15,7 @@ var blockedUrls = [
 /* content scripts to inject in web page in given order */
 var contentScripts = [
 	'content/content.js',
+	'fonts/font-awesome/css/font-awesome.min.css',
 	'content/content.css'
 ];
 
