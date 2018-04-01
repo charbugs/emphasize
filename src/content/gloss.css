@@ -3,38 +3,41 @@
 	box-shadow: 3px 3px 5px grey;
 }
 
-.tippy-tooltip {
-		background: transparent !important;
-	}
+.tippy-tooltip.emphasize-theme {
+	background-color: transparent;
+	box-shadow: 1px 1px 20px #555;
+	padding: 0px;
+	border-radius: 6px;
+}
+
+.tippy-popper[x-placement^=top] .tippy-tooltip.emphasize-theme .tippy-arrow {
+		border-color: white transparent transparent transparent;
+}
+
+.tippy-popper[x-placement^=bottom] .tippy-tooltip.emphasize-theme .tippy-arrow {
+		border-color: transparent transparent white transparent;
+}
 
 .emphasize-gloss-container {
 	background: white;
-	color: #444;
-	border: 1px solid #aaa;
-	border-radius: 4px;
-	margin: 10px;
-	box-shadow:  1px 1px 20px grey;
+	border-radius: 6px;
+	text-align: left;
 	min-width: 250px;
 }
 
-
 .emphasize-gloss-header {
-	/*background: #eee;*/
-	padding: 10px;
-	font-family: 'Roboto-Regular';
-	font-size: small;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #eee;
+	padding: 12px;
+	font-family: "Roboto-Medium";
+	font-size: 12px;
+	color: #aaa;
+	text-align: center;
 }
 
-.emphasize-gloss-icon {
+.emphasize-gloss-logo {
 	display: inline-block;
-	padding: 1px 6px;
+	padding: 0px 6px;
 	float: left;
-	color: white;
-	background: linear-gradient(to right, #3399ff 16%, #33ccff 100%);
-	font-weight: bold;
-	opacity: 0.6;
-	border-radius: 3px;
 }
 
 .emphasize-gloss-title {
@@ -50,8 +53,12 @@
 }
 
 .emphasize-gloss-content {
-	margin: 24px;
+	font-family: "Roboto-Regular";
+	font-size: 14px;
+	padding: 24px;
+	color: #444;
 	text-align: left;
-	font-size: small;
-	font-family: sans-serif;
+	max-width: 300px;
+	max-height: 300px;
+	overflow: auto;
 }

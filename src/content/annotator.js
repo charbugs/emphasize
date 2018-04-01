@@ -7,9 +7,11 @@ const WRAPPER_TEMPLATE =
 const GLOSS_TEMPLATE = 
 	`<div class="emphasize-gloss-container">
 		<div class="emphasize-gloss-header">
-			<div class="emphasize-gloss-icon">em</div>
+			<div class="emphasize-gloss-logo">EM</div>
 			<div class="emphasize-gloss-title"></div>
-			<div class="emphasize-gloss-close">&#x2715;</div>
+			<div class="emphasize-gloss-close">
+				<i class="fa fa-times"></i>
+			</div>
 		</div>
 	</div>`;
 
@@ -118,9 +120,10 @@ class Annotator {
 			this._tippy(wrapper, {
 				html: glossContainer,
 				interactive: true,
-				animation: 'fade',
-				animateFill: false,
-				distance: 0,
+				interactiveBorder: 10,
+				distance: 10,
+				arrow: true,
+				theme: 'emphasize',
 				popperOptions: {
 	    			modifiers: {
 	      				computeStyle: {
