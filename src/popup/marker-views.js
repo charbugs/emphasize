@@ -69,7 +69,7 @@ exports.MarkerReady = function(props) {
 				/>
 				<br/>
 				{
-					setup.inputs.map((input, idx) => {
+					setup.inputs && setup.inputs.map((input, idx) => {
 						
 						if (input.type === 'text') {
 							return <TextInput 
