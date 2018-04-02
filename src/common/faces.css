@@ -1,96 +1,188 @@
-/**
- * face 1 to 9: deep colors
- */
+/* face 1: red */
 
-.emphasize-face-1 { /* red */
-	color: #FFFFFF;
+.emphasize-face-1.emphasize-mark {
+	color: #222;
+	background: #fbbbb6;
+	border-bottom: 2px solid #F44336;
+}
+
+.emphasize-face-1.toggler {
 	background: #F44336;
 }
 
-.emphasize-face-2 { /* teal */
-	color: #FFFFFF !important;
-	background: #009688 !important;
+.emphasize-face-1.button {
+	background: #F44336;
+	color: white;
 }
 
-.emphasize-face-3 { /* indigo */
-	color: #FFFFFF;
+.emphasize-face-1.blink {
+	background: #fbbbb6;
+}
+
+/* face 2 : teal */
+
+.emphasize-face-2.emphasize-mark {
+	color: #222;
+	background: #b3fff7;
+	border-bottom: 2px solid #009688;
+}
+
+.emphasize-face-2.toggler {
+	background: #009688;
+}
+
+.emphasize-face-2.button {
+	background: #009688;
+	color: white;
+}
+
+.emphasize-face-2.blink {
+	background: #b3fff7;
+}
+
+/* face 3 : indigo */
+
+.emphasize-face-3.emphasize-mark {
+	color: #222;
+	background: #c6cceb;
+	border-bottom: 2px solid #3F51B5;
+}
+
+.emphasize-face-3.toggler {
 	background: #3F51B5;
 }
 
-.emphasize-face-4 { /* pink */
-	color: #FFFFFF;
+.emphasize-face-3.button {
+	background: #3F51B5;
+	color: white;
+}
+
+.emphasize-face-3.blink {
+	background: #c6cceb;
+}
+
+/* face 4 : pink */
+
+.emphasize-face-4.emphasize-mark {
+	color: #222;
+	background: #f8b9ce;
+	border-bottom: 2px solid #E91E63;
+}
+
+.emphasize-face-4.toggler {
 	background: #E91E63;
 }
 
-.emphasize-face-5 { /* green */
-	color: #FFFFFF;
+.emphasize-face-4.button {
+	background: #E91E63;
+	color: white;
+}
+
+.emphasize-face-4.blink {
+	background: #f8b9ce;
+}
+
+/* face 5 : green */
+
+.emphasize-face-5.emphasize-mark {
+	color: #222;
+	background: #cae8cb;
+	border-bottom: 2px solid #4CAF50;
+}
+
+.emphasize-face-5.toggler {
 	background: #4CAF50;
 }
 
-.emphasize-face-6 { /* orange */
-	color: #000000;
+.emphasize-face-5.button {
+	background: #4CAF50;
+	color: white;
+}
+
+.emphasize-face-5.blink {
+	background: #cae8cb;
+}
+
+/* face 6 : orange */
+
+.emphasize-face-6.emphasize-mark {
+	color: #222;
+	background: #ffe0b3;
+	border-bottom: 2px solid #FF9800;
+}
+
+.emphasize-face-6.toggler {
 	background: #FF9800;
 }
 
-.emphasize-face-7 { /* blue */
-	color: #FFFFFF;
+.emphasize-face-6.button {
+	background: #FF9800;
+	color: white;
+}
+
+.emphasize-face-6.blink {
+	background: #ffe0b3;
+}
+
+/* face 7 : blue */
+
+.emphasize-face-7.emphasize-mark {
+	color: #222;
+	background: #b6dcfb;
+	border-bottom: 2px solid #2196F3;
+}
+
+.emphasize-face-7.toggler {
 	background: #2196F3;
 }
 
-.emphasize-face-8 { /* purple */
-	color: #FFFFFF;
+.emphasize-face-7.button {
+	background: #2196F3;
+	color: white;
+}
+
+.emphasize-face-7.blink {
+	background: #b6dcfb;
+}
+
+/* face 8 : purple */
+
+.emphasize-face-8.emphasize-mark {
+	color: #222;
+	background: #eac0f1;
+	border-bottom: 2px solid #9C27B0;
+}
+
+.emphasize-face-8.toggler {
 	background: #9C27B0;
 }
 
-.emphasize-face-9 { /* lime */
-	color: #000000;
-	background: #CDDC39;
+.emphasize-face-8.button {
+	background: #9C27B0;
+	color: white;
 }
 
-/**
- * face 10 to 18: light colors
- */
-.emphasize-face-10 {
-	border-radius: 2px;
-	background: #aad356;
+.emphasize-face-8.blink {
+	background: #eac0f1;
 }
 
-.emphasize-face-11 {
-	border-radius: 2px;
-	background: #f9c908;
+/* face 9 : lime */
+
+.emphasize-face-9.emphasize-mark {
+	color: #222;
+	background: #e9f0a8;
+	border-bottom: 2px solid #b3c322;
 }
 
-.emphasize-face-12 {
-	border-radius: 2px;
-	background: #b7e1f3;
+.emphasize-face-9.toggler {
+	background: #b3c322;
 }
 
-.emphasize-face-13 {
-	border-radius: 2px;
-	background: #f79487;
+.emphasize-face-9.button {
+	background: #b3c322;
+	color: white;
 }
 
-.emphasize-face-14 {
-	border-radius: 2px;
-	background: #bdd6d1;
-}
-
-.emphasize-face-15 {
-	border-radius: 2px;
-	background: #c7c4e9;
-}
-
-.emphasize-face-16 {
-	border-radius: 2px;
-	background: #f0d3a8;
-}
-
-.emphasize-face-17 {
-	border-radius: 2px;
-	background: #f6a7d1;
-}
-
-.emphasize-face-18 {
-	border-radius: 2px;
-	background: #72dab2;
+.emphasize-face-9.blink {
+	background: #e9f0a8;
 }

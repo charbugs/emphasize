@@ -16,6 +16,7 @@ const GLOSS_TEMPLATE =
 	</div>`;
 
 const ATTR_JOB_ID = 'data-emphasize-job-id';
+const CLASS_MARK = 'emphasize-mark';
 const MAX_TITLE_LENGTH = 25;
 const ELLIPSIS = '\u2026';
 
@@ -113,7 +114,7 @@ class Annotator {
 		
 		var wrapper = this._createWrapper(token.form);
 		
-		if (token.gloss.trim()) {
+		if (token.gloss && token.gloss.trim()) {
 			
 			var glossContainer = this._createGloss(token.gloss);
 
@@ -144,6 +145,7 @@ class Annotator {
 		var wrapper = this._htmlToElement(WRAPPER_TEMPLATE);
 		wrapper.setAttribute(ATTR_JOB_ID, this._jobId);
 		wrapper.classList.add(this._markerSetup.face);
+		wrapper.classList.add(CLASS_MARK);
 		wrapper.textContent = string;
 		return wrapper;
 	}		

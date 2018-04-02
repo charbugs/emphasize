@@ -192,12 +192,8 @@ body {
 ************************************************/
 
 @keyframes blink {
-    from {
-        color: #444;
-        opacity: 0.5;
-    } to {
+    to {
         background: white;
-        color: #444;
     } 
 }
 
