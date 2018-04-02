@@ -1,6 +1,7 @@
 /* cross highlighting */
 [class*="emphasize-face-"] [class*="emphasize-face-"] {
-	box-shadow: 3px 3px 5px grey;
+	background: #ccc !important;
+	border-bottom: 2px solid #222 !important;
 }
 
 .tippy-tooltip.emphasize-theme {

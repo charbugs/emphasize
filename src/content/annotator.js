@@ -117,9 +117,14 @@ class Annotator {
 		if (token.gloss && token.gloss.trim()) {
 			
 			var glossContainer = this._createGloss(token.gloss);
+			
+			var showDelay = token.node.parentElement._tippy 
+				? token.node.parentElement._tippy.options.delay[0] + 1000
+				: 0;
 
 			this._tippy(wrapper, {
 				html: glossContainer,
+				delay: [showDelay, 0],
 				interactive: true,
 				interactiveBorder: 10,
 				distance: 10,
