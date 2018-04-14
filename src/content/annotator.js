@@ -125,6 +125,8 @@ class Annotator {
 			this._tippy(wrapper, {
 				html: glossContainer,
 				delay: [showDelay, 0],
+				trigger: 'click',
+				multiple: true,
 				interactive: true,
 				interactiveBorder: 10,
 				distance: 10,
