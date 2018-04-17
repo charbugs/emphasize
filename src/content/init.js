@@ -1,62 +1,84 @@
 'use strict';
+
 var tippy = require('tippy.js');
 
-var { sequenceSyncMethodExecution } = require('../common/sequencer.js');
-var { Token } = require('./token.js');
-var { Tokenizer } = require('./tokenizer.js');
-var { WebScraper } = require('./web-scraper.js');
-var { MarkupCompiler } = require('./markup-compiler.js');
+var { Scraper } = require('./scraper.js');
+var { Annotation } = require('./annotation.js');
 var { Annotator } = require('./annotator.js');
-var { PageMarker } = require('./page-marker.js');
-var { Access } = require('./access.js');
+var { Worker } = require('./worker.js');
 var { Messaging } = require('./messaging.js');
 
-
-var createToken = (form, node, begin, end) => new Token({ 
-	form, node, begin, end
-});
-	
-var tokenizer = new Tokenizer();
-
-var webScraper = new WebScraper({
-	document: 		document, 
-	rootElement: 	document.body,
-	tokenizer: 		tokenizer,
-	NodeFilter: 	NodeFilter,
-	createToken: 	createToken
-});
-
-var markupCompiler = new MarkupCompiler();
-
-var createAnnotator = (jobId, markerSetup) => new Annotator({
-	document: 		document,
-	rootElement: 	document.body,
-	jobId: 			jobId,
-	markerSetup: 	markerSetup,
-	tippy:  		tippy
-});
-
-var createPageMarker = function(jobId, markerSetup) {
-	var order = [
-		'extractWebPageData',
-		'getWebPageDataForRemote',
-		'annotate',
-	];
-	var marker = new PageMarker({
-		jobId: 			jobId,
-		markerSetup: 	markerSetup,
-		webScraper: 	webScraper,
-		annotator: 		createAnnotator(jobId, markerSetup),
-		markupCompiler:	markupCompiler 
+var createScraper = function() {
+	return new Scraper({
+		document: 		document,
+		rootElement: 	document.body,
+		NodeFilter: 	NodeFilter,
+		Node: 			Node
 	});
-	return sequenceSyncMethodExecution(marker, order);
+}
+
+var createAnnotation = function(jobId, markerSetup) {
+	return new Annotation({
+		document: 		document,
+		Node: 			Node,
+		tippy: 			tippy,
+		jobId: 			jobId,
+		markerSetup: 	markerSetup
+	});
 };
 
-var access = new Access({ createPageMarker });
+var createAnnotator = function(annotation) {
+	return new Annotator({
+		document: 	document,
+		Node: 		Node,
+		annotation: annotation
+	});
+}
+
+var worker = new Worker({
+	document: 			document,
+	createScraper: 		createScraper,
+	createAnnotation: 	createAnnotation,
+	createAnnotator: 	createAnnotator
+});
 
 var messaging = new Messaging({
 	browser: 			chrome,
-	baseObject: 		access,
+	baseObject: 		worker,
 });
 
 messaging.createMessageChannel();
+
+/*var jobId = 42;
+var markerSetup = { face: 'emphasize-face-1', title: 'test marker'};
+var markup = [ 
+	{ tokens: [1, 4], gloss:"<b>nicht</b>" },
+];
+
+worker.startAnnotationJob(jobId, markerSetup);
+worker.getTokens(jobId);
+worker.getUrl(jobId);
+worker.annotate(jobId, markup);
+worker.stopAnnotationJob(jobId);
+
+var jobId = 55;
+var markerSetup = { face: 'emphasize-face-3', title: 'estt marker2'};
+var markup = [ 
+	{ tokens: [2, 4], gloss:"<b>nicht</b>" },
+];
+
+worker.startAnnotationJob(jobId, markerSetup);
+worker.getTokens(jobId);
+worker.getUrl(jobId);
+worker.annotate(jobId, markup);
+worker.stopAnnotationJob(jobId);
+
+setInterval(function() {
+	worker.startAnnotationJob(jobId, markerSetup);
+	worker.toggleAnnotation(jobId);
+	worker.stopAnnotationJob(jobId);
+}, 1000);*/
+
+
+
+

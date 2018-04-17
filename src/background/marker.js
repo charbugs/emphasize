@@ -26,12 +26,16 @@ class Marker {
 		this.reset(false, false);
 	}
 
+	///////////////////////////////////////////////////////
+	// API
+	///////////////////////////////////////////////////////
+
 	async reset(keepUserInput, fire) {
 		// do we have annotations in web page?
 		if (this.state === this.MARKED) {
-			await this._createPageMarker();
+			await this._startAnnotationJob();
 			await this._removeAnnotation();
-			await this._deletePageMarker();
+			await this._stopAnnotationJob();
 		}
 
 		this.error = null;
@@ -43,18 +47,17 @@ class Marker {
 			this.userInputs = this._createInputContainer();
 		
 		this.changeState(this.READY, fire);
-		
 	}
 
 	async apply() {
 
 		try {
 			this.changeState(this.WORKING);
-			await this._createPageMarker();
+			await this._startAnnotationJob();
 			await this._collectInput();
 			await this._analyze();
 			await this._annotate();
-			await this._deletePageMarker();
+			await this._stopAnnotationJob();
 			this.changeState(this.MARKED);
 		} 
 		catch(err) {
@@ -71,23 +74,20 @@ class Marker {
 		}
 	}
 
-
 	async toggleAnnotation() {
-		await this._createPageMarker();
-		await this._messaging.invoke(this.tabId, 
-			'toggleAnnotation', this.jobId);
-		await this._deletePageMarker();
+		await this._startAnnotationJob();
+		await this._toggleAnnotation();
+		await this._stopAnnotationJob();
 		this.annotationHidden = !this.annotationHidden;
 	}
 
-	/**
-	 	 * Aborts a pending markup request.
-	 	 *
-	 	 * Will cause the waiting analyze() method to proceed.
-	 	 */ 
 	abortAnalysis() {
 		this._request.abortRequest();
 	}
+
+	///////////////////////////////////////////////////////
+	// privats
+	///////////////////////////////////////////////////////
 
 	_createInputContainer() {
 		var container = {};
@@ -99,16 +99,6 @@ class Marker {
 		return container;
 	}
 
-	async _createPageMarker() {
-		await this._messaging.invoke(
-			this.tabId, 'createPageMarker', this.jobId, this.setup);
-	}
-
-	async _deletePageMarker() {
-		await this._messaging.invoke(
-			this.tabId, 'deletePageMarker', this.jobId);
-	}
-
 	/**
 	 * Requests content scripts for webpage tokens etc.
 	 *
@@ -116,16 +106,9 @@ class Marker {
 	 * in `this.input.inputs`.
 	 */
 	async _collectInput() {
-
-		await this._messaging.invoke(
-			this.tabId, 'extractWebPageData', this.jobId);
-
-		var wpData = await this._messaging.invoke(
-			this.tabId, 'getWebPageDataForRemote', this.jobId);
-
 		this.input = {};
-		this.input.tokens = wpData.tokens;
-		this.input.url = wpData.url;
+		this.input.tokens = await this._getTokens();
+		this.input.url = await this._getUrl();
 		this.input.inputs = this.userInputs;
 	}
 
@@ -142,18 +125,40 @@ class Marker {
 		}
 	}
 
-	/**
-	 * Annotates the web page text according to the output
-	 * of the analysis.
-	 */
+	///////////////////////////////////////////////////////
+	// web page side delegators
+	///////////////////////////////////////////////////////
+
+	async _startAnnotationJob() {
+		await this._messaging.invoke(
+			this.tabId, 'startAnnotationJob', this.jobId, this.setup);
+	}
+
+	async _stopAnnotationJob() {
+		await this._messaging.invoke(
+			this.tabId, 'stopAnnotationJob', this.jobId);
+	}
+
+	async _getTokens() {
+		return await this._messaging.invoke(
+			this.tabId, 'getTokens', this.jobId);
+	}
+
+	async _getUrl() {
+		return await this._messaging.invoke(
+			this.tabId, 'getUrl', this.jobId);
+	}	
+
 	async _annotate() {
 		await this._messaging.invoke(
 			this.tabId, 'annotate',	this.jobId, this.output.markup);
 	}
 
-	/**
-	 * Removes annotation from web page.
-	 */
+	async _toggleAnnotation() {
+		await this._messaging.invoke(
+			this.tabId, 'toggleAnnotation', this.jobId);
+	}
+
 	async _removeAnnotation() {
 		await this._messaging.invoke(
 			this.tabId, 'removeAnnotation', this.jobId);

@@ -78,3 +78,5 @@ var menuContainer = new MenuContainer({
 
 window.injection = injection;
 window.menuContainer = menuContainer;
+//debug
+window.messaging = messaging;

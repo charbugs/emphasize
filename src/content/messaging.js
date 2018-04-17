@@ -19,7 +19,7 @@ class Messaging {
 	}
 
 	_handleMessage(message, sender, callback) {
-		
+
 		if (message.command === 'isAlive')
 			callback(true);
 		else if (message.command === 'invoke')

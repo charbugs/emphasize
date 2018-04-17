@@ -1,65 +1,56 @@
 'use strict';
 
-const WRAPPER_TEMPLATE = 
-	`<span data-emphasize-job-id="0">
-	</span>`
-
-const GLOSS_TEMPLATE = 
-	`<div class="emphasize-gloss-container">
-		<div class="emphasize-gloss-header">
-			<div class="emphasize-gloss-logo">EM</div>
-			<div class="emphasize-gloss-title"></div>
-			<div class="emphasize-gloss-close">
-				<i class="fa fa-times"></i>
-			</div>
-		</div>
-	</div>`;
-
-const ATTR_JOB_ID = 'data-emphasize-job-id';
-const CLASS_MARK = 'emphasize-mark';
-const MAX_TITLE_LENGTH = 25;
-const ELLIPSIS = '\u2026';
-
 class Annotator {
 
-	constructor({ document, rootElement, jobId, markerSetup, tippy }) {
+	constructor({ document, Node, annotation }) {
 		this._document = document;
-		this._rootElement = rootElement;
-		this._jobId = jobId;
-		this._markerSetup = markerSetup;
-		this._tippy = tippy;
+		this._Node = Node;
+		this._annotation = annotation;
 	}
 
-	annotate(annotatedTokens) {
-		for (var bundle of this._bundleTokensByNode(annotatedTokens)) {
-			bundle.sort((a, b) => a.begin - b.begin);
-			this._annotateNode(bundle);
-		}
+	removeAnnotation() {
+		this._getWrappers().forEach(wrapper => this._unwrap(wrapper));
+		this._document.normalize();
 	}
 
 	toggleAnnotation() {
-		this._getWrapper().forEach(wrapper => {
-			if (wrapper.classList.contains(this._markerSetup.face)) {
-				wrapper.classList.remove(this._markerSetup.face);
-				wrapper._tippy && wrapper._tippy.disable();
+		this._getWrappers().forEach(wrapper => 
+			this._annotation.toggleWrapper(wrapper));
+	}
+
+	annotate(tokenNodes, markup) {
+
+		var that = this;
+
+		markup.forEach(function(item) {
+			if (item.token !== undefined) {
+				that._annotateTokenNodes(
+					tokenNodes.slice(item.token, item.token + 1), item);
 			} 
-			else {
-				wrapper.classList.add(this._markerSetup.face);
-				wrapper._tippy && wrapper._tippy.enable();
+			else if (item.tokens) {
+				item.tokens.forEach(function(token) {
+					that._annotateTokenNodes(
+						tokenNodes.slice(token, token + 1), item);		
+				}); 		
+			}
+			else if (item.group) {
+				that._annotateTokenNodes(
+					tokenNodes.slice(item.group.first, item.group.last + 1), item);
+			}
+			else if (item.groups) {
+				item.groups.forEach(function(group) {
+					that._annotateTokenNodes(
+						tokenNodes.slice(group.first, group.last + 1), item);
+				});
 			}
 		});
 	}
 
-	removeAnnotation() {
-		this._getWrapper().forEach(wrapper => this._unwrap(wrapper));
-		this._rootElement.normalize();
+	_getWrappers() {
+		return this._document.querySelectorAll(
+			this._annotation.getWrapperSelector());
 	}
 
-	_getWrapper() {
-		return this._rootElement.querySelectorAll(
-			`[${ATTR_JOB_ID}="${this._jobId}"]`);
-	}
-	
 	_unwrap(element) {
 		var parent = element.parentElement;
 		while(element.firstChild) {
@@ -68,132 +59,87 @@ class Annotator {
 		parent.removeChild(element);
 	}
 
-	_bundleTokensByNode(tokens) {
-		var bundles = new Map();
-		for (var token of tokens) {
-			if (!bundles.has(token.node)){
-				bundles.set(token.node, []);
+	_annotateTokenNodes(tokenNodes, item) {
+
+		var that = this;
+
+		this._separateSequences(tokenNodes, node => node.parentElement)
+		.forEach(function(nodes, idx, arr) {
+
+			var wrapper = that._annotation.createWrapper(item);
+
+			if (arr.length === 1) {
+				that._wrapExactPart(nodes[0], nodes[nodes.length - 1], wrapper);
 			}
-			bundles.get(token.node).push(token);
-		}
-		return Array.from(bundles.values());
-	}
-
-	/**
-	 * @param {List of Token} tokens - annotated tokens
-	 *   - tokens should belong to a single text node.
-	 *	 - tokens should be ordered from first to last.
-	 */
-	_annotateNode(tokens) {
-		var oldNode = tokens[0].node;
-		var newNodes = this._annoNodesFromAnnoTokens(tokens);
-		this._replaceNodeWithMultiples(oldNode, newNodes);
-	}
-
-	_annoNodesFromAnnoTokens(tokens) {
-
-		var newNodes = [];
-		var oldNode = tokens[0].node;
-		var text = oldNode.data;
-		var offset = 0;
-
-		var _textChunkToNode = (text, begin, end) =>
-			this._document.createTextNode(text.slice(begin, end));
-
-		tokens.forEach(token => {
-			newNodes.push(_textChunkToNode(text, offset, token.begin));
-			newNodes.push(this._createAnnotation(token));
-			offset = token.end;
+			else if (arr.length > 1 && idx === 0) {
+				that._wrapRightPart(nodes[0], wrapper);
+			}
+			else if (idx === arr.length - 1) {
+				that._wrapLeftPart(nodes[nodes.length - 1], wrapper);
+			}
+			else {
+				that._wrapEntireSection(nodes[0], wrapper);
+			}
 		});
-
-		newNodes.push(_textChunkToNode(text, offset, text.length));
-		return newNodes;
 	}
 
-	_createAnnotation(token) {
-		
-		var wrapper = this._createWrapper(token.form);
-		
-		if (token.gloss && token.gloss.trim()) {
-			
-			var glossContainer = this._createGloss(token.gloss);
-			
-			var showDelay = token.node.parentElement._tippy 
-				? token.node.parentElement._tippy.options.delay[0] + 1000
-				: 0;
-
-			this._tippy(wrapper, {
-				html: glossContainer,
-				delay: [showDelay, 0],
-				trigger: 'click',
-				multiple: true,
-				interactive: true,
-				interactiveBorder: 10,
-				distance: 10,
-				arrow: true,
-				theme: 'emphasize',
-				popperOptions: {
-	    			modifiers: {
-	      				computeStyle: {
-	        				gpuAcceleration: false
-	      				}
-	    			}
-				}
-			});
-			
-			glossContainer.querySelector('.emphasize-gloss-close')
-				.onclick = ev => wrapper._tippy.hide();
-		}
-		
-		return wrapper;
+	_wrapExactPart(leftEdgeNode, rightEdgeNode, wrapper) {
+		var allNodes = this._getNodesOfTextSection(leftEdgeNode);
+		var leftEdgeIdx = allNodes.indexOf(leftEdgeNode);
+		var rightEdgeIdx = allNodes.indexOf(rightEdgeNode);
+		this._wrapNodes(allNodes.slice(leftEdgeIdx, rightEdgeIdx + 1), wrapper);
 	}
 
-	_createWrapper (string) {
-		var wrapper = this._htmlToElement(WRAPPER_TEMPLATE);
-		wrapper.setAttribute(ATTR_JOB_ID, this._jobId);
-		wrapper.classList.add(this._markerSetup.face);
-		wrapper.classList.add(CLASS_MARK);
-		wrapper.textContent = string;
-		return wrapper;
-	}		
-
-	_trimMarkerTitle() {
-		var title = this._markerSetup.title;
-		return title.length > MAX_TITLE_LENGTH
-			? title.slice(0, MAX_TITLE_LENGTH-1) + ELLIPSIS
-			: title;
+	_wrapRightPart(leftEdgeNode, wrapper) {
+		var allNodes = this._getNodesOfTextSection(leftEdgeNode);
+		var leftEdgeIdx = allNodes.indexOf(leftEdgeNode);
+		this._wrapNodes(allNodes.slice(leftEdgeIdx), wrapper);
 	}
 
-	_createGloss(glossString) {
+	_wrapLeftPart(rightEdgeNode, wrapper) {
+		var allNodes = this._getNodesOfTextSection(rightEdgeNode);
+		var rightEdgeIdx = allNodes.indexOf(rightEdgeNode);
+		this._wrapNodes(allNodes.slice(0, rightEdgeIdx + 1), wrapper);
+	}
 
-		var glossContainer = this._htmlToElement(GLOSS_TEMPLATE);
-		glossContainer.querySelector('.emphasize-gloss-title')
-			.textContent = this._trimMarkerTitle();
+	_wrapEntireSection(someNode, wrapper) {
+		this._wrapNodes(this._getNodesOfTextSection(someNode), wrapper);
+	}
+
+	_wrapNodes(nodes, wrapper) {
+		nodes[0].parentElement.insertBefore(wrapper, nodes[0]);
+		nodes.forEach(node => wrapper.appendChild(node));	
+	}
+
+	_getNodesOfTextSection(someNode) {
 		
-		var glossContent = this._htmlToElement(glossString);
-
-		if (glossContent.nodeType === Node.TEXT_NODE) {
-			var textNode = glossContent;
-			glossContent = document.createElement('div');
-			glossContent.appendChild(textNode);
+		var nodes = [someNode];
+		
+		var currentNode = someNode.previousSibling;
+		while (currentNode && currentNode.nodeType === this._Node.TEXT_NODE) {
+			nodes.unshift(currentNode);
+			currentNode = currentNode.previousSibling;
 		}
 
-		glossContent.classList.add('emphasize-gloss-content');
-		glossContainer.appendChild(glossContent);
-		return glossContainer;
+		var currentNode = someNode.nextSibling;
+		while (currentNode && currentNode.nodeType === this._Node.TEXT_NODE) {
+			nodes.push(currentNode);
+			currentNode = currentNode.nextSibling;
+		}
+
+		return nodes;
 	}
 
-	_replaceNodeWithMultiples(oldNode, newNodes) {
-        var parentNode = oldNode.parentNode;
-        for (var newNode of newNodes)
-            parentNode.insertBefore(newNode, oldNode)
-        parentNode.removeChild(oldNode);
-    }
-
-    _htmlToElement(html) {
-	    var template = document.createElement('template');
-	    template.innerHTML = html.trim();
-	    return template.content.firstChild;
+	_separateSequences(arr, key) {
+		var seqs = [[]];
+		arr.reduce(function(acc, cur) {
+			if (key(cur) !== acc) {
+		  		seqs.push([]);
+			}
+			seqs[seqs.length - 1].push(cur);
+			return key(cur);
+		}, key(arr[0]));
+		return (seqs[0].length === 0) ? [] : seqs;
 	}
 }
 

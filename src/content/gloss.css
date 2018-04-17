@@ -1,7 +1,11 @@
 /* cross highlighting */
-[class*="emphasize-face-"] [class*="emphasize-face-"] {
+.emphasize-mark .emphasize-mark {
 	background: #ccc !important;
 	border-bottom: 2px solid #222 !important;
+}
+
+[data-tippy] {
+	cursor: pointer;
 }
 
 .tippy-tooltip.emphasize-theme {
@@ -54,6 +58,7 @@
 }
 
 .emphasize-gloss-content {
+	display: block;
 	font-family: "Roboto-Regular";
 	font-size: 14px;
 	padding: 24px;
