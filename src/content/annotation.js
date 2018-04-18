@@ -121,8 +121,10 @@ class Annotation {
 			}
 		}
 
-		wrapper._tippy.options.html.querySelector('.emphasize-gloss-close')
-			.onclick = ev => wrapper._tippy.hide();
+		if (wrapper._tippy) {
+			wrapper._tippy.options.html.querySelector('.emphasize-gloss-close')
+				.onclick = ev => wrapper._tippy.hide();
+		}
 	}
 
 	_isOuterWrapper(wrapper) {
