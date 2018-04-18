@@ -21,9 +21,10 @@ var { RequestError } = require('../common/errors.js');
  */
 class Request {
 
-	constructor({ parser, createXHR }) {
+	constructor({ parser, createXHR, urlJoin }) {
 		this._parser = parser;
 		this._createXHR = createXHR;
+		this._urlJoin = urlJoin;
 		this._xhr;
 	}
 
@@ -37,45 +38,34 @@ class Request {
 		this._xhr.abort();
 	}
 
-	/**
-	 * Requests an marker for setup.
-	 *
-	 * param: (String) url - of the analyzer.
-	 * return: (Object) parsed setup response.
-	 */
-	async requestSetup(url) {
-
-		var data = { call: 'setup' };
-		data = this._parser.parseSetupRequest(data); // debug
-		var response = await this._post(url, data);
+	async requestSetup(markerUrl) {
+		var url = this._urlJoin(markerUrl, '/setup');
+		var response = await this._get(url);
 		return this._parser.parseSetupResponse(response);
 	}
 
-	/**
-	 * Requests an marker to perform an analysis on the given data.
-	 *
-	 * param: (String) url - of analyzer
-	 * param: (Object) data - as defined in protocol
-	 * return: (Object) parsed analysis response.
-	 */
-	async requestMarkup(url, data) {
-		
-		data.call = 'markup',
+	async requestMarkup(markerUrl, data) {
 		data = this._parser.parseMarkupRequest(data) // debug
+		var url = this._urlJoin(markerUrl, '/markup');
 		var response = await this._post(url, data);
 		return this._parser.parseMarkupResponse(response);
 	}
 
-	/**
-	 * Performs a POST request and handles some errors.
-	 *
-	 * param: (String) url
-	 * param: (Jsonable) data
-	 * return: (String) - the response body as text.
-	 */
+	_get(url) {
+		var that = this;
+		return new Promise(function(resolve, reject) {
+
+			that._xhr = that._createXHR();
+			that._xhr.open('GET', url, true);
+			that._xhr.send();
+			that._xhr.onreadystatechange = function() {
+				that._handleResponse(resolve, reject);
+			}
+		});
+	}
+
 	_post(url, data) {
 		var that = this;
-
 		return new Promise(function(resolve, reject) {
 
 			that._xhr = that._createXHR();

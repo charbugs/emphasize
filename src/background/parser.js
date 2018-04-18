@@ -10,10 +10,6 @@ class Parser {
 		this._Ajv = Ajv;
 		this._sanitizeHtml = sanitizeHtml;
 
-		// validator functions
-		this._setupRequestValidator = this._Ajv({allErrors: true})
-				.compile(this._protocol.setupRequestSchema);
-
 		this._setupResponseValidator = this._Ajv({allErrors: true})
 				.compile(this._protocol.setupResponseSchema);
 
@@ -38,20 +34,6 @@ class Parser {
 			var msg = "Data" + first.dataPath + " " + first.message;
 			throw new Error(msg);
 		}
-	}
-
-	/**
-	 * Check wether the data of a setup request is valid.
-	 *
-	 * param: (Object) data - setup request data
-	 */
-	parseSetupRequest(request) {
-		try {
-			this._validate(this._setupRequestValidator, request);
-		} catch (err) {
-			throw new ProtocolError(err.message);
-		}
-		return request;
 	}
 
 	/**

@@ -7,22 +7,6 @@
 
 /**
  * (json schema)
- * Structure of the data for setup requests. 
- */
-var setupRequestSchema = {
-	type: 'object',
-	required: ['call'],
-	additionalProperties: false,
-	properties: {
-		call: {
-			type: 'string',
-			enum: ['setup']
-		}
-	}
-};
-
-/**
- * (json schema)
  * If a marker was requested to pass it's setup, the response 
  * must have this structure.
  */
@@ -72,13 +56,9 @@ var setupResponseSchema = {
  */
 var markupRequestSchema = {
 	type: 'object',
-	required: ['call', 'tokens', 'inputs', 'url'],
+	required: ['tokens', 'inputs', 'url'],
 	additionalProperties: false,
 	properties: {
-		call: {
-			type: 'string',
-			enum: ['markup']
-		},
 		tokens: {
 			type: 'array',
 			items: {
@@ -333,7 +313,6 @@ var descriptionHtmlRules = {
 var reportHtmlRules = glossHtmlRules;
 
 module.exports = {
-	setupRequestSchema,
 	setupResponseSchema,
 	markupRequestSchema,
 	markupResponseSchema,

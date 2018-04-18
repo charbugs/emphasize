@@ -29,9 +29,10 @@ function Setup(props) {
 
 class SetupStore {
 
-	constructor({ prome, createEvent }) {
+	constructor({ prome, createEvent, validUrl }) {
 		this._prome = prome;
 		this._createEvent = createEvent;
+		this._validUrl = validUrl;
 
 		this.setupAdded = this._createEvent();
 		this.setupRemoved = this._createEvent();		
@@ -93,6 +94,12 @@ class SetupStore {
 	 * fires: setupAdded(url)
 	 */
 	async addSetup(setup) {
+
+		setup.url = setup.url.replace(/\/+$/, '');
+
+		if (!this._validUrl.isWebUri(setup.url)) {
+			throw new StorageError('Not a valid HTTP or HTTP URL');
+		}
 
 		var items = await this._prome.storage.local.get('setups');
 

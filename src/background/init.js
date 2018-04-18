@@ -1,6 +1,7 @@
 var Ajv = require('ajv');
 var sanitizeHtml = require('sanitize-html');
 var validUrl = require('valid-url');
+var urlJoin = require('url-join');
 
 var { Prome } = require('../common/prome.js');
 var { Event } = require('../common/event.js');
@@ -27,7 +28,8 @@ var messaging = new Messaging({ prome });
 
 var setupStore = new SetupStore({ 
 	prome, 
-	createEvent 
+	createEvent,
+	validUrl
 });
 
 setupStore.initStorage();
@@ -44,8 +46,9 @@ var createStateManager = (states) => new StateManager({
 });
 
 var createRequest = () => new Request({ 
-	parser, 
-	createXHR
+	parser: 	parser,
+	createXHR: 	createXHR,
+	urlJoin: 	urlJoin,
 });
 
 var createRegistration = () => new Registration({
@@ -56,8 +59,8 @@ var createRegistration = () => new Registration({
 	validUrl: validUrl
 });
 
-var createMarker = (setup, tabId) => new Marker({
-	setup: 				setup,
+var createMarker = (markerSetup, tabId) => new Marker({
+	setup: 				markerSetup,
 	tabId: 				tabId,
 	jobId: 				getUid(),
 	createStateManager: createStateManager,
