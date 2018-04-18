@@ -65,7 +65,7 @@ class Marker {
 				err.name === 'ProtocolError' ||
 				err.name === 'MarkerError') {
 				this.error = err;
-				await this._deletePageMarker();
+				await this._stopAnnotationJob();
 				this.changeState(this.ERROR);
 			} 
 			else {
