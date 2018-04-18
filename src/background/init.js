@@ -1,5 +1,6 @@
 var Ajv = require('ajv');
 var sanitizeHtml = require('sanitize-html');
+var validUrl = require('valid-url');
 
 var { Prome } = require('../common/prome.js');
 var { Event } = require('../common/event.js');
@@ -52,6 +53,7 @@ var createRegistration = () => new Registration({
 	createStateManager: createStateManager,
 	request:	createRequest(),
 	setupStore:	setupStore,
+	validUrl: validUrl
 });
 
 var createMarker = (setup, tabId) => new Marker({

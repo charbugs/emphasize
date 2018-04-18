@@ -8,7 +8,7 @@ var { RegistrationError } = require('../common/errors.js');
 
 class Registration {
 
-	constructor({ jobId, request, setupStore, createStateManager }) {
+	constructor({ jobId, request, setupStore, createStateManager, validUrl }) {
 		
 		Object.assign(this, createStateManager([
 			'READY', 'WORKING', 'ERROR', 'ADDED', 'REMOVED']));
@@ -16,6 +16,7 @@ class Registration {
 		this.jobId = jobId;
 		this._request = request;
 		this._setupStore = setupStore;
+		this._validUrl = validUrl;
 
 		this.reset(false, false);
 	}
@@ -63,9 +64,8 @@ class Registration {
 	* param: (String) url
 	*/
 	_checkUrl(url) {
-		var re = /^(http:\/\/|https:\/\/)\S+/;
-		if (!url || url.search(re) === -1) {
-			throw new RegistrationError('Need a valid HTTP URL.');
+		if (!this._validUrl.isWebUri(url)) {
+			throw new RegistrationError('Need a valid HTTP or HTTPS URL.');
 		}
 	}
 
