@@ -9,7 +9,10 @@ class Annotator {
 	}
 
 	removeAnnotation() {
-		this._getWrappers().forEach(wrapper => this._unwrap(wrapper));
+		this._getWrappers().forEach(wrapper => {
+			this._annotation.prepareRemoval(wrapper);
+			this._unwrap(wrapper)
+		});
 		this._document.normalize();
 	}
 

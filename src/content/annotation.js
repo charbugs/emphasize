@@ -35,12 +35,19 @@ class Annotation {
 	toggleWrapper(wrapper) {
 		if (wrapper.classList.contains(CLASS_MARK)) {
 			wrapper.classList.remove(CLASS_MARK);
-			wrapper._tippy && wrapper._tippy.disable();
+			if (wrapper._tippy) {
+				wrapper._tippy.hide();
+				wrapper._tippy.disable();
+			}
 		} 
 		else {
 			wrapper.classList.add(CLASS_MARK);
 			wrapper._tippy && wrapper._tippy.enable();
 		}
+	}
+
+	prepareRemoval(wrapper) {
+		wrapper._tippy && wrapper._tippy.hide();
 	}
 
 	createWrapper(markupItem) {
