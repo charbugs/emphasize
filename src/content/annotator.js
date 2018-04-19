@@ -23,26 +23,24 @@ class Annotator {
 
 	annotate(tokenNodes, markup) {
 
-		var that = this;
-
-		markup.forEach(function(item) {
+		markup.forEach(item => {
 			if (item.token !== undefined) {
-				that._annotateTokenNodes(
+				this._annotateTokenNodes(
 					tokenNodes.slice(item.token, item.token + 1), item);
 			} 
 			else if (item.tokens) {
-				item.tokens.forEach(function(token) {
-					that._annotateTokenNodes(
+				item.tokens.forEach(token => {
+					this._annotateTokenNodes(
 						tokenNodes.slice(token, token + 1), item);		
 				}); 		
 			}
 			else if (item.group) {
-				that._annotateTokenNodes(
+				this._annotateTokenNodes(
 					tokenNodes.slice(item.group.first, item.group.last + 1), item);
 			}
 			else if (item.groups) {
-				item.groups.forEach(function(group) {
-					that._annotateTokenNodes(
+				item.groups.forEach(group => {
+					this._annotateTokenNodes(
 						tokenNodes.slice(group.first, group.last + 1), item);
 				});
 			}
@@ -64,24 +62,22 @@ class Annotator {
 
 	_annotateTokenNodes(tokenNodes, item) {
 
-		var that = this;
-
 		this._separateSequences(tokenNodes, node => node.parentElement)
-		.forEach(function(nodes, idx, arr) {
+		.forEach((nodes, idx, arr) => {
 
-			var wrapper = that._annotation.createWrapper(item);
+			var wrapper = this._annotation.createWrapper(item);
 
 			if (arr.length === 1) {
-				that._wrapExactPart(nodes[0], nodes[nodes.length - 1], wrapper);
+				this._wrapExactPart(nodes[0], nodes[nodes.length - 1], wrapper);
 			}
 			else if (arr.length > 1 && idx === 0) {
-				that._wrapRightPart(nodes[0], wrapper);
+				this._wrapRightPart(nodes[0], wrapper);
 			}
 			else if (idx === arr.length - 1) {
-				that._wrapLeftPart(nodes[nodes.length - 1], wrapper);
+				this._wrapLeftPart(nodes[nodes.length - 1], wrapper);
 			}
 			else {
-				that._wrapEntireSection(nodes[0], wrapper);
+				this._wrapEntireSection(nodes[0], wrapper);
 			}
 		});
 	}

@@ -118,11 +118,9 @@ class Annotation {
 
 	_setHandlers(wrapper) {
 
-		var that = this;
-
-		wrapper.onclick = function(ev) {
-			if (that._isOuterWrapper(wrapper) && 
-				that._anyWrapperToggledIn(wrapper)) {
+		wrapper.onclick = ev => {
+			if (this._isOuterWrapper(wrapper) && 
+				this._anyWrapperToggledIn(wrapper)) {
 				ev.preventDefault();
 				ev.stopPropagation();	
 			}
