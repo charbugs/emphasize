@@ -75,6 +75,7 @@ function Prome({ chrome }) {
 
 	self.runtime = {};
 	self.runtime.lastError = chrome.runtime.lastError;
+	self.runtime.getManifest = chrome.runtime.getManifest;
 
 	return self;
 }

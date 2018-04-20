@@ -9,7 +9,7 @@ class MenuData {
 
 		this.tabId = tabId;
 		this.registration = registration;
-		this.version = chrome.runtime.getManifest().version;
+		this.version = this._prome.runtime.getManifest().version;
 
 		this.markers;
 		this.view;
