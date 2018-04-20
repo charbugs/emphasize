@@ -48,37 +48,3 @@ var messaging = new Messaging({
 });
 
 messaging.createMessageChannel();
-
-/*var jobId = 42;
-var markerSetup = { face: 'emphasize-face-1', title: 'test marker'};
-var markup = [ 
-	{ tokens: [1, 4], gloss:"<b>nicht</b>" },
-];
-
-worker.startAnnotationJob(jobId, markerSetup);
-worker.getTokens(jobId);
-worker.getUrl(jobId);
-worker.annotate(jobId, markup);
-worker.stopAnnotationJob(jobId);
-
-var jobId = 55;
-var markerSetup = { face: 'emphasize-face-3', title: 'estt marker2'};
-var markup = [ 
-	{ tokens: [2, 4], gloss:"<b>nicht</b>" },
-];
-
-worker.startAnnotationJob(jobId, markerSetup);
-worker.getTokens(jobId);
-worker.getUrl(jobId);
-worker.annotate(jobId, markup);
-worker.stopAnnotationJob(jobId);
-
-setInterval(function() {
-	worker.startAnnotationJob(jobId, markerSetup);
-	worker.toggleAnnotation(jobId);
-	worker.stopAnnotationJob(jobId);
-}, 1000);*/
-
-
-
-
