@@ -1,13 +1,3 @@
-/* cross highlighting */
-.emphasize-mark .emphasize-mark {
-	background: #ccc !important;
-	border-bottom: 2px solid #222 !important;
-}
-
-[data-tippy] {
-	cursor: pointer;
-}
-
 .tippy-tooltip.emphasize-theme {
 	background-color: transparent;
 	box-shadow: 1px 1px 20px #555;

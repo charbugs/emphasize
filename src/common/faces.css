@@ -1,3 +1,13 @@
+.emphasize-mark[data-tippy] {
+	cursor: pointer;
+}
+
+/* cross highlighting */
+.emphasize-mark .emphasize-mark {
+	background: #ccc !important;
+	border-bottom: 2px solid #222 !important;
+}
+
 /* face 1: red */
 
 .emphasize-face-1.emphasize-mark {
