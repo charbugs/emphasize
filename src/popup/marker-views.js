@@ -85,7 +85,11 @@ exports.MarkerReady = function(props) {
 							return <SelectInput 
 								key={idx}
 								label={ input.label || input.id }
-								default= { marker.userInputs[input.id] }
+								default= { 
+									// saved value or first in list
+									marker.userInputs[input.id] || 
+									input.values[0] 
+								}
 								options={ input.values } 
 								onChange= { (pos) => 
 									props.onMarkerInputChange(marker, input.id, pos) } />

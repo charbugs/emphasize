@@ -111,7 +111,7 @@ exports.SelectInput = class SelectInput extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = { selected: props.default || 0 };
+		this.state = { selected: props.default };
 	}
 
 	handleChange(ev) {
@@ -129,7 +129,7 @@ exports.SelectInput = class SelectInput extends React.Component {
 				>
 					{
 						this.props.options.map((option, idx) =>
-							<option key={ idx } value={ idx }>
+							<option key={ idx } value={ option }>
 								{ option }
 							</option>
 						)
