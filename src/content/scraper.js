@@ -1,7 +1,7 @@
 'use strict';
 
 var blacklistElements = [
-   	'TEXTAREA', 'OPTION', 'SCRIPT', 'STYLE', 'OBJECT'
+   	'TEXTAREA', 'OPTION', 'SCRIPT', 'NOSCRIPT', 'STYLE', 'OBJECT'
 ];
 
 class Scraper {
