@@ -91,11 +91,19 @@ class Marker {
 
 	_createInputContainer() {
 		var container = {};
-		if (this.setup.inputs) {
-			this.setup.inputs.forEach(input => {
+		
+		if (!this.setup.inputs)
+			return container;
+
+		this.setup.inputs.forEach(input => {
+
+			if (input.type === 'text')
 				container[input.id] = '';
-			});
-		}
+			else if (input.type === 'select')
+				container[input.id] = input.values[0];
+
+		});
+		
 		return container;
 	}
 
