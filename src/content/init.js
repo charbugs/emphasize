@@ -2,18 +2,29 @@
 
 var tippy = require('tippy.js');
 
+var { langData } = require('./language.js');
+var { Tokenizer } = require('./tokenizer.js');
 var { Scraper } = require('./scraper.js');
 var { Annotation } = require('./annotation.js');
 var { Annotator } = require('./annotator.js');
 var { Worker } = require('./worker.js');
 var { Messaging } = require('./messaging.js');
 
+
+var createTokenizer = function(langCode) {
+	return new Tokenizer({
+		langData: langData,
+		langCode: langCode
+	});
+}
+
 var createScraper = function() {
 	return new Scraper({
 		document: 		document,
 		rootElement: 	document.body,
 		NodeFilter: 	NodeFilter,
-		Node: 			Node
+		Node: 			Node,
+		createTokenizer: createTokenizer
 	});
 }
 

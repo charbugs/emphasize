@@ -6,16 +6,17 @@ var blacklistElements = [
 
 class Scraper {
 
-	constructor({ document, rootElement, NodeFilter, Node }) {
+	constructor({ document, rootElement, NodeFilter, Node, createTokenizer }) {
 		this._document = document;
 		this._rootElement = rootElement;
 		this._NodeFilter = NodeFilter;
 		this._Node = Node;
+		this._createTokenizer = createTokenizer;
 	}
 
 	getTokenNodes() {
 		var textNodes = this._extractTextNodes();
-		this._splitTextNodes(textNodes);
+		this._tokenizeTextNodesInplace(textNodes);
 		return this._extractTextNodes();
 	}
 
@@ -59,11 +60,12 @@ class Scraper {
             blacklistElements.indexOf(node.tagName) > -1;
 	}
 
-	_splitTextNodes(textNodes) {
+	_tokenizeTextNodesInplace(textNodes) {
 		var that = this;
+		var tokenizer = this._createTokenizer('any');
 
 		textNodes.forEach(function(node) {
-			var tokens = that._tokenize(node.data);
+			var tokens = tokenizer.tokenize(node.data);
 			var newNodes = tokens.map(token => that._document.createTextNode(token));
 			that._replaceNodeWithMultiples(node, newNodes);
 		});

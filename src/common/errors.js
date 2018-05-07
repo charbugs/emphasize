@@ -91,6 +91,16 @@ function RegistrationError(message) {
 RegistrationError.prototype = Object.create(Error.prototype);
 RegistrationError.prototype.name = 'RegistrationError';
 
+/**
+* If something went wrong wile tokenizing
+*/
+function TokenizerError(message) {
+	this.message = message;
+	this.stack = (new Error()).stack;
+}
+TokenizerError.prototype = Object.create(Error.prototype);
+TokenizerError.prototype.name = 'TokenizerError';
+
 exports.RequestError = RequestError;
 exports.ProtocolError = ProtocolError;
 exports.MarkerError = MarkerError;
@@ -99,4 +109,5 @@ exports.ChannelError = ChannelError;
 exports.InjectionError = InjectionError;
 exports.AccessError = AccessError;
 exports.RegistrationError = RegistrationError;
+exports.RegistrationError = TokenizerError;
 
