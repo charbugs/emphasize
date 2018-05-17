@@ -71,10 +71,6 @@ class Scraper {
 		});
 	}
 
-	_tokenize(string) {
-		return string.match(/(\S+|\s+)/g);
-	}
-
 	_replaceNodeWithMultiples(oldNode, newNodes) {
 	    var parentNode = oldNode.parentNode;
 	    newNodes.forEach(node => 
