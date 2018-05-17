@@ -61,10 +61,10 @@ class Annotator {
 	}
 
 	_annotateTokenNodes(tokenNodes, item) {
-
+		
 		this._separateSequences(tokenNodes, node => node.parentElement)
 		.forEach((nodes, idx, arr) => {
-
+			
 			var wrapper = this._annotation.createWrapper(item);
 
 			if (arr.length === 1) {
@@ -129,15 +129,16 @@ class Annotator {
 		return nodes;
 	}
 
-	_separateSequences(arr, key) {
+	_separateSequences(tokenNodes) {
 		var seqs = [[]];
-		arr.reduce(function(acc, cur) {
-			if (key(cur) !== acc) {
-		  		seqs.push([]);
+		tokenNodes.reduce(function (prev, cur) {
+			if (cur.parentElement !== prev.parentElement ||
+				cur.nextElementSibling !== prev.nextElementSibling) {
+				seqs.push([]);
 			}
-			seqs[seqs.length - 1].push(cur);
-			return key(cur);
-		}, key(arr[0]));
+			seqs[seqs.length-1].push(cur);
+			return cur;
+		}, tokenNodes[0]);
 		return (seqs[0].length === 0) ? [] : seqs;
 	}
 }
