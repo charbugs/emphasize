@@ -266,6 +266,17 @@ var ABBREVS_EN = [
     'Sun.',
 ];
 
+var EN_NOT_SUFFIX = [
+	'n\u0027t',
+	'n\u2019t',
+
+];
+
+var EN_GENETIV_SUFFIX = [
+	'\u0027s',
+	'\u2019s',
+];
+
 function bundle(...arrays) {
 	var set = new Set();
 	for (var array of arrays)
@@ -278,8 +289,9 @@ var langData = {
 	supportedLanguages: ['any'],
 	any: {
 		prefixes: bundle(QUOTES, BRACKETS_OPEN),
-		suffixes: bundle(QUOTES, BRACKETS_CLOSE, PUNCTUATION),
-		fixedExpressions: bundle(ABBREVS_EN, ABBREVS_DE)
+		suffixes: bundle(QUOTES, BRACKETS_CLOSE, PUNCTUATION, 
+			EN_NOT_SUFFIX, EN_GENETIV_SUFFIX),
+		fixedExpressions: bundle(ABBREVS_EN, ABBREVS_DE),
 	}
 };
 
