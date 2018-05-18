@@ -24,6 +24,10 @@ function Setup(props) {
 	self.description = props.description;     
 	self.inputs = props.inputs;               
 	self.face = props.face;
+	self.homepage = props.homepage;
+	self.author = props.author;
+	self.email = props.email;
+	self.supportedLanguages = props.supportedLanguages;
 	return self;
 }
 

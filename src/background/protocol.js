@@ -46,6 +46,18 @@ var setupResponseSchema = {
 					}
 				}
 			}
+		},
+		homepage: {
+			type: 'string'
+		},
+		author: {
+			type: 'string'
+		},
+		email: {
+			type: 'string'
+		},
+		supportedLanguages: {
+			type: 'string'
 		}
 	}
 };

@@ -192,8 +192,36 @@ exports.MarkerMore = function(props) {
 				onGlobalBackClick={ props.onGlobalBackClick }
 			/>
 			<Content>
-				URL:<br/>
-				{ setup.url }
+				{ setup.url && 
+					<span>
+						<b>this marker listens on: </b><br/>
+						{ setup.url }<br/><br/> 
+					</span> 
+				}
+				{ setup.supportedLanguages && 
+					<span>
+						<b>supported languages: </b><br/>
+						{ setup.supportedLanguages }<br/><br/>
+					</span>  
+				}
+				{ setup.homepage && 
+					<span>
+						<b>homepage: </b><br/>
+						{ setup.homepage }<br/><br/>
+					</span>  
+				}
+				{ setup.author && 
+					<span>
+						<b>author: </b><br/>
+						{ setup.author }<br/><br/>
+					</span>  
+				}
+				{ setup.email && 
+					<span>
+						<b>email: </b><br/>
+						{ setup.email }
+					</span>  
+				}
 			</Content>
 			<ControlBar>
 				<Button
