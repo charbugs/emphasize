@@ -8,7 +8,7 @@ const GLOSS_TEMPLATE =
 			<div class="emphasize-gloss-logo">EM</div>
 			<div class="emphasize-gloss-title"></div>
 			<div class="emphasize-gloss-close">
-				<i class="fa fa-times"></i>
+				&#10005;
 			</div>
 		</div>
 	</div>`;
