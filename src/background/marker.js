@@ -1,15 +1,9 @@
-/**
- *	Defines a marker class.
- */
 
 var { MarkerError } = require('../common/errors.js');
 
 'use strict';
 
-/**
- * param: (Setup) setup - marker setup.
- * param: (Number) tabId - tab the marker should work on.
- */
+
 class Marker {
 
 	constructor({ setup, tabId, jobId, createStateManager, messaging, request }) {

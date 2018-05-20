@@ -79,7 +79,6 @@ class Registration {
 	}
 
 	async removeMarkerFromSystem(url) {
-		console.log('in registration, removing')
 		await this._setupStore.removeSetup(url);
 		this.changeState(this.REMOVED);
 	}

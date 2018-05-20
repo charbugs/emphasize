@@ -8,7 +8,7 @@
  * html5rocks.com/en/tutorials/cors/#toc-cross-domain-from-chrome-extensions)
  *
  * CORS is only permitted for a few protocols including http and https. Since
- * we only allow analyzers on http and https CORS is no problem.
+ * we only allow markers on http and https CORS is no problem.
  */
 
 var { RequestError } = require('../common/errors.js');

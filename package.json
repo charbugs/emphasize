@@ -1,19 +1,13 @@
 {
-  "name": "emphasize",
+  "name": "Emphasize",
   "version": "1.0.0",
-  "description": "",
+  "description": "Brings text analysis to your browser",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/charbugs/emphasize.git"
   },
-  "author": "",
+  "author": "Mathias Maass",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/charbugs/emphasize/issues"

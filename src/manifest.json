@@ -1,13 +1,15 @@
 {
     "manifest_version": 2,
     "name": "Emphasize",
-    "version": "0.1.0",
-    "description": "Browser extension for advanced text search in web pages",
+    "version": "1.0.0",
+    "description": "Brings text analysis to your browser",
+    "author": "Mathias Maass",
+    "homepage_url": "https://github.com/charbugs/emphasize",
 
     "permissions": [
         "activeTab",
         "storage",
-        "<all_urls>"
+        "<all_urls>" // nedded to evade same origin policy for markers
     ],
 
     "background": {
@@ -20,10 +22,6 @@
     },
 
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-
-    "externally_connectable": {
-        "matches": ["http://localhost:8080/*"]
-    },
 
     "web_accessible_resources": [
         "fonts/*"
