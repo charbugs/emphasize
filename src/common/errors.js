@@ -109,5 +109,5 @@ exports.ChannelError = ChannelError;
 exports.InjectionError = InjectionError;
 exports.AccessError = AccessError;
 exports.RegistrationError = RegistrationError;
-exports.RegistrationError = TokenizerError;
+exports.TokenizerError = TokenizerError;
 
