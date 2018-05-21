@@ -90,9 +90,10 @@ class SetupStore {
 	 * Stores an setup
 	 *
 	 * param: (Object) setup - the setup from remote.
+	 * param: (Boolean) overwrite - should setup be overwritten (if exists)
 	 * fires: setupAdded(url)
 	 */
-	async addSetup(setup) {
+	async addSetup(setup, overwrite) {
 
 		setup.url = setup.url.replace(/\/+$/, '');
 
@@ -101,14 +102,20 @@ class SetupStore {
 		}
 
 		var items = await this._prome.storage.local.get('setups');
+		var pos = items.setups.findIndex(item => item.url === setup.url);
 
-		if (this._urlExists(setup.url, items.setups)) {
+		if (pos === -1) {
+			setup.face = this._getStyleClass(items.setups);
+			items.setups.push(setup)
+		}
+		else if (overwrite) {
+			setup.face = this._getStyleClass(items.setups);
+			items.setups[pos] = setup;
+		} 
+		else {
 			throw new StorageError('A marker of this URL already exists.');
 		}
-
-		setup.face = this._getStyleClass(items.setups);
-
-		items.setups.push(setup);
+		
 		await this._prome.storage.local.set({ setups: items.setups });
 		this.setupAdded.dispatch(setup);
 	}
