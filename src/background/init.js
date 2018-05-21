@@ -19,6 +19,10 @@ var { Marker } = require('./marker.js');
 var { MenuData } = require('./menu-data.js');
 var { MenuContainer} = require('./menu-container.js');
 
+///////////////////////////////////////////////////////////
+// Construct components
+///////////////////////////////////////////////////////////
+
 var prome = Prome({ chrome });
 var createXHR = () => new XMLHttpRequest();
 var createEvent = () => new Event();
@@ -31,8 +35,6 @@ var setupStore = new SetupStore({
 	createEvent,
 	validUrl
 });
-
-setupStore.initStorage();
 
 var parser = new Parser({ 
 	protocol, 
@@ -80,6 +82,21 @@ var createMenuData = (tabId) => new MenuData({
 var menuContainer = new MenuContainer({
 	createMenuData
 });
+
+///////////////////////////////////////////////////////////
+// Kick off
+///////////////////////////////////////////////////////////
+
+chrome.browserAction.disable();
+
+chrome.runtime.onInstalled.addListener(function(details) {
+	if (details.reason === 'install') {
+		console.log('do while installed'); // debug
+		setupStore.initStorage();
+	}
+});
+
+chrome.browserAction.enable();
 
 window.injection = injection;
 window.menuContainer = menuContainer;

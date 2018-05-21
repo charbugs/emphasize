@@ -42,13 +42,8 @@ class SetupStore {
 		this.setupRemoved = this._createEvent();		
 	}
 
-	/**
-	 * If the storage is empty init it.
-	 */
 	async initStorage() {
-		var items = await this._prome.storage.local.get(null);
-		if (Object.keys(items).length == 0)
-			this._prome.storage.local.set({ setups: [] });
+		this._prome.storage.local.set({ setups: [] });
 	}
 
 	/**
