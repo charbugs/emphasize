@@ -9,7 +9,7 @@
     "permissions": [
         "activeTab",
         "storage",
-        "<all_urls>" // nedded to evade same origin policy for markers
+        "<all_urls>"
     ],
 
     "background": {
