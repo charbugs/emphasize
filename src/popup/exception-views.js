@@ -1,7 +1,7 @@
 var React = require('react');
 var { Content, AppInfoBar } = require('./basic-components.js');
 
-exports.InvalidPage = function(props) {
+exports.BlockedPageNotification = function(props) {
 	return (
 		<div>
 			<Content>
