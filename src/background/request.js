@@ -38,25 +38,26 @@ class Request {
 		this._xhr.abort();
 	}
 
-	async requestSetup(markerUrl) {
+	async requestSetup(markerUrl, timeout) {
 		var url = this._urlJoin(markerUrl, '/setup');
-		var response = await this._get(url);
+		var response = await this._get(url, timeout || 0);
 		return this._parser.parseSetupResponse(response);
 	}
 
-	async requestMarkup(markerUrl, data) {
+	async requestMarkup(markerUrl, data, timeout) {
 		data = this._parser.parseMarkupRequest(data) // debug
 		var url = this._urlJoin(markerUrl, '/markup');
-		var response = await this._post(url, data);
+		var response = await this._post(url, data, timeout || 0);
 		return this._parser.parseMarkupResponse(response);
 	}
 
-	_get(url) {
+	_get(url, timeout) {
 		var that = this;
 		return new Promise(function(resolve, reject) {
 
 			that._xhr = that._createXHR();
 			that._xhr.open('GET', url, true);
+			that._xhr.timeout = timeout;
 			that._xhr.send();
 			that._xhr.onreadystatechange = function() {
 				that._handleResponse(resolve, reject);
@@ -64,12 +65,13 @@ class Request {
 		});
 	}
 
-	_post(url, data) {
+	_post(url, data, timeout) {
 		var that = this;
 		return new Promise(function(resolve, reject) {
 
 			that._xhr = that._createXHR();
 			that._xhr.open('POST', url, true);
+			that._xhr.timeout = timeout;
 			that._xhr.setRequestHeader('Content-Type', 'application/json');
 			that._xhr.send(JSON.stringify(data));
 			that._xhr.onreadystatechange = function() {
