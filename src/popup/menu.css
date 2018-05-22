@@ -4,6 +4,12 @@ body {
     width: 450px;
 }
 
+a {
+    text-decoration: none;
+    color: dodgerblue;
+    font-weight: bold;
+}
+
 .left {
     float: left;
 }

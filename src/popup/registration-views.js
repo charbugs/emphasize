@@ -20,8 +20,18 @@ exports.RegistrationReady = function(props) {
 			/>
 			<Content>
 				<div>
-					Lorem ispum dolor sit amet. Ubidor allore sit communis solid.
-					Omnibus libikur amis sena cor leibor.
+					You can register a new marker to Emphasize by
+					entering the marker's url to the input field.
+					Here list of 
+					<a onClick={ props.onMarkerRepositoryClick }
+						href="https://github.com/charbugs/emphasize"
+					> public markers</a>.
+					<br/><br/>
+					You can also write your own markers and include it
+					to Emphasize. Click 
+					<a onClick={ props.onDeveloperInfoClick }
+						href="https://github.com/charbugs/emphasize"
+					> here</a> for more information.
 				</div>
 				<br/>
 				<TextInput label="URL"

@@ -26,6 +26,10 @@ class Menu extends React.Component {
 		this.setState(Object.assign({}, this.menuData));
 	}
 
+	///////////////////////////////////////////////////////
+	// Open websites
+	///////////////////////////////////////////////////////	
+
 	openProjectWebsite() {
 		chrome.tabs.create({ url: "https://github.com/charbugs/emphasize" });	
 	}
@@ -248,7 +252,9 @@ class Menu extends React.Component {
 				inputUrl={ registration.inputUrl || '' }
 				onUrlChange={ this.saveUrl.bind(this) }
 				onMarkersTabClick={ this.showMarkerList.bind(this) }
-				onRegisterMarker={ this.registerMarker.bind(this) } />
+				onRegisterMarker={ this.registerMarker.bind(this) } 
+				onMarkerRepositoryClick={ this.openProjectWebsite.bind(this) }
+				onDeveloperInfoClick={ this.openProjectWebsite.bind(this) } />
 		}
 
 		if (view === 'REGISTRATION' && 
