@@ -12,7 +12,8 @@ var {	RegistrationReady,
 		RegistrationDone,
 		RegistrationError } = require('./registration-views.js');
 
-var {	BlockedPageNotification } = require('./exception-views.js');
+var {	BlockedPageNotification,
+		WaitingForWebPageNotification } = require('./exception-views.js');
 
 
 class Menu extends React.Component {
@@ -173,7 +174,9 @@ class Menu extends React.Component {
 	render () {
 
 		if (!this.state)
-			return 'Waiting for state ...';
+			return <WaitingForWebPageNotification
+				version={ chrome.runtime.getManifest().version }
+				onHomeClick={ this.openProjectWebsite.bind(this) } />
 
 		if (this.state.injectionError)
 			return <BlockedPageNotification

@@ -15,3 +15,16 @@ exports.BlockedPageNotification = function(props) {
 		</div>
 	);
 }
+
+exports.WaitingForWebPageNotification = function(props) {
+	return (
+		<div>
+			<Content>
+				Waiting for web page to load ...
+			</Content>
+			<AppInfoBar version={ props.version} 
+				onHomeClick={ props.onHomeClick }
+			/>
+		</div>
+	);
+}
