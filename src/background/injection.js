@@ -9,7 +9,9 @@ var { InjectionError } = require('../common/errors.js');
 
 /* urls the extension will/should not work on */
 var blockedUrls = [
-	/^chrome:\/\//
+	/^chrome:\/\//,
+	/^https:\/\/chrome.google.com\/webstore/,
+	/^http:\/\/chrome.google.com\/webstore/,
 ];
 
 /* content scripts to inject in web page in given order */
