@@ -43,7 +43,9 @@ class SetupStore {
 	}
 
 	async initStorage() {
-		this._prome.storage.local.set({ setups: [] });
+		var items = await this._prome.storage.local.get('setups');
+		if (!items.hasOwnProperty('setups'))
+			await this._prome.storage.local.set({ setups: [] });
 	}
 
 	/**
@@ -109,7 +111,7 @@ class SetupStore {
 			items.setups.push(setup)
 		}
 		else if (overwrite) {
-			setup.face = this._getStyleClass(items.setups);
+			setup.face = items.setups[pos].face;
 			items.setups[pos] = setup;
 		} 
 		else {

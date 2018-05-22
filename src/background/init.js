@@ -18,10 +18,8 @@ var { Registration } = require('./registration');
 var { Marker } = require('./marker.js');
 var { MenuData } = require('./menu-data.js');
 var { MenuContainer} = require('./menu-container.js');
+var { MarkerUpdate } = require('./update.js');
 
-///////////////////////////////////////////////////////////
-// Construct components
-///////////////////////////////////////////////////////////
 
 var prome = Prome({ chrome });
 var createXHR = () => new XMLHttpRequest();
@@ -83,20 +81,25 @@ var menuContainer = new MenuContainer({
 	createMenuData
 });
 
-///////////////////////////////////////////////////////////
-// Kick off
-///////////////////////////////////////////////////////////
-
-chrome.browserAction.disable();
-
-chrome.runtime.onInstalled.addListener(function(details) {
-	if (details.reason === 'install') {
-		console.log('do while installed'); // debug
-		setupStore.initStorage();
-	}
+var markerUpdate = new MarkerUpdate({
+	setupStore: 	setupStore,
+	request: 		createRequest(),
 });
 
-chrome.browserAction.enable();
+async function kickoff() {
+	chrome.browserAction.disable();
+	chrome.browserAction.setTitle({ title: 'Updating markers ... Please wait!' });
+	await setupStore.initStorage();
+	await markerUpdate.update();
+	window.injection = injection;
+	window.menuContainer = menuContainer;
+	chrome.browserAction.setTitle({ title: 'Text analysis for web pages' });
+	chrome.browserAction.enable();
+}
 
-window.injection = injection;
-window.menuContainer = menuContainer;
+kickoff();
+
+
+
+
+
