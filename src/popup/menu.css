@@ -10,6 +10,10 @@ a {
     font-weight: bold;
 }
 
+label {
+    font-family: Roboto-Medium, sans-serif;
+}
+
 .left {
     float: left;
 }

@@ -58,7 +58,8 @@ exports.RegistrationWorking = function(props) {
 				loading={ true }
 			/>
 			<Content>
-				Requesting marker for setup ...
+				<label>Requesting setup from marker at:</label><br/><br/>
+				{ props.inputUrl }
 			</Content>
 			<ControlBar>
 				<Button 

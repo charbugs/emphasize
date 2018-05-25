@@ -115,7 +115,8 @@ exports.MarkerWorking = function(props) {
 				loading={ true }
 			/>
 			<Content>
-				Requesting {props.marker.setup.url} for setup ...
+				<label>Requesting analysis from marker at:</label><br/><br/>
+				{ props.marker.setup.url }
 			</Content>
 			<ControlBar>
 				<Button
@@ -194,31 +195,31 @@ exports.MarkerMore = function(props) {
 			<Content>
 				{ setup.url && 
 					<span>
-						<b>this marker listens on: </b><br/>
+						<label>this marker listens on: </label><br/>
 						{ setup.url }<br/><br/> 
 					</span> 
 				}
 				{ setup.supportedLanguages && 
 					<span>
-						<b>supported languages: </b><br/>
+						<label>supported languages: </label><br/>
 						{ setup.supportedLanguages }<br/><br/>
 					</span>  
 				}
 				{ setup.homepage && 
 					<span>
-						<b>homepage: </b><br/>
+						<label>homepage: </label><br/>
 						{ setup.homepage }<br/><br/>
 					</span>  
 				}
 				{ setup.author && 
 					<span>
-						<b>author: </b><br/>
+						<label>author: </label><br/>
 						{ setup.author }<br/><br/>
 					</span>  
 				}
 				{ setup.email && 
 					<span>
-						<b>email: </b><br/>
+						<label>email: </label><br/>
 						{ setup.email }
 					</span>  
 				}

@@ -260,6 +260,7 @@ class Menu extends React.Component {
 		if (view === 'REGISTRATION' && 
 			registration.state === registration.WORKING) {
 			return <RegistrationWorking 
+				inputUrl={ registration.inputUrl || '' }
 				onMarkersTabClick={ this.showMarkerList.bind(this) }
 				onAbortRegistration={ this.abortRegistration.bind(this) } />
 		}
