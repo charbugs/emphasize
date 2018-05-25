@@ -136,7 +136,8 @@ exports.MarkerError = function(props) {
 				onGlobalBackClick={ props.onGlobalBackClick }
 			/>
 			<Content>
-				Error: { props.marker.error.message }
+				<label>Something went wrong:</label><br/><br/>
+				{ props.marker.error.message }
 			</Content>
 			<ControlBar>
 				<Button

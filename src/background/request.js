@@ -85,7 +85,8 @@ class Request {
 		if (this._xhr.readyState === this._xhr.DONE) {
 
 			if (this._xhr.status === 0) {
-				var msg = 'Something went wrong while requesting marker.';
+				var msg = 'Failed to receive data from marker. Server answers: ';
+				msg = msg + this._xhr.status;
 				reject(new RequestError(msg));
 			}
 			else if (this._xhr.status === 200) {

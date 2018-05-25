@@ -99,6 +99,7 @@ exports.RegistrationError = function(props) {
 				onMarkersTabClick={ props.onMarkersTabClick }
 			/>
 			<Content>
+				<label>Something went wrong:</label><br/><br/>
 				{ props.errorMessage }
 			</Content>
 			<ControlBar>
