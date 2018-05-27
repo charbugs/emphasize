@@ -173,7 +173,6 @@ Emphasize has a simple communication protocol for data exchange. This protocol w
 | ----------  | --------------------------------- |
 | Description | Sends the marker setup            |
 | Agent       | Marker                            |
-| HTTP body   | Setup of the marker as JSON       |
 
 
 Here is an example of how the HTTP body of a setup response may look like:
@@ -237,121 +236,132 @@ The content of a markup request is a json object that contains the `tokens` (wor
 
 ### Content of a markup response
 
-Example:
+|             |                                   |
+| ----------  | --------------------------------- |
+| Description | Sends analysis results            |
+| Agent       | Marker                            |
 
-	{
-		"markup": [
-			{ "tokens": [2, 19] }
-		],
-		"report": "Found 2 synonyms for the search term: say"
-	}
+Here is an example of how the HTTP body of a markup response may look like:
+
+```JSON
+{
+  "markup": [
+    { "tokens": [2, 19] }
+  ],
+  "report": "Found 2 synonyms for the search term: say"
+}
+```
 
 The content of a markup reponse is a json object that holds the analysis results of the marker. The `markup` field is an array of objects that contains the instructions what text parts of the webpage should be highlighted. In the example the marker wants token number 2 ("talking") and 19 ("said") of webpage text to be highlighted by Emphasize. That is, a marker refers to the indices of the tokens list comming with an markup request. Note that the indices start by 0. Furthermore there is an optional `report` field that is shown in the user interface after the marker was succesfull applied.
 
 The `markup` array can contain multiple instruction objects and these objects can have 4 different formats:
 
-	{
-		"markup": [
-			{ "token": 2 }, 								// highlights token 2
-			{ "tokens": [19, 23, 34] },						// highlights token 19, 23, 34
-			{ "group": { "first": 52, "last": 66 } },		// highlights token 52 to 66 as a sequence
-			{ "groups": [ 									// highlights two groups as two sequences
-				{ "first": 70, "last": 73 }, 
-				{ "first": 52, "las"t: 66 } 
-			]},
-			
-		]
-	}
+```Javascript
+{
+  "markup": [
+    { "token": 2 },                               // highlights token 2
+    { "tokens": [19, 23, 34] },                   // highlights token 19, 23, 34
+    { "group": { "first": 52, "last": 66 } },     // highlights token 52 to 66 as a sequence
+    { "groups": [                                 // highlights two groups as two sequences
+      { "first": 70, "last": 73 }, 
+      { "first": 52, "las"t: 66 } 
+    ]},
+  ]
+}
+```
 
 If we want a commenting popup for a highlighted text section we must add a `gloss` field to the the corresponding instruction object:
 
-	{
-		"markup": [
-			{ 
-				"token": 2, 
-				"gloss": "This comment will be shown as a popup next to token 2." 
-			},
-			{ 
-				"tokens": [19, 23, 34],
-				"gloss":  "This comment causes one popup for each of the tokens 19, 23, 34."
-			}
-		]
-	}
+```JSON
+{
+  "markup": [
+    { 
+      "token": 2, 
+      "gloss": "This comment will be shown as a popup next to token 2." 
+    },
+    { 
+      "tokens": [19, 23, 34],
+      "gloss":  "This comment causes one popup for each of the tokens 19, 23, 34."
+    }
+  ]
+}
+```
 
 ### HTML in the content
 
 The `gloss` and `report` field of a markup response as well as the `description` field of a setup response can contain HTML that Emphasize tries to render at the respective place (popups and user interface). Note three things here:
 
-* Always wrap strings containing HTML in a <div> element.
+* Always wrap strings containing HTML in a `<div>` element.
 
-* The set of HTML elements is restricted, wheras the `description` filed is more restricted (only text layout elements like <b>, <ul>, <li> etc.) then the `gloss` and `report` field (can also contain <img>, <audio>, <video>). Some elements like 'script' and 'style' are generally disallowed.
+* The set of HTML elements is restricted, wheras the `description` filed is more restricted (only text layout elements like `<b>`, `<ul>`, `<li>` etc.) then the `gloss` and `report` field (can also contain `<img>`, `<audio>`, `<video>`). Some elements like `<script>` and `<style>` are generally disallowed.
 
 * Invalid HTML will be striped from the strings
 
 ### Example implementation
 
-Here is an example implementation of a simple regualar expression marker written in Python. The purpose of this marker is to highlight words that match a regular expression given by the user. I use the web framework Flask to set up the server. It is a local marker that can be registered to Emphasize using the the base url: http://127.0.0.1/regex or http://localhost:8080/regex.
+Here is an example implementation of a simple regualar expression marker written in Python. The purpose of this marker is to highlight words that match a regular expression given by the user. I use the web framework Flask to set up the server. It is a local marker that can be registered to Emphasize using the the base url: `http://127.0.0.1/regex` or `http://localhost:8080/regex`.
 
+```Python
+from flask import Flask, request, Response
+import json
+import re
 
-	from flask import Flask, request, Response
-	import json
-	import re
+app = Flask(__name__)
 
-	app = Flask(__name__)
+@app.route('/regex/setup', methods=['GET'])
+def handle_setup_sequest():
+    data = get_setup()
+    return create_response(data);
 
-	@app.route('/regex/setup', methods=['GET'])
-	def handle_setup_sequest():
-	    data = get_setup()
-	    return create_response(data);
+@app.route('/regex/markup', methods=['POST'])
+def handle_markup_request():
+    data = get_markup(request.json)
+    return create_response(data);
 
-	@app.route('/regex/markup', methods=['POST'])
-	def handle_markup_request():
-	    data = get_markup(request.json)
-	    return create_response(data);
-	    
-	def create_response(data):
-	    resp = Response() 
-	    resp.data = json.dumps(data)
-	    resp.headers['Content-Type'] = 'application/json'
-	    return resp
+def create_response(data):
+    resp = Response() 
+    resp.data = json.dumps(data)
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
 
-	def get_setup():
-	    return {
-	        'title': 'Regular Expression Search',
-	        'description': "Find words that match a regular expression.",
-	        'inputs': [
-	            {
-	                'id': 're',
-	                'type': 'text',
-	                'label': 'Regular Expression',
-	            }
-	        ]
+def get_setup():
+    return {
+	'title': 'Regular Expression Search',
+	'description': "Find words that match a regular expression.",
+	'inputs': [
+	    {
+		'id': 're',
+		'type': 'text',
+		'label': 'Regular Expression',
 	    }
+	]
+    }
 
-	def get_markup(markup_request):
+def get_markup(markup_request):
 
-	    tokens = markup_request['tokens']
-	    pattern = markup_request['inputs']['re']
+    tokens = markup_request['tokens']
+    pattern = markup_request['inputs']['re']
 
-	    if not pattern:
-	        return { 'error': 'You should give me a pattern.' }
+    if not pattern:
+	return { 'error': 'You should give me a pattern.' }
 
-	    tokens_to_mark = []
+    tokens_to_mark = []
 
-	    for i in range(len(tokens)):
-	        if re.search(pattern, tokens[i]):
-	            tokens_to_mark.append(i)  
-	    
-	    report = '%d of %d tokens match the pattern: %s' % (
-	        len(tokens_to_mark), 
-	        len(tokens), 
-	        pattern
-	    )
+    for i in range(len(tokens)):
+	if re.search(pattern, tokens[i]):
+	    tokens_to_mark.append(i)  
 
-	    return { 
-	        'markup': [ { 'tokens': tokens_to_mark } ], 
-	        'report' : report 
-	    }
+    report = '%d of %d tokens match the pattern: %s' % (
+	len(tokens_to_mark), 
+	len(tokens), 
+	pattern
+    )
 
-	if __name__ == '__main__':
-	    app.run(host='127.0.0.1', port=8080, debug=True)
+    return { 
+	'markup': [ { 'tokens': tokens_to_mark } ], 
+	'report' : report 
+    }
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=8080, debug=True)
+```
