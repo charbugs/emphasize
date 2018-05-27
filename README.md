@@ -7,7 +7,13 @@
 
 #### What is Emphasize?
 
-* Emphasize is a browser extension for Chrome that provides serveral text analysis tools. These tools can be applied to any webpage that is loaded in the browser. As a result text sections of the webpage will be hightlighted and may be commented by little popups. For example such a tool may highlight technical terms in a webpage and provide a short explanation for each of these terms.
+* Emphasize is a browser extension for Chrome that provides **advanced text search tools**. These tools can be applied to any webpage that is loaded in the browser. As a result text sections of the webpage will be annotated. **Annotations** can comprise two things:
+    
+    * Highlightings of text sections
+    * Comments that will be shown as little popups near the highlighted text sections
+
+
+* **For example** such a tool may highlight technical terms in a webpage and provide a short explanation for each of these terms.
 
 #### Emphasize is extensible
 
