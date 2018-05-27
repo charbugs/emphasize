@@ -11,6 +11,7 @@ Emphasize is a browser extension for Chrome that provides **advanced text search
 * Highlightings of text sections
 * Comments that will be shown as little popups near the highlighted text sections
 
+#### Give me an example!
 
 For example such a tool may highlight technical terms in a webpage and provide a short explanation for each of these terms that will be shown as popups near the terms.
 
