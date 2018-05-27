@@ -1,4 +1,8 @@
 
+:tada: Emphasize brings advanced text search tools to your browser. :bird:
+
+[Install from Chrome Web Store](https://chrome.google.com/webstore/detail/emphasize/akkppidlpcckbggkbbkfjobkaahbgajk)
+
 ## Overview
 
 #### What is Emphasize?
@@ -35,7 +39,7 @@
 
 ## Installation
 
-* Emphasize can be installed through the Chrome Webstore: [Emphasize on Chrome Webstore](https://chrome.google.com/webstore/detail/emphasize/akkppidlpcckbggkbbkfjobkaahbgajk)
+* [Emphasize can be installed from Chrome Web Store](https://chrome.google.com/webstore/detail/emphasize/akkppidlpcckbggkbbkfjobkaahbgajk)
 
 * You need **Chrome Version 55 or greater**
 
@@ -143,7 +147,7 @@ Supported languages: German
 
 ## Writing markers for Emphasize
 
-### Communication protocol
+### Communication protocol overview
 
 Emphasize has a simple communication protocol for data exchange. This protocol wants a marker to implement a small HTTP API: Here are the basics:
 
@@ -212,7 +216,7 @@ By means of the `inputs` field the setup defines that there should be an text in
 }
 ```
 
-### Content of a markup request
+### Markup request
 
 |             |                                       |
 | ----------- | ------------------------------------- |
@@ -234,7 +238,7 @@ Here is an example of how the HTTP body of a markup request may look like:
 
 The content of a markup request is a json object that contains the `tokens` (words, punctuation etc.) of the webpage the marker should be applied on. It also contains the `url` of the webapge as an additional information. If the marker has defined input forms in the setup, the markup request will provide an `inputs` object that contains the user input data. Each key of this object refers to the id of the input form given in the marker's setup. The values of this object hold the user input data.
 
-### Content of a markup response
+### Markup response 
 
 |             |                                   |
 | ----------  | --------------------------------- |
@@ -287,7 +291,7 @@ If we want a commenting popup for a highlighted text section we must add a `glos
 }
 ```
 
-### HTML in the content
+### Some fields can contain HTML
 
 The `gloss` and `report` field of a markup response as well as the `description` field of a setup response can contain HTML that Emphasize tries to render at the respective place (popups and user interface). Note three things here:
 
@@ -297,7 +301,7 @@ The `gloss` and `report` field of a markup response as well as the `description`
 
 * Invalid HTML will be striped from the strings
 
-### Example implementation
+### Example implementation of a marker
 
 Here is an example implementation of a simple regualar expression marker written in Python. The purpose of this marker is to highlight words that match a regular expression given by the user. I use the web framework Flask to set up the server. It is a local marker that can be registered to Emphasize using the the base url: `http://127.0.0.1/regex` or `http://localhost:8080/regex`.
 
