@@ -12,35 +12,35 @@ Emphasize is a browser extension for Chrome that provides **advanced text search
 * Comments that will be shown as little popups near the highlighted text sections
 
 
-**For example** such a tool may highlight technical terms in a webpage and provide a short explanation for each of these terms.
+For example such a tool may highlight technical terms in a webpage and provide a short explanation for each of these terms that will be shown as popups near the terms.
 
 #### Emphasize is extensible
 
-Emphasize is extensible, i.e. people can write their own text analysis tools and integrate it to the extension. In this regard Emphasize is meant as an framework for the development of text analysis tools that work in the browser. Emphasize aims to make this easy by taking care of some common tasks like extracting the webpage text, splitting text to words, converting analysis outcomes to visible highlightings etc.
+Emphasize is extensible, i.e. people can write their own text search tools and integrate it to the extension. In this regard Emphasize is meant as an framework for the development of text analysis tools that work in the browser. Emphasize aims to make this easy by taking care of some common tasks like extracting the webpage text, splitting text to words, converting search results to visible annotations etc.
 
 #### What is a marker?
 
-Text analysis tools integrated in Emphasize are called markers. A marker is programm that takes as input a list of words (the webpage text) and outputs which of these words (or sequences of words) should be highlighted. Emphasize then converts these instructions in visible highlightings within the webpage. It's also possible for a marker to add comments to words that will be displayed as popups next to these words.
+Text search tools integrated in Emphasize are called markers. A marker is programm that takes as input a list of words (the webpage text) and outputs instructions that determine which of these words (or sequences of words) should be annotated. Emphasize then converts these instructions in visible annotations within the webpage.
 
 #### How are markers integrated to Emphasize?
 
-A marker is a webservice listening on a HTTP-URL. In this way a marker can be integrated to Emphasize. When a marker is registered to Emphasize the marker supplies it's setup which determines how the marker will be displayed within the user interface of Emphasize and what information the marker expects from the user to work properly (e.g. a search term). When the user applies a marker to the current webpage Emphasize connects to the marker, pass the webpage text and other informations, waits for the results of the marker's analysis and converts this results to a visible outcome within the wepage text.
+A marker is a webservice listening on a HTTP URL. In this way a marker can be integrated to Emphasize. When a marker is registered to Emphasize the marker supplies it's setup which determines how the marker will be displayed within the user interface of Emphasize and what information the marker expects from the user to work properly (e.g. a search term). When the user applies a marker to a webpage Emphasize connects to the marker, pass the webpage text and other informations, waits for the results of the marker's analysis and converts this results to visible annotations within the wepage text.
 
 #### What programming language are markers written in?
 
-As Emphasize and markers talk to each other over the HTTP protocol a marker can be written in almost any programming language as long as the marker adheres to the rules that Emphasize defines for data exchange.
+As Emphasize and markers talk to each other over HTTP a marker can be written in almost any programming language as long as the marker adheres to the communication protocol that Emphasize defines for data exchange.
 
 #### Users can register and remove markers
 
-Markers can be registered to Emphasize by entering the marker's url in the user interface. Emphasize will request the setup of the marker and perform some validation checks. If everything is ok the marker will be shown in the marker list of the user interface and can be applied to a webpage. It's also possible to remove a marker from Emphasize.
+Markers can be registered to Emphasize by entering the marker's url in the user interface. Emphasize will request the setup of the marker and perform some validation checks. If everything is ok the marker will be shown in the marker list of the user interface and can be applied to a webpage. Likewise markers can be removed from Emphasize.
 
-#### Public and private markers
+#### Public and local markers
 
 A marker can be public to each user of Emphasize if the URL the marker is listening on is a public URL. Conversly a marker can be for private or for testing use if the marker listening on a local URL.
 
 #### Where to find public markers?
 
-Currently there is no standard way to get to public markers. I plan to create a repository, where developers can publish markers so that users can register these markers to their instance of Emphasize. For now I provide a simple list of public markers on this Github site (see below).
+Currently there is no standard way to get to public markers. I plan to create a repository where developers can publish markers so that users can search this repository and register markers to their instance of Emphasize. For now I provide a simple [list of public markers](#list-of-public-markers) on this page.
 
 ## Installation
 
@@ -66,11 +66,11 @@ Currently there is no standard way to get to public markers. I plan to create a 
 
 * Apply a marker to the current webpage by clicking the apply button. 
 
-* If everthing went well Emphasize will highlight the webpage text.
+* If everthing went well Emphasize will annotate the webpage text.
 
 ### Working with highlightings
 
-* For the sake of differentiation each marker has it's own unique color. This color appears in highlightings as well as in the user interface.
+* For the sake of differentiation each marker has it's own unique color. This color appears in highlightings as well as in some places at the user interface.
 
 * You can temporary hide the highlightings of the marker by switching the toggle button.
 
@@ -116,8 +116,6 @@ This marker highlights words in a webapge that match a given regular expression.
 
 Supported languages: any
 
-
-
 ---
 
 **Persons, Locations, Organisations**
@@ -162,9 +160,9 @@ Emphasize has a simple communication protocol for data exchange. This protocol w
 
 * **setup response**: When a marker receives a setup request it should return a json object that contains the setup features like title, description etc.
 
-* **markup request**: If a marker is registered to Emphasize, a user can apply the marker to a webpage. In this case Emphasize will perform a POST request to `<base url>/markup`, e.g. `http://mymarkers.com/synonym-detection/markup`. The body of this request is a json object that contains the text of the webpage and some other informations like user inputs.
+* **markup request**: If a marker is registered to Emphasize, a user can apply the marker to a webpage. In this case Emphasize will perform a POST request to `<base url>/markup`, e.g. `http://mymarkers.com/synonym-detection/markup`. The HTTP body of this request is a json object that contains the text of the webpage and some other informations like user inputs.
 
-* **markup response**: When a marker receives a markup request from Emphasize it should return a json object that contains instructions what parts of the webpage text to highlight and comment. The response can also contain a analysis report or an error message for the case the marker was unable to process the data.
+* **markup response**: When a marker receives a markup request from Emphasize it should return a json object that contains instructions what parts of the webpage text should be annotated. The response can also contain a analysis report or an error message for the case the marker was unable to process the data.
 
 ### Setup request
 
@@ -205,7 +203,7 @@ Here is an example of how the HTTP body of a setup response may look like:
 
 The content of an setup response is an json object that must contain at least a `title` and a `description` for the marker. Titel and description will be shown in the user interface of Emphasize. The `author`, `homepage` and `supportedLanguages` field provide additional informations but have further impact on the functionality of the marker. 
 
-By means of the `inputs` field the setup defines that there should be an text input form in the marker view of the user interface so that the user can enter data (a search term in that case) before applying the marker. As you can see the `inputs` field is an array which means that a marker can define multiple input forms. It's also possible to define a selection form, e.g.;
+By means of the `inputs` field the marker defines that there should be an text input form in the corresponding marker view of the user interface so that the user can enter data (a "search term" in the example) before applying the marker. As you can see the `inputs` field is an array which means that a marker can define multiple input forms. It's also possible to define a selection form, e.g.;
 
 ```Javascript
 {
@@ -261,7 +259,7 @@ Here is an example of how the HTTP body of a markup response may look like:
 }
 ```
 
-The content of a markup reponse is a json object that holds the analysis results of the marker. The `markup` field is an array of objects that contains the instructions what text parts of the webpage should be highlighted. In the example the marker wants token number 2 ("talking") and 19 ("said") of webpage text to be highlighted by Emphasize. That is, a marker refers to the indices of the tokens list comming with an markup request. Note that the indices start by 0. Furthermore there is an optional `report` field that is shown in the user interface after the marker was succesfull applied.
+The content of a markup reponse is a json object that holds the analysis results of the marker. The `markup` field is an array of objects that contains instructions what text sections of the webpage should be annotated. In the example the marker wants token number 2 ("talking") and 19 ("said") of webpage text to be highlighted. That is, a marker refers to text sections through the indices of the tokens list comming with an markup request. Note that the indices start by 0. Furthermore there is an optional `report` field that is shown in the user interface after the marker was succesfull applied.
 
 The `markup` array can contain multiple instruction objects and these objects can have 4 different formats:
 
@@ -279,7 +277,7 @@ The `markup` array can contain multiple instruction objects and these objects ca
 }
 ```
 
-If we want a commenting popup for a highlighted text section we must add a `gloss` field to the the corresponding instruction object:
+If we want to add a comment to a highlighted text section we must add a `gloss` field to the the corresponding instruction object:
 
 ```Javascript
 {
@@ -296,13 +294,21 @@ If we want a commenting popup for a highlighted text section we must add a `glos
 }
 ```
 
+Finally a markup response can contain a error message that is displayed to the user:
+
+```Javascrip
+{
+  "error": "You should give me a search term."
+}
+```
+
 ### Some fields can contain HTML
 
 The `gloss` and `report` field of a markup response as well as the `description` field of a setup response can contain HTML that Emphasize tries to render at the respective place (popups and user interface). Note three things here:
 
 * Always wrap strings containing HTML in a `<div>` element.
 
-* The set of HTML elements is restricted, wheras the `description` filed is more restricted (only text layout elements like `<b>`, `<ul>`, `<li>` etc.) then the `gloss` and `report` field (can also contain `<img>`, `<audio>`, `<video>`). Some elements like `<script>` and `<style>` are generally disallowed.
+* The set of HTML elements is restricted, wheras the `description` filed is more restricted (only text layout elements like `<b>`, `<ul>`, `<li>` etc. are allowed) then the `gloss` and `report` field (can also contain `<img>`, `<audio>`, `<video>`). Some elements like `<script>` and `<style>` are generally disallowed.
 
 * Invalid HTML will be striped from the strings
 
