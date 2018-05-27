@@ -177,7 +177,7 @@ Emphasize has a simple communication protocol for data exchange. This protocol w
 
 Here is an example of how the HTTP body of a setup response may look like:
 
-```JSON
+```Javascript
 {
   "title": "Synonym Marker", 
   "description": "Highlights synonyms of the search term within the webpage text.",
@@ -198,7 +198,7 @@ The content of an setup response is an json object that must contain at least a 
 
 By means of the `inputs` field the setup defines that there should be an text input form in the marker view of the user interface so that the user can enter data (a search term in that case) before applying the marker. As you can see the `inputs` field is an array which means that a marker can define multiple input forms. It's also possible to define a selection form, e.g.;
 
-```JSON
+```Javascript
 {
   ...
   "inputs": [
@@ -224,7 +224,7 @@ By means of the `inputs` field the setup defines that there should be an text in
 
 Here is an example of how the HTTP body of a markup request may look like:
 
-```JSON
+```Javascript
 {
   "tokens": ["I", "was", "talking", "to", "the", "cast", "half", "an", "hour", "ago", ",", "before", "the", "break", "for", "dinner", "started", ",", "Bezos", "said", "on", "stage", "at", "the", "conference", "."],
   "url": "https://www.cnet.com/news/jeff-bezos-amazon-rescues-the-expanse-from-cancellation",
@@ -243,7 +243,7 @@ The content of a markup request is a json object that contains the `tokens` (wor
 
 Here is an example of how the HTTP body of a markup response may look like:
 
-```JSON
+```Javascript
 {
   "markup": [
     { "tokens": [2, 19] }
@@ -272,7 +272,7 @@ The `markup` array can contain multiple instruction objects and these objects ca
 
 If we want a commenting popup for a highlighted text section we must add a `gloss` field to the the corresponding instruction object:
 
-```JSON
+```Javascript
 {
   "markup": [
     { 
