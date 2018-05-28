@@ -95,6 +95,7 @@ exports.MarkerReady = function(props) {
 			</Content>
 			<ControlBar>
 				<Button label="Apply"
+					title="apply marker to web page"
 					classes={ [setup.face, 'left'] }
 					onClick= { () => props.onApplyClick(marker) }
 				/>
@@ -167,9 +168,11 @@ exports.MarkerDone = function(props) {
 				<Button 
 					classes={ ['secondary', 'left'] }
 					label="Reset"
+					title="discard annotations and reports"
 					onClick={ () => props.onResetClick(props.marker) }
 				/>
 				<Toggler 
+					title="toggle annotations"
 					face={ props.marker.setup.face }
 					on={ props.togglerOn }
 					onChange={ () => props.onToggleClick(props.marker) }
@@ -234,6 +237,7 @@ exports.MarkerMore = function(props) {
 				<Button
 					classes={ ['secondary', 'right'] } 
 					label="Remove"
+					title="remove this marker from emphasize"
 					onClick={ () => props.onRemoveClick(props.marker) }
 				/>
 			</ControlBar>

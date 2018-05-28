@@ -93,7 +93,7 @@ async function kickoff() {
 	await markerUpdate.update();
 	window.injection = injection;
 	window.menuContainer = menuContainer;
-	chrome.browserAction.setTitle({ title: 'Text analysis for web pages' });
+	chrome.browserAction.setTitle({ title: 'Advanced text search in web pages' });
 	chrome.browserAction.enable();
 }
 

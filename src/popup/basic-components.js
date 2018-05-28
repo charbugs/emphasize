@@ -28,6 +28,7 @@ exports.Button = function(props) {
 	return (
 		<div className={ ['button', ...(props.classes || []) ].join(' ') }
 			onClick={ props.onClick }
+			title={ props.title }
 		>{ props.label }
 		</div>
 	);
@@ -63,6 +64,7 @@ exports.GlobalNavbar = function (props) {
 				</li>
 
 				<li className={ getClassString(1) }	
+					title="register a new marker"
 					onClick={ props.onRegistrationTabClick }>
 					Register
 				</li>				
@@ -233,7 +235,8 @@ exports.Toggler = class Toggler extends React.Component {
 
 	render() {
 		return (
-			<div className={ this.state.classList.join(' ') } 
+			<div className={ this.state.classList.join(' ') }
+				title={ this.props.title }
 				onClick={ this.handleClick.bind(this) }
 			></div>
 		);
