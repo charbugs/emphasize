@@ -24,13 +24,13 @@ exports.RegistrationReady = function(props) {
 					entering the marker's url to the input field.
 					Here list of 
 					<a onClick={ props.onMarkerRepositoryClick }
-						href="https://github.com/charbugs/emphasize"
+						href="#"
 					> public markers</a>.
 					<br/><br/>
 					You can also write your own markers and include it
 					to Emphasize. Click 
 					<a onClick={ props.onDeveloperInfoClick }
-						href="https://github.com/charbugs/emphasize"
+						href="#"
 					> here</a> for more information.
 				</div>
 				<br/>

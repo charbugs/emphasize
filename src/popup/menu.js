@@ -34,6 +34,10 @@ class Menu extends React.Component {
 		chrome.tabs.create({ url: "https://github.com/charbugs/emphasize" });	
 	}
 
+	openMarkerRepository() {
+		chrome.tabs.create({ url: "https://github.com/charbugs/emphasize#list-of-public-markers"})
+	}
+
 	///////////////////////////////////////////////////////
 	// Init
 	///////////////////////////////////////////////////////
@@ -253,7 +257,7 @@ class Menu extends React.Component {
 				onUrlChange={ this.saveUrl.bind(this) }
 				onMarkersTabClick={ this.showMarkerList.bind(this) }
 				onRegisterMarker={ this.registerMarker.bind(this) } 
-				onMarkerRepositoryClick={ this.openProjectWebsite.bind(this) }
+				onMarkerRepositoryClick={ this.openMarkerRepository.bind(this) }
 				onDeveloperInfoClick={ this.openProjectWebsite.bind(this) } />
 		}
 
