@@ -3,6 +3,7 @@
 var DEFAULT_MARKER_1 = { url: 'http://h2706860.stratoserver.net/em-regex-search' };
 var DEFAULT_MARKER_2 = { url: 'http://h2706860.stratoserver.net/em-named-entities' };
 var DEFAULT_MARKER_3 = { url: 'http://h2706860.stratoserver.net/em-text-similarities' };
+var DEFAULT_MARKER_4 = { url: 'http://h2706860.stratoserver.net/em-synonym-search' };
 
 class MarkerUpdate {
 
@@ -19,7 +20,8 @@ class MarkerUpdate {
 			setups = [
 				DEFAULT_MARKER_1,
 				DEFAULT_MARKER_2,
-				DEFAULT_MARKER_3
+				DEFAULT_MARKER_3,
+				DEFAULT_MARKER_4
 			];
 		}
 
