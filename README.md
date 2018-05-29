@@ -365,7 +365,7 @@ def get_markup(markup_request):
 
     for i in range(len(tokens)):
 	if re.search(pattern, tokens[i]):
-	    tokens_to_mark.append(i)  
+	    tokens_to_mark.append(i)
 
     report = '%d of %d tokens match the pattern: %s' % (
 	len(tokens_to_mark), 
