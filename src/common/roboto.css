@@ -7,3 +7,14 @@
 	font-family: 'Roboto-Medium';
 	src: url('chrome-extension://__MSG_@@extension_id__/fonts/roboto/Roboto-Medium.woff'); 
 }
+
+@font-face {
+	font-family: 'Roboto-Slab-Regular';
+	src: url('chrome-extension://__MSG_@@extension_id__/fonts/roboto/Roboto-Slab-Regular.woff'); 
+}
+
+@font-face {
+	font-family: 'Roboto-Slab-Bold';
+	src: url('chrome-extension://__MSG_@@extension_id__/fonts/roboto/Roboto-Slab-Bold.woff'); 
+}
+

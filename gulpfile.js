@@ -130,7 +130,8 @@ gulp.task('build-popup-css', function() {
 gulp.task('build-fonts', function() {
 	gulp.src([
 			'node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff',
-			'node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff'
+			'node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff',
+			'node_modules/roboto-fontface/fonts/roboto-slab/Roboto-Slab-Bold.woff',
 		])
 		.pipe(gulp.dest(path.join(BUILD_DIR, 'fonts', 'roboto')));
 

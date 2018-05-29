@@ -245,20 +245,20 @@ label {
 }
 
 .app-info-bar .label {
-    padding: 14px;
+    padding: 16px;
     display: inline-block;
-    font-family: Roboto-Medium, sans-serif;
+    font-family: Roboto-Slab-Bold, sans-serif;
     font-size: 16px;
 }
 
 .app-info-bar .version {
-    padding: 14px;
+    padding: 16px;
     display: inline-block;
     font-size: 12px;
 }
 
 .app-info-bar .home {
-    padding: 14px;
+    padding: 16px;
     float: right;
     display: inline-block;
     font-size: 20px;
