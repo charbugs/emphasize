@@ -162,7 +162,7 @@ exports.MarkerDone = function(props) {
 				props.marker.output.report
 					? <UserHtmlContent html={ props.marker.output.report }
 						setDefaultMarginIfNotProvidedByUser={ true } />
-					: <Content>Marker applied without a message</Content>
+					: <Content>Marker did not send a analysis report.</Content>
 			}
 			<ControlBar>
 				<Button 
