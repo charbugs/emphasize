@@ -92,7 +92,9 @@ label {
     line-height: 1.5;
     color: #444;
     font-family: Roboto-Regular, sans-serif;
-    font-size: 14px;   
+    font-size: 14px;
+    max-height: 430px;
+    overflow: auto;   
 }
 
 /************************************************
