@@ -315,7 +315,7 @@ The `gloss` and `report` field of a markup response as well as the `description`
 
 ### Example implementation of a marker
 
-Here is an example implementation of a simple regular expression marker written in Python. The purpose of this marker is to highlight words that match a regular expression given by the user. I use the web framework Flask to set up the server. It is a local marker that can be registered with Emphasize using the the base URL: `http://127.0.0.1/regex` or `http://localhost:8080/regex`.
+Here is an example implementation of a simple *regular expression marker* written in Python. The purpose of this marker is to highlight words that match a regular expression given by the user. I use the web framework Flask to set up the server. It is a local marker that can be registered with Emphasize using the the base URL: `http://127.0.0.1:8080/regex` or `http://localhost:8080/regex`.
 
 ```Python
 from flask import Flask, request, Response
