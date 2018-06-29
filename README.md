@@ -121,7 +121,7 @@ Supported languages: any
 
 **Persons, Locations, Organisations**
 
-This marker highlights words that refer to Persons, Locations and Organisations.
+This marker highlights words that refer to persons, locations or organisations.
 
 `http://h2706860.stratoserver.net/em-named-entities`
 
