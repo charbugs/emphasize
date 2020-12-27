@@ -1,5 +1,7 @@
 
-:tada: Emphasize brings advanced text search tools to your browser. :bird:
+__Note__: This project was part of my master thesis and is not maintained.
+
+Advanced text search tools for chrome.
 
 [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/emphasize/akkppidlpcckbggkbbkfjobkaahbgajk)
 
